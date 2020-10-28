@@ -1,9 +1,5 @@
-#ifndef SAGE_MATH_H_
-#define SAGE_MATH_H_ 1
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef SG_MATH_H
+#define SG_MATH_H 1
 
 #include <stdint.h>
 
@@ -95,10 +91,5 @@ void
 perspective(m4 m4src, const float fov_y, const float aspect_ratio,
             const float nearVal, const float farVal);
 
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
