@@ -9,23 +9,14 @@ extern "C" {
 
 #define SG_DEFINE_HANDLE( object ) typedef struct object##_T *object;
 
+typedef enum {
+	SG_SUCCESS = 0,
+} SgResult;
 
+typedef uint32_t SgBool;
 typedef uint32_t SgFlags;
 
-typedef struct SgAppInfo {
-	const char*            pAppName;
-} SgAppInfo;
-
 // Reserved for future use
-typedef SgFlags SgAppCreateFlags;
-
-typedef struct SgAppCreateInfo {
-	const SgAppInfo*       pAppInfo;
-	SgAppCreateFlags       flags;
-} SgAppCreateInfo;
-
-/* SgResult */void sgCreateApp();
-
 #ifdef __cplusplus
 }
 #endif

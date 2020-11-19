@@ -1,9 +1,18 @@
-# rend_src = 
+sage_incs = []
+sage_libs = []
+
+subdir('base')
+sage_incs += sgbase_inc
+sage_libs += sgbase_lib
+subdir('math')
+sage_incs += sgmath_inc
+sage_libs += sgmath_lib
+subdir('rend')
+sage_incs += sgrend_inc
+sage_libs += sgrend_lib
 # entt_src = 
 # jobs_src =
-math_src = files('math/sg_math.c')
-math_inc = include_directories('math')
+
+
 # phys_src =
 
-sage_src = [math_src]
-sage_incs = [math_inc]

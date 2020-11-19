@@ -1,5 +1,5 @@
 [submodule "extern/flecs"]
-	path = extern/flecs
+	path = subprojects/flecs
 	url = https://github.com/SanderMertens/flecs
 [submodule "extern/log.c"]
 	path = extern/log.c
@@ -17,5 +17,8 @@
 	path = extern/fast_obj
 	url = https://github.com/thisistherk/fast_obj
 [submodule "extern/meshoptimizer"]
-	path = extern/meshoptimizer
+	path = subprojects/meshoptimizer
 	url = https://github.com/zeux/meshoptimizer
+[submodule "subprojects/glfw"]
+	path = subprojects/glfw
+	url = https://github.com/glfw/glfw

@@ -1,15 +1,12 @@
-#ifndef SAGE_REND_H_
-#define SAGE_REND_H_ 1
+#ifndef SG_REND_H
+#define SG_REND_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include "sage_core.h"
-#include "sage_math.h"
+#include "sage_base.h"
 #define VK_NO_PROTOTYPES
 #include "volk.h"
 #define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
+#include "sg_math.h"
 
 typedef enum SgAppCreateFlagBits {
 	SG_APP_CURSOR_HIDDEN         = 0x00000001,
@@ -24,14 +21,8 @@ typedef struct SgAppCreateInfo {
 	v2                     size;
 } SgAppCreateInfo;
 
+SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppSgApp);
 
-SG_DEFINE_HANDLE(SgApp);
-SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp *pSgApp);
-
-SgBool sgAppUpdate(const SgApp* ppSgApp);
-
-#ifdef __cplusplus
-}
-#endif
+SgBool sgAppUpdate(const SgApp** ppSgApp);
 
 #endif
