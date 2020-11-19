@@ -3,7 +3,9 @@
 
 #define VK_NO_PROTOTYPES
 #include "volk.h"
+#include "sage_base.h"
 
-VkPhysicalDevice pickPhysicalDevice(VkSurfaceKHR surface, VkPhysicalDevice *pPhysicalDevices, uint32_t deviceCount);
+SgResult getPhysicalDevice(SgApp *pApp);
+SgResult getLogicalDevice(SgApp *pApp);
 
 #endif

@@ -101,22 +101,6 @@ SgResult createVkInstance(const SgAppCreateInfo *pCreateInfo, SgApp *pApp) {
 	return SG_SUCCESS;
 }
 
-SgResult getPhysicalDevice(SgApp *pApp) {
-	uint32_t deviceCount = 0;
-	vkEnumeratePhysicalDevices(pApp->instance, &deviceCount, VK_NULL_HANDLE);
-	VkPhysicalDevice *pPhysicalDevices = calloc(deviceCount, sizeof(VkPhysicalDevice));
-	vkEnumeratePhysicalDevices(pApp->instance, &deviceCount, pPhysicalDevices);
-	pApp->physicalDevice = pickPhysicalDevice(pApp->surface, pPhysicalDevices, deviceCount);
-	if (pApp->physicalDevice) {
-		log_info("[AppInit]: Vulkan Physical Device found");
-	} else {
-		log_fatal("[AppInit]: Vulkan Physical Device not found");
-	}
-	free(pPhysicalDevices);
-	return SG_SUCCESS;
-}
-
-
 SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppSgApp) {
 	/* TODO: Implement custom allocation callbacks */
 	// static could be an alternative... But it is not thread safe. Mb will change to static later.
@@ -135,11 +119,14 @@ SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppSgApp) {
 #endif
 	/* Vulkan Surface */
 	createWindowSurface(pApp);
-	/* Vulkan Device */
+	/* Vulkan Physical Device */
 	getPhysicalDevice(pApp);
+	/* Vulkan Logical Device */
+	getLogicalDevice(pApp);
 
 	/* Vulkan Surface Attirbutes */
 	getSurfaceAttributes(pApp);
+
 
 	/* End */
 	*ppSgApp = pApp;

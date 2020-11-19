@@ -22,14 +22,18 @@ typedef struct SurfaceAttributes {
 } SurfaceAttributes;
 
 typedef struct SgApp {
-	GLFWwindow*            pWindow;
-	VkInstance             instance;
+	GLFWwindow*               pWindow;
+	VkInstance                instance;
 #ifdef _DEBUG
 	VkDebugReportCallbackEXT  debugCallback;
 #endif
-	VkSurfaceKHR           surface;
-	VkPhysicalDevice       physicalDevice;
-	SurfaceAttributes      surfaceAttributes;
+	VkSurfaceKHR              surface;
+	VkPhysicalDevice          physicalDevice;
+	// TODO: Do it more generic.
+	// With an array of queues and their priorities
+	uint32_t                  graphicsQueueFamilyIdx;
+	SurfaceAttributes         surfaceAttributes;
+	VkDevice                  device;
 } SgApp;
 
 

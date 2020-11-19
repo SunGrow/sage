@@ -1,4 +1,6 @@
 #include "sg_rend_device.h"
+#include "sage_base.h"
+#include <stdlib.h>
 #include "log.h"
 
 // could replace with trying to get all of the families
@@ -58,4 +60,54 @@ VkPhysicalDevice pickPhysicalDevice(VkSurfaceKHR surface, VkPhysicalDevice *pPhy
 		log_error("[AppInit]: No suitable GPUs found");
 	}
 	return result;
+}
+
+SgResult getPhysicalDevice(SgApp *pApp) {
+	uint32_t deviceCount = 0;
+	vkEnumeratePhysicalDevices(pApp->instance, &deviceCount, VK_NULL_HANDLE);
+	VkPhysicalDevice *pPhysicalDevices = calloc(deviceCount, sizeof(VkPhysicalDevice));
+	vkEnumeratePhysicalDevices(pApp->instance, &deviceCount, pPhysicalDevices);
+	pApp->physicalDevice = pickPhysicalDevice(pApp->surface, pPhysicalDevices, deviceCount);
+	pApp->graphicsQueueFamilyIdx = getGraphicsFamilyIndex(pApp->physicalDevice);
+	if (pApp->physicalDevice) {
+		log_info("[AppInit]: Vulkan Physical Device found");
+	} else {
+		log_fatal("[AppInit]: Vulkan Physical Device not found");
+	}
+	free(pPhysicalDevices);
+	return SG_SUCCESS;
+}
+
+static const char *deviceExtensionNames[] = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+};
+
+SgResult getLogicalDevice(SgApp *pApp) {
+	// Should really come from a pApp
+	float pQueuePriorities[] = {1.0f};
+	// Should be abstracted away
+	VkDeviceQueueCreateInfo graphicsQueueCreateInfo = {
+	    .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+	    .queueFamilyIndex = pApp->graphicsQueueFamilyIdx,
+	    .queueCount = 1,
+	    .pQueuePriorities = pQueuePriorities,
+	};
+	VkDeviceQueueCreateInfo pQueueCreateInfos[] = {
+	    graphicsQueueCreateInfo,
+	};
+	VkDeviceCreateInfo createInfo = {
+	    .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+	    .queueCreateInfoCount = NUMOF(pQueueCreateInfos),
+	    .pQueueCreateInfos = pQueueCreateInfos,
+	    .enabledExtensionCount = NUMOF(deviceExtensionNames),
+	    .ppEnabledExtensionNames = deviceExtensionNames,
+	};
+	vkCreateDevice(pApp->physicalDevice, &createInfo, VK_NULL_HANDLE, &pApp->device);
+	if (pApp->device) {
+		log_info("[AppInit]: Logical Device created successfully");
+	} else {
+		log_warn("[AppInit]: Logical Device creation failure");
+		return -1;
+	}
+	return SG_SUCCESS;
 }
