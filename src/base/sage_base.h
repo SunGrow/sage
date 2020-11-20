@@ -7,6 +7,7 @@
 #include "volk.h"
 #define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
+#include "vk_mem_alloc.h"
 
 #define SG_DEFINE_HANDLE( object ) typedef struct object##_T *object;
 #define NUMOF(arr) (sizeof(arr) / sizeof((arr)[0]))
@@ -34,6 +35,7 @@ typedef struct SgApp {
 	uint32_t                  graphicsQueueFamilyIdx;
 	SurfaceAttributes         surfaceAttributes;
 	VkDevice                  device;
+	VmaAllocator              allocator;
 } SgApp;
 
 

@@ -19,10 +19,10 @@ VkSurfaceFormatKHR getSurfaceFormat(VkPhysicalDevice physicalDevice, VkSurfaceKH
 	uint32_t formatCount = 0;
 	VkSurfaceFormatKHR format;
 	vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, VK_NULL_HANDLE);
-	VkSurfaceFormatKHR *pformats = calloc(formatCount, sizeof(VkSurfaceFormatKHR));
-	vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, pformats);
-	if (formatCount == 1 && pformats[0].format == VK_FORMAT_UNDEFINED) {
-		free(pformats);
+	VkSurfaceFormatKHR *pFormats = malloc(formatCount * sizeof(*pFormats));
+	vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, pFormats);
+	if (formatCount == 1 && pFormats[0].format == VK_FORMAT_UNDEFINED) {
+		free(pFormats);
 		log_info("[AppInit]: Surface Format not specified");
 		return (VkSurfaceFormatKHR){
 		    .format = VK_FORMAT_B8G8R8A8_UNORM,
@@ -30,36 +30,36 @@ VkSurfaceFormatKHR getSurfaceFormat(VkPhysicalDevice physicalDevice, VkSurfaceKH
 		};
 	}
 	for (uint32_t i = 0; i < formatCount; ++i) {
-		if (pformats[i].format == VK_FORMAT_B8G8R8A8_UNORM &&
-		    pformats[i].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-			format = pformats[i];
-			free(pformats);
+		if (pFormats[i].format == VK_FORMAT_B8G8R8A8_UNORM &&
+		    pFormats[i].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+			format = pFormats[i];
+			free(pFormats);
 			log_info("[AppInit]: Surface Format found");
 			return format;
 		}
 	}
-	format = pformats[0];
-	free(pformats);
+	format = pFormats[0];
+	free(pFormats);
 	log_warn("[AppInit]: Surface Format not found");
 	return format;
 }
 
 VkPresentModeKHR getSurfacePresentMode(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface) {
-	uint32_t modecnt = 0;
+	uint32_t modeCount = 0;
 	VkPresentModeKHR result;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &modecnt, VK_NULL_HANDLE);
-	VkPresentModeKHR *ppresmodes = calloc(modecnt, sizeof(VkPresentModeKHR)); 
-	vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &modecnt, ppresmodes);
-	for (uint32_t i = 0; i < modecnt; ++i) {
-		if (ppresmodes[i] == VK_PRESENT_MODE_MAILBOX_KHR) {
-			result = ppresmodes[i];
-			free(ppresmodes);
+	vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &modeCount, VK_NULL_HANDLE);
+	VkPresentModeKHR *pPresentModes = malloc(modeCount * sizeof(*pPresentModes)); 
+	vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &modeCount, pPresentModes);
+	for (uint32_t i = 0; i < modeCount; ++i) {
+		if (pPresentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR) {
+			result = pPresentModes[i];
+			free(pPresentModes);
 			log_info("[AppInit]: Surface Present Mode found");
 			return result;
 		}
 	}
-	result = ppresmodes[0];
-	free(ppresmodes);
+	result = pPresentModes[0];
+	free(pPresentModes);
 	log_warn("[AppInit]: Surface Present Mode not found");
 	return result;
 }

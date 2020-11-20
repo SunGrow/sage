@@ -8,16 +8,18 @@ uint32_t getGraphicsFamilyIndex(VkPhysicalDevice pd) {
 	uint32_t queueCount = 0;
 	vkGetPhysicalDeviceQueueFamilyProperties(pd, &queueCount, 0);
 
-	VkQueueFamilyProperties queues[queueCount]; // using vla
+	VkQueueFamilyProperties *queues = malloc(queueCount * sizeof(*queues));
 	vkGetPhysicalDeviceQueueFamilyProperties(pd, &queueCount, queues);
 
 	// Too lazy to handle multiple families case. Might do it later
 	for (uint32_t i = 0; i < queueCount; ++i)
 		if ((queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) &&
 		    (queues[i].queueFlags & VK_QUEUE_COMPUTE_BIT)) {
+			free(queues);
 			return i;
 		}
 
+	free(queues);
 	return VK_QUEUE_FAMILY_IGNORED;
 }
 
@@ -65,7 +67,7 @@ VkPhysicalDevice pickPhysicalDevice(VkSurfaceKHR surface, VkPhysicalDevice *pPhy
 SgResult getPhysicalDevice(SgApp *pApp) {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(pApp->instance, &deviceCount, VK_NULL_HANDLE);
-	VkPhysicalDevice *pPhysicalDevices = calloc(deviceCount, sizeof(VkPhysicalDevice));
+	VkPhysicalDevice *pPhysicalDevices = malloc(deviceCount * sizeof(*pPhysicalDevices));
 	vkEnumeratePhysicalDevices(pApp->instance, &deviceCount, pPhysicalDevices);
 	pApp->physicalDevice = pickPhysicalDevice(pApp->surface, pPhysicalDevices, deviceCount);
 	pApp->graphicsQueueFamilyIdx = getGraphicsFamilyIndex(pApp->physicalDevice);

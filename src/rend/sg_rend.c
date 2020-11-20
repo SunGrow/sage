@@ -4,6 +4,7 @@
 #endif
 #include "device/sg_rend_device.h"
 #include "surface/sg_rend_surface.h"
+#include "allocator/sg_rend_allocator.h"
 #include <stdlib.h>
 #include "log.h"
 
@@ -66,7 +67,7 @@ SgResult createVkInstance(const SgAppCreateInfo *pCreateInfo, SgApp *pApp) {
     const char **glfwExt;
     glfwExt = glfwGetRequiredInstanceExtensions(&glfwExtCount);
     uint32_t extCount = NUMOF(SG_SURF_EXT) + glfwExtCount;
-    const char *pExt[extCount]; // using vla
+    const char **pExt = malloc(extCount * sizeof(*pExt));
     for (uint32_t i = 0; i < glfwExtCount; ++i) {
         pExt[i] = glfwExt[i];
     }
@@ -98,6 +99,7 @@ SgResult createVkInstance(const SgAppCreateInfo *pCreateInfo, SgApp *pApp) {
 
 	volkLoadInstance(pApp->instance);
 
+    free(pExt);
 	return SG_SUCCESS;
 }
 
@@ -124,8 +126,14 @@ SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppSgApp) {
 	/* Vulkan Logical Device */
 	getLogicalDevice(pApp);
 
+	VkPhysicalDeviceProperties props;
+	vkGetPhysicalDeviceProperties(pApp->physicalDevice, &props);
+	/* Create Vulkan Allocator */
+	createAllocator(pApp);
+
 	/* Vulkan Surface Attirbutes */
 	getSurfaceAttributes(pApp);
+
 
 
 	/* End */
