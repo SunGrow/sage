@@ -55,12 +55,20 @@ typedef struct SgApp {
 	pthread_t                 threads[SG_THREADS_COUNT];
 	// No secondary command buffer pools atm
 	VkCommandPool             pCommandPools[SG_FRAME_QUEUE_LENGTH * SG_THREADS_COUNT];
+
+	// Synchorization primitives
+	VkSemaphore               pFrameReadySemaphore[SG_FRAME_QUEUE_LENGTH];
+	VkSemaphore               pFrameFinishedSemaphore[SG_FRAME_QUEUE_LENGTH];
+	uint32_t                  currentFrame;
+	uint32_t                  frameImageIndex;
+	VkFence                   pFrameFences[SG_FRAME_QUEUE_LENGTH];
+	VkFence                   pFrameImageInFlightFences[SG_FRAME_QUEUE_LENGTH];
 } SgApp;
 
 typedef enum SgResourceTypeFlagBits {
 	SG_RESOURCE_TYPE_TEXTURE_2D   = 0x00000001,
 	SG_RESOURCE_TYPE_MESH         = 0x00000002,
-	SG_RESOURCE_TYPE_DYNAMIC      = 0x00000004,
+	SG_RESOURCE_TYPE_UNIFORM      = 0x00000004,
 	SG_RESOURCE_TYPE_INDICES      = 0x00000008,
 	SG_RESOURCE_TYPE_STAGING      = 0x00000010, // Hidden from the outer API atm
 } SgResourceTypeFlagBits;
@@ -142,6 +150,9 @@ typedef struct SgGraphicsInstance {
 	VkPipeline                     graphicsPipeline;
 } SgGraphicsInstance;
 
+typedef struct SgUpdateCommands {
+	VkCommandBuffer             pCommandBuffers[SG_FRAME_QUEUE_LENGTH];
+} SgUpdateCommands;
 
 typedef struct SgFile {
 	uint32_t*         pBytes;

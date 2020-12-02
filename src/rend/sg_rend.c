@@ -142,6 +142,24 @@ SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppSgApp) {
 	/* Command Pool Initialization */
 	initCommandPools(pApp);
 
+	/* Synchronization Primitive creation*/
+	VkSemaphoreCreateInfo semaphoreCreateInfo = {
+		.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+	};
+	VkFenceCreateInfo fenceCreateInfo = {
+		.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+		.flags = VK_FENCE_CREATE_SIGNALED_BIT,
+	};
+	VkResult res = VK_SUCCESS;
+	for (uint32_t i = 0; i < SG_FRAME_QUEUE_LENGTH; ++i) {
+		res |= vkCreateSemaphore(pApp->device, &semaphoreCreateInfo, VK_NULL_HANDLE, &pApp->pFrameReadySemaphore[i]);
+		res |= vkCreateSemaphore(pApp->device, &semaphoreCreateInfo, VK_NULL_HANDLE, &pApp->pFrameFinishedSemaphore[i]);
+		res |= vkCreateFence(pApp->device, &fenceCreateInfo, VK_NULL_HANDLE, &pApp->pFrameFences[i]);
+	}
+	if (res) {
+		log_error("[App Init]: Synchonization Primitive init failure");
+	}
+
 	/* End */
 	*ppSgApp = pApp;
 
@@ -163,8 +181,8 @@ SgResult sgCreateResourceSet(const SgApp* pApp, const SgResourceSetCreateInfo *p
 			case (SG_RESOURCE_TYPE_MESH):
 				pSetLayoutBindings[i].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 				break;
-			case (SG_RESOURCE_TYPE_DYNAMIC):
-				pSetLayoutBindings[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+			case (SG_RESOURCE_TYPE_UNIFORM):
+				pSetLayoutBindings[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				break;
 			case (SG_RESOURCE_TYPE_TEXTURE_2D):
 				pSetLayoutBindings[i].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -219,8 +237,8 @@ SgResult sgInitResourceSet(const SgApp *pApp, const SgResourceSetInitInfo *pInit
 			pWriteDescriptorSets[i].pBufferInfo = pBufferInfo;
 		}
 		switch (pInitInfo->ppResources[i]->type) {
-			case (SG_RESOURCE_TYPE_DYNAMIC):
-				pWriteDescriptorSets[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+			case (SG_RESOURCE_TYPE_UNIFORM):
+				pWriteDescriptorSets[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				break;
 			case (SG_RESOURCE_TYPE_MESH):
 				pWriteDescriptorSets[i].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -459,8 +477,8 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 				case SG_RESOURCE_TYPE_MESH:
 					pPoolSizes[i + j * pCreateInfo->setCount].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 					break;
-				case SG_RESOURCE_TYPE_DYNAMIC:
-					pPoolSizes[i + j * pCreateInfo->setCount].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+				case SG_RESOURCE_TYPE_UNIFORM:
+					pPoolSizes[i + j * pCreateInfo->setCount].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 					break;
 			}
 			pPoolSizes[i + j * pCreateInfo->setCount].descriptorCount = 1;
@@ -584,20 +602,172 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	return SG_SUCCESS;
 }
 
+SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdateCommands** ppUpdateCommands) {
+
+	SgUpdateCommands *pUpdateCommands = calloc(1, sizeof(pUpdateCommands[0]));
+
+	VkCommandBufferAllocateInfo commandAllocInfo = {
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+    	.commandPool = pInitInfo->pApp->pCommandPools[0], // TODO: Use dedicated command pools
+    	.commandBufferCount = SG_FRAME_QUEUE_LENGTH,
+	};
+	vkAllocateCommandBuffers(pInitInfo->pApp->device, &commandAllocInfo, pUpdateCommands->pCommandBuffers);
+
+	VkClearValue pClearValues[] = {
+		{.color = {{0.04, 0.01, 0, 1}}},
+		{.depthStencil = {1.0f, 0}},
+	};
+	for (uint32_t i = 0; i < SG_FRAME_QUEUE_LENGTH; ++i) {
+		VkRenderPassBeginInfo renderPassBeginInfo = {
+			.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+			.framebuffer = pInitInfo->pGraphicsInstance->swapchain.pFrameBuffers[i],
+			.renderPass = pInitInfo->pGraphicsInstance->renderPass,
+			.renderArea.extent = pInitInfo->pGraphicsInstance->swapchain.extent,
+			.clearValueCount = NUMOF(pClearValues),
+			.pClearValues = pClearValues,
+		};
+
+		VkRect2D scissor = (VkRect2D){
+		    { 0, 0, },
+			pInitInfo->pGraphicsInstance->swapchain.extent,
+		};
+		VkViewport viewport = (VkViewport)
+		{ 0, 0, (float)pInitInfo->pGraphicsInstance->swapchain.extent.width, (float)pInitInfo->pGraphicsInstance->swapchain.extent.height, 0, 1};
+
+		VkCommandBufferBeginInfo commandBufferBeginInfo = {
+			.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+		};
+		vkBeginCommandBuffer(pUpdateCommands->pCommandBuffers[i], &commandBufferBeginInfo); 
+
+		/* Image Barrier */
+		VkImageMemoryBarrier renderBeginBarrier = {
+			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+	    	.srcAccessMask = VK_NULL_HANDLE,
+	    	.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+	    	.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+	    	.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+	    	.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+	    	.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+	    	.image = pInitInfo->pGraphicsInstance->swapchain.pFrameImages[i],
+	    	.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+	    	.subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS,
+	    	.subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS,
+		};
+		VkImageMemoryBarrier pBeginBarriers[] = {renderBeginBarrier};
+		
+
+		vkCmdPipelineBarrier(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 1, pBeginBarriers);
+		/* */
+		vkCmdSetViewport(pUpdateCommands->pCommandBuffers[i], 0, 1, &viewport);
+		vkCmdSetScissor(pUpdateCommands->pCommandBuffers[i], 0, 1, &scissor);
+		vkCmdBindPipeline(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pInitInfo->pGraphicsInstance->graphicsPipeline);
+
+		for (uint32_t j = 0; j < pInitInfo->indexResourceCount; ++j) {
+			vkCmdBeginRenderPass(pUpdateCommands->pCommandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+			vkCmdBindDescriptorSets(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pInitInfo->pGraphicsInstance->pipelineLayout, 0, pInitInfo->pGraphicsInstance->setCount, pInitInfo->pGraphicsInstance->pDescriptorSets, 0, NULL);
+			vkCmdBindIndexBuffer(pUpdateCommands->pCommandBuffers[i], pInitInfo->ppIndexResources[j]->dataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+			vkCmdDrawIndexed(pUpdateCommands->pCommandBuffers[i], pInitInfo->ppIndexResources[j]->dataBuffer.size/sizeof(uint32_t), 1, 0, 0, 0);
+
+			vkCmdEndRenderPass(pUpdateCommands->pCommandBuffers[i]);
+		}
+		/* Image Barrier */
+		VkImageMemoryBarrier renderEndBarrier = {
+			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+	    	.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+	    	.dstAccessMask = VK_NULL_HANDLE,
+	    	.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+	    	.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+	    	.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+	    	.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+	    	.image = pInitInfo->pGraphicsInstance->swapchain.pFrameImages[i],
+	    	.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+	    	.subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS,
+	    	.subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS,
+		};
+		VkImageMemoryBarrier pEndBarriers[] = {renderEndBarrier};
+
+		vkCmdPipelineBarrier(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, NUMOF(pEndBarriers), pEndBarriers);
+		/**/
+		vkEndCommandBuffer(pUpdateCommands->pCommandBuffers[i]);
+	}
+	*ppUpdateCommands = pUpdateCommands;
+
+	return SG_SUCCESS;
+}
+
 SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo) {
 	SgApp *pApp = pUpdateInfo->pApp;
 	SgGraphicsInstance *pGraphicsInstance = pUpdateInfo->pGraphicsInstance;
 	if(glfwWindowShouldClose(pApp->pWindow))
 		return 0;
 	glfwPollEvents();
-	vkAcquireNextImageKHR();
+	/* Retrieve Image */
+    vkWaitForFences(pApp->device, 1, &pApp->pFrameFences[pApp->currentFrame], VK_TRUE, UINT64_MAX);
 
+	VkResult res = vkAcquireNextImageKHR(pApp->device, pGraphicsInstance->swapchain.swapchain, UINT64_MAX, pApp->pFrameReadySemaphore[pApp->currentFrame], VK_NULL_HANDLE, &pApp->frameImageIndex);
+	if (res == VK_ERROR_OUT_OF_DATE_KHR) {
+		log_warn("[TODO]: RESIZE");
+	} else if (res != VK_SUCCESS && res != VK_SUBOPTIMAL_KHR) {
+		log_error("[App Update]: Frame Image acquisition failure");
+	}
 
+	/* Draw to Frame Image */
+	if (pApp->pFrameImageInFlightFences[pApp->frameImageIndex] != VK_NULL_HANDLE) {
+        vkWaitForFences(pApp->device, 1, &pApp->pFrameImageInFlightFences[pApp->currentFrame], VK_TRUE, UINT64_MAX);
+	}
+	pApp->pFrameImageInFlightFences[pApp->frameImageIndex] = pApp->pFrameFences[pApp->currentFrame];
+
+    VkSemaphore pWaitSemaphores[] = {pApp->pFrameReadySemaphore[pApp->currentFrame]};
+    VkPipelineStageFlags pWaitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+
+	VkSubmitInfo submitInfo = {
+	    .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+	    .waitSemaphoreCount = NUMOF(pWaitSemaphores),
+	    .pWaitSemaphores = pWaitSemaphores,
+	    .pWaitDstStageMask = pWaitStages,
+	    .commandBufferCount = 1,
+	    .pCommandBuffers = &pUpdateInfo->pUpdateCommands->pCommandBuffers[pApp->currentFrame],
+	    .signalSemaphoreCount = 1,
+	    .pSignalSemaphores = &pApp->pFrameFinishedSemaphore[pApp->currentFrame],
+	};
+
+    vkResetFences(pApp->device, 1, &pApp->pFrameFences[pApp->currentFrame]);
+	vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, pApp->pFrameFences[pApp->currentFrame]);
+
+	VkPresentInfoKHR presentinfo = {
+	    .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+	    .swapchainCount = 1,
+	    .pImageIndices = &pApp->frameImageIndex,
+	    .pSwapchains = &pGraphicsInstance->swapchain.swapchain,
+	    .waitSemaphoreCount = 1,
+	    .pWaitSemaphores = &pApp->pFrameFinishedSemaphore[pApp->currentFrame],
+	};
+	vkQueuePresentKHR(pApp->graphicsQueue, &presentinfo);
+
+	pApp->currentFrame = (pApp->currentFrame + 1) % SG_FRAME_QUEUE_LENGTH;
 	return 1;
 }
 
 void sgDestroyApp(SgApp **ppApp) {
 	SgApp* pApp = *ppApp;
 	vkDeviceWaitIdle(pApp->device);
+	
+	for (uint32_t i = 0; i < SG_FRAME_QUEUE_LENGTH; ++i) {
+		vkDestroySemaphore(pApp->device, pApp->pFrameReadySemaphore[i], VK_NULL_HANDLE);
+		vkDestroySemaphore(pApp->device, pApp->pFrameFinishedSemaphore[i], VK_NULL_HANDLE);
+		vkDestroyFence(pApp->device, pApp->pFrameFences[i], VK_NULL_HANDLE);
+	}
+
+	for (uint32_t i = 0; i < SG_FRAME_QUEUE_LENGTH * SG_THREADS_COUNT; ++i) {
+		vkDestroyCommandPool(pApp->device, pApp->pCommandPools[i], VK_NULL_HANDLE);
+	}
+
+	vmaDestroyAllocator(pApp->allocator);
+
 	vkDestroyDevice(pApp->device, VK_NULL_HANDLE);
+	vkDestroySurfaceKHR(pApp->instance, pApp->surface, VK_NULL_HANDLE);
+	vkDestroyInstance(pApp->instance, VK_NULL_HANDLE);
+	ppApp = NULL;
 }

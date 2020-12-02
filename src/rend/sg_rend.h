@@ -63,11 +63,19 @@ typedef struct SgGraphicsInstanceCreateInfo {
 
 SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCreateInfo *pCreateInfo, SgGraphicsInstance **ppGraphicsInstance);
 
+typedef struct SgUpdateCommandsInitInfo {
+	SgApp*                 pApp;
+	SgGraphicsInstance*    pGraphicsInstance;
+	SgResource**           ppIndexResources;
+	uint32_t               indexResourceCount;
+} SgUpdateCommandsInitInfo;
+
+SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdateCommands** ppUpdateCommands);
+
 typedef struct SgAppUpdateInfo {
 	SgApp*                 pApp;
 	SgGraphicsInstance*    pGraphicsInstance;
-	SgResource**           ppIndexResouces;
-	uint32_t               indexResourceCount;
+	SgUpdateCommands*      pUpdateCommands;
 } SgAppUpdateInfo;
 SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo);
 

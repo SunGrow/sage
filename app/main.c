@@ -51,6 +51,7 @@ int main() {
 		.type = SG_RESOURCE_TYPE_MESH,
 	};
 	sgCreateResource(app, &meshResourceCreateInfo, &meshResource);
+	sgUpdateResource(app, &meshResource);
 
 	SgResource meshIndicesResource;
 	SgResourceCreateInfo meshIndicesResourceCreateInfo = {
@@ -106,7 +107,7 @@ int main() {
 		.bytes = &transformuniform,
 		.size = sizeof(TransformUniform),
 		.stage = SG_SHADER_STAGE_VERTEX_BIT,
-		.type = SG_RESOURCE_TYPE_DYNAMIC,
+		.type = SG_RESOURCE_TYPE_UNIFORM,
 	};
 	sgCreateResource(app, &cameraResourceCreateInfo, &cameraResource);
 
@@ -132,7 +133,7 @@ int main() {
 	};
 	SgGraphicsInstance graphicsInstance;
 	sgCreateGraphicsInstance(app, &graphicsInstanceCreateInfo, &graphicsInstance);
-	sgUpdateResource(app, &meshResource);
+
 	SgResourceSetInitInfo initInfo = {
 		.resourceSet = resourceSet,
 		.graphicsInstance = graphicsInstance,
@@ -141,12 +142,19 @@ int main() {
 	};
 	sgInitResourceSet(app, &initInfo);
 	
-
-	SgAppUpdateInfo updateInfo = {
+	SgUpdateCommandsInitInfo updateInitInfo = {
 		.app = app,
 		.graphicsInstance = graphicsInstance,
 		.pIndexResouces = &meshIndicesResource,
 		.indexResourceCount = 1,
+	};
+	SgUpdateCommands updateCommands;
+	sgInitUpdateCommands(&updateInitInfo, &updateCommands);
+
+	SgAppUpdateInfo updateInfo = {
+		.app = app,
+		.graphicsInstance = graphicsInstance,
+		.updateCommands = updateCommands,
 	};
 
 	while(sgAppUpdate(&updateInfo)) {

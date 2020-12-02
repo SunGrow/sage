@@ -46,7 +46,7 @@ SgResult sgCreateShader(const SgApp pApp, const SgShaderCreateInfo* pCreateInfo,
 typedef enum SgResourceTypeFlagBits {
 	SG_RESOURCE_TYPE_TEXTURE_2D   = 0x00000001,
 	SG_RESOURCE_TYPE_MESH         = 0x00000002,
-	SG_RESOURCE_TYPE_DYNAMIC      = 0x00000004,
+	SG_RESOURCE_TYPE_UNIFORM      = 0x00000004,
 	SG_RESOURCE_TYPE_INDICES      = 0x00000008,
 } SgResourceTypeFlagBits;
 typedef SgFlags SgResourceTypeFlags;
@@ -92,11 +92,20 @@ typedef struct SgResourceSetInitInfo {
 
 SgResult sgInitResourceSet(const SgApp app, const SgResourceSetInitInfo *pInitInfo);
 
-typedef struct SgAppUpdateInfo {
+typedef struct SgUpdateCommandsInitInfo {
 	SgApp                  app;
 	SgGraphicsInstance     graphicsInstance;
 	SgResource*            pIndexResouces;
 	uint32_t               indexResourceCount;
+} SgUpdateCommandsInitInfo;
+
+SG_DEFINE_HANDLE(SgUpdateCommands);
+SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdateCommands* pUpdateCommands);
+
+typedef struct SgAppUpdateInfo {
+	SgApp                  app;
+	SgGraphicsInstance     graphicsInstance;
+	SgUpdateCommands       updateCommands;
 } SgAppUpdateInfo;
 SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo);
 

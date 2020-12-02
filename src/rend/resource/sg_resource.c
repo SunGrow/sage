@@ -1,9 +1,17 @@
 #include <stdlib.h>
+#include "log.h"
 #include "sg_resource.h"
 
 
 SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreateInfo, SgResource **ppResource) {
 	SgResource *pResource = calloc(1, sizeof(pResource[0]));
+	pResource->stage = pCreateInfo->stage;
+	pResource->type = pCreateInfo->type;
+	pResource->binding = pCreateInfo->binding;
+	pResource->dataBuffer.bytes = pCreateInfo->bytes;
+	pResource->dataBuffer.size = pCreateInfo->size;
+	pResource->stagingBuffer.bytes = pCreateInfo->bytes;
+	pResource->stagingBuffer.size = pCreateInfo->size;
 	// Allocate transfer command buffer
 	VkCommandBufferAllocateInfo commandAllocInfo = {
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -34,7 +42,7 @@ SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreate
 			sgCreateBuffer(pApp, &stagingBufferCreateInfo, &pResource->stagingBuffer);
 			vmaMapMemory(pApp->allocator,pResource->stagingBuffer.allocation, pResource->stagingBuffer.bytes);
 			break;
-		case (SG_RESOURCE_TYPE_DYNAMIC):
+		case (SG_RESOURCE_TYPE_UNIFORM):
 			sgCreateBuffer(pApp, &bufferCreateInfo, &pResource->dataBuffer);
 			vmaMapMemory(pApp->allocator,pResource->dataBuffer.allocation, pResource->dataBuffer.bytes);
 			break;
@@ -45,9 +53,6 @@ SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreate
 			break;
 		}
 	}
-	pResource->stage = pCreateInfo->stage;
-	pResource->type = pCreateInfo->type;
-	pResource->binding = pCreateInfo->binding;
 
 	*ppResource = pResource;
 
@@ -69,7 +74,7 @@ SgResult sgCreateBuffer(const SgApp* pApp, SgBufferCreateInfo* pCreateInfo, SgBu
 			bufferCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 			allocationInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 			break;
-		case (SG_RESOURCE_TYPE_DYNAMIC):
+		case (SG_RESOURCE_TYPE_UNIFORM):
 			bufferCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 			allocationInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
 			break;
@@ -79,7 +84,10 @@ SgResult sgCreateBuffer(const SgApp* pApp, SgBufferCreateInfo* pCreateInfo, SgBu
 			break;
 	}
 
-	vmaCreateBuffer(pApp->allocator, &bufferCreateInfo, &allocationInfo, &pBuffer->buffer, &pBuffer->allocation, NULL);
+	VkResult res = vmaCreateBuffer(pApp->allocator, &bufferCreateInfo, &allocationInfo, &pBuffer->buffer, &pBuffer->allocation, NULL);
+	if (res) {
+		log_warn("[Res]: Buffer creation error");
+	}
 	pBuffer->size = pCreateInfo->size;
 	pBuffer->bytes = pCreateInfo->bytes;
 	return SG_SUCCESS;
@@ -154,5 +162,7 @@ SgResult sgUpdateResource(const SgApp* pApp, SgResource** ppResource) {
 	};
 	
 	vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(pApp->graphicsQueue);
+	*ppResource = pResource;
 	return SG_SUCCESS;
 }
