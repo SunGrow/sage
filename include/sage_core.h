@@ -16,6 +16,10 @@ typedef enum {
 typedef uint32_t SgBool;
 typedef uint32_t SgFlags;
 
+SG_DEFINE_HANDLE(SgFile);
+SgResult sgOpenFile(const char* path, SgFile *pFile);
+SgResult sgCloseFile(SgFile *pFile);
+
 // Reserved for future use
 #ifdef __cplusplus
 }

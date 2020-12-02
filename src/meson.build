@@ -10,6 +10,9 @@ sage_libs += sgmath_lib
 subdir('rend')
 sage_incs += sgrend_inc
 sage_libs += sgrend_lib
+subdir('res')
+sage_incs += sgres_inc
+sage_libs += sgres_lib
 # entt_src = 
 # jobs_src =
 

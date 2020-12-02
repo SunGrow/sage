@@ -33,7 +33,7 @@ A method can't implicitly change its object state.
 
 ### Indentation
 
-Linux kernel, but the function and structure braces are on the same line
+We have one true brace
 
 __Example__:
 ```C
@@ -44,8 +44,9 @@ int power(int x, int y) {
 		result = 0;
 	} else {
 		result = 1;
-		while (y-- > 0)
+		while (y-- > 0) {
 			result *= x;
+		}
 	}
 	return result;
 }
