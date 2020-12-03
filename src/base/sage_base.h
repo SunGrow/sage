@@ -1,5 +1,6 @@
 #ifndef SAGE_BASE
 #define SAGE_BASE
+#define _DEBUG
 
 #include <stddef.h>
 #include <stdint.h>
@@ -155,6 +156,8 @@ typedef struct SgGraphicsInstance {
 
 typedef struct SgUpdateCommands {
 	VkCommandBuffer             pCommandBuffers[SG_FRAME_QUEUE_LENGTH];
+	SgResource**           ppIndexResources;
+	uint32_t               indexResourceCount;
 } SgUpdateCommands;
 
 typedef struct SgFile {

@@ -297,7 +297,7 @@ SgResult createRenderPass(const SgApp *pApp, VkRenderPass* pRenderPass) {
 			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
 			.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 			.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 			.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 	    },
 		{
@@ -452,6 +452,73 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 		.type = VK_IMAGE_VIEW_TYPE_2D,
 	};
 	sgCreateImageView(pApp, &depthImageViewCreateInfo, &pSwapchain->depthImageView);
+	/* Transition depth image */
+	/*
+        (g_t_DepthImage,
+         depthFormat,
+         VK_IMAGE_LAYOUT_UNDEFINED,
+         VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1);
+		SpResult spTransitionImageLayout
+		    (VkImage image, VkFormat format, VkImageLayout oldLayout,
+		     VkImageLayout newLayout, uint32_t mipLevels)
+	 * */
+	{
+		/* Begin command buffer */
+		VkCommandBuffer commandBuffer;
+		VkCommandBufferAllocateInfo allocInfo = {
+			.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+    		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+    		.commandPool = pApp->pCommandPools[2],
+    		.commandBufferCount = 1,
+		};
+
+    	
+    	vkAllocateCommandBuffers(pApp->device, &allocInfo, &commandBuffer);
+
+    	VkCommandBufferBeginInfo beginInfo = {
+			.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+			.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+		};
+
+    	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+		/**/
+
+
+		VkImageMemoryBarrier barrier = {
+			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+			.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+			.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+			.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+			.image = pSwapchain->depthImage.image,
+			.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT,
+			.subresourceRange.baseMipLevel = 0,
+			.subresourceRange.layerCount = 1,
+			.subresourceRange.baseArrayLayer = 0,
+			.srcAccessMask = 0,
+			.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+		};
+
+		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, 0, 0, NULL, 0, NULL, 1, &barrier);
+
+		
+		/* End command buffer */
+		vkEndCommandBuffer(commandBuffer);
+
+    	VkSubmitInfo submitInfo = {
+			.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+    		.commandBufferCount = 1,
+    		.pCommandBuffers = &commandBuffer,
+		};
+
+    	vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    	vkQueueWaitIdle(pApp->graphicsQueue);
+
+    	vkFreeCommandBuffers(pApp->device, pApp->pCommandPools[2], 1, &commandBuffer);
+		/**/
+	}
+
+	/**/
 
 	/* Blend Image to Creation */
 	SgImageCreateInfo blendImageCreateInfo = {
@@ -681,7 +748,7 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 	VkCommandBufferAllocateInfo commandAllocInfo = {
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-    	.commandPool = pInitInfo->pApp->pCommandPools[0], // TODO: Use dedicated command pools
+    	.commandPool = pInitInfo->pApp->pCommandPools[1], // TODO: Use dedicated command pools
     	.commandBufferCount = SG_FRAME_QUEUE_LENGTH,
 	};
 	vkAllocateCommandBuffers(pInitInfo->pApp->device, &commandAllocInfo, pUpdateCommands->pCommandBuffers);
@@ -729,7 +796,7 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 		VkImageMemoryBarrier pBeginBarriers[] = {renderBeginBarrier};
 		
 
-		vkCmdPipelineBarrier(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 1, pBeginBarriers);
+//		vkCmdPipelineBarrier(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 1, pBeginBarriers);
 		/* */
 		vkCmdSetViewport(pUpdateCommands->pCommandBuffers[i], 0, 1, &viewport);
 		vkCmdSetScissor(pUpdateCommands->pCommandBuffers[i], 0, 1, &scissor);
@@ -760,7 +827,7 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 		};
 		VkImageMemoryBarrier pEndBarriers[] = {renderEndBarrier};
 
-		vkCmdPipelineBarrier(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, NUMOF(pEndBarriers), pEndBarriers);
+//		vkCmdPipelineBarrier(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, NUMOF(pEndBarriers), pEndBarriers);
 		/**/
 		vkEndCommandBuffer(pUpdateCommands->pCommandBuffers[i]);
 	}
