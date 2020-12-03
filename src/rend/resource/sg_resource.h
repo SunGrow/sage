@@ -32,6 +32,7 @@ typedef struct SgImageCreateInfo {
 	VmaMemoryUsage      memoryUsage;
 	void*               bytes;
 	uint32_t            size;
+	VkSampleCountFlags  samples;
 } SgImageCreateInfo;
 
 SgResult sgCreateImage(const SgApp* pApp, SgImageCreateInfo* pCreateInfo, SgImage* pImage);

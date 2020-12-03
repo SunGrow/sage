@@ -129,6 +129,8 @@ SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppSgApp) {
 	createWindowSurface(pApp);
 	/* Vulkan Physical Device */
 	getPhysicalDevice(pApp);
+	/* TODO: Actually find sample count supported on a device */
+	pApp->msaaSampleCount = VK_SAMPLE_COUNT_2_BIT;
 	/* Vulkan Logical Device */
 	getLogicalDevice(pApp);
 	vkGetDeviceQueue(pApp->device, pApp->graphicsQueueFamilyIdx, 0, &pApp->graphicsQueue);
@@ -273,53 +275,90 @@ SgResult sgCreateShader(const SgApp *pApp, const SgShaderCreateInfo* pCreateInfo
 }
 
 // TODO: Fix this static crap. Is a problem with an API, really. But I have no time to fix it
-SgResult createRenderPass(VkDevice device, VkFormat format, VkRenderPass* pRenderPass) {
+SgResult createRenderPass(const SgApp *pApp, VkRenderPass* pRenderPass) {
+	VkDevice device = pApp->device;
+	VkFormat format = pApp->surfaceAttributes.format.format;
+
 	VkAttachmentDescription attachments[] = {
 	    {
 	        .format = format,
-	        .samples = VK_SAMPLE_COUNT_1_BIT,
-	        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-	        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-	        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-	        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-	        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-	        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+	        .samples = pApp->msaaSampleCount,
+			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+    		.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+    		.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+    		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+    		.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 	    },
 	    {
-	        .format = VK_FORMAT_D32_SFLOAT_S8_UINT,
-	        .samples = VK_SAMPLE_COUNT_1_BIT,
-	        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-	        .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-	        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-	        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-	        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-	        .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+			.format = VK_FORMAT_D32_SFLOAT_S8_UINT,
+			.samples = pApp->msaaSampleCount,
+			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+			.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+			.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 	    },
+		{
+			.format = format,
+			.samples = VK_SAMPLE_COUNT_1_BIT,
+			.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+			.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+			.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+			.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+		},
 	};
 
-	VkAttachmentReference colorAttachment = {
+	VkAttachmentReference colorAttachmentRef = {
 	    .attachment = 0,
 	    .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 	};
-	VkAttachmentReference depthAttachment = {
+	VkAttachmentReference depthAttachmentRef = {
 	    .attachment = 1,
 	    .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+	};
+	VkAttachmentReference resolveAttachmentRef = {
+	    .attachment = 2,
+	    .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 	};
 
 	VkSubpassDescription subpass = {
 	    .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
 	    .colorAttachmentCount = 1,
-	    .pColorAttachments = &colorAttachment,
-	    .pDepthStencilAttachment = &depthAttachment,
+	    .pColorAttachments = &colorAttachmentRef,
+	    .pDepthStencilAttachment = &depthAttachmentRef,
+		.pResolveAttachments = &resolveAttachmentRef,
+	};
+
+	VkSubpassDependency pDependencies[] = {
+		{
+			.srcSubpass = VK_SUBPASS_EXTERNAL,
+			.dstSubpass = 0,
+
+			.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+
+			.srcAccessMask = 0,
+			.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+		},
 	};
 
 	VkRenderPassCreateInfo createInfo = {
 	    .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+
+		.pAttachments = attachments,
+		.attachmentCount = NUMOF(attachments),
+
+		.pSubpasses = &subpass,
+		.subpassCount = 1,
+
+		.pDependencies = pDependencies,
+		.dependencyCount = NUMOF(pDependencies),
 	};
-	createInfo.attachmentCount = NUMOF(attachments);
-	createInfo.pAttachments = attachments;
-	createInfo.subpassCount = 1;
-	createInfo.pSubpasses = &subpass;
+
 
 	if(vkCreateRenderPass(device, &createInfo, 0, pRenderPass) == VK_SUCCESS) {
 		log_info("[Graphics Instance]: Render Pass Created");
@@ -403,15 +442,35 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 		.format = VK_FORMAT_D32_SFLOAT_S8_UINT,
 		.tiling = VK_IMAGE_TILING_OPTIMAL,
 		.layout = VK_IMAGE_LAYOUT_UNDEFINED,
+		.samples = pApp->msaaSampleCount,
 	};
 	sgCreateImage(pApp, &depthImageCreateInfo, &pSwapchain->depthImage);
 
-	SgImageViewCreateInfo createInfo = {
+	SgImageViewCreateInfo depthImageViewCreateInfo = {
 		.aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT,
 		.pImage = &pSwapchain->depthImage,
 		.type = VK_IMAGE_VIEW_TYPE_2D,
 	};
-	sgCreateImageView(pApp, &createInfo, &pSwapchain->depthImageView);
+	sgCreateImageView(pApp, &depthImageViewCreateInfo, &pSwapchain->depthImageView);
+
+	/* Blend Image to Creation */
+	SgImageCreateInfo blendImageCreateInfo = {
+		.extent = (VkExtent3D) {pSwapchain->extent.width, pSwapchain->extent.height, 1},
+		.memoryUsage = VMA_MEMORY_USAGE_GPU_ONLY,
+		.usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		.type = VK_IMAGE_TYPE_2D,
+		.format = pApp->surfaceAttributes.format.format,
+		.tiling = VK_IMAGE_TILING_OPTIMAL,
+		.layout = VK_IMAGE_LAYOUT_UNDEFINED,
+		.samples = pApp->msaaSampleCount,
+	};
+	sgCreateImage(pApp, &blendImageCreateInfo, &pSwapchain->blendImage);
+	SgImageViewCreateInfo blendImageViewCreateInfo = {
+		.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
+		.pImage = &pSwapchain->blendImage,
+		.type = VK_IMAGE_VIEW_TYPE_2D,
+	};
+	sgCreateImageView(pApp, &blendImageViewCreateInfo, &pSwapchain->blendImageView);
 
 	/* FrameBuffer */
 	VkFramebufferCreateInfo framebufferCreateInfo = {
@@ -425,9 +484,10 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 
 
 	for (uint32_t i = 0; i < pSwapchain->imageCount; ++i) {
-		VkImageView pAttachments[] = {pSwapchain->pFrameImageViews[i], pSwapchain->depthImageView.imageView};
+		VkImageView pAttachments[] = {pSwapchain->blendImageView.imageView, pSwapchain->depthImageView.imageView, pSwapchain->pFrameImageViews[i]};
 		framebufferCreateInfo.attachmentCount = NUMOF(pAttachments);
 		framebufferCreateInfo.pAttachments = pAttachments;
+
 		if (vkCreateFramebuffer(pApp->device, &framebufferCreateInfo, VK_NULL_HANDLE, &pSwapchain->pFrameBuffers[i]) == VK_SUCCESS) {
 		} else {
 			log_error("[Graphics Instance]: Framebuffer %d Creation Failure", i);
@@ -441,7 +501,7 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	SgGraphicsInstance* pGraphicsInstance = calloc(1, sizeof(pGraphicsInstance[0]));
 	pGraphicsInstance->ppSets = pCreateInfo->ppSets;
 	/* Create Render Passes */
-	createRenderPass(pApp->device, pApp->surfaceAttributes.format.format, &pGraphicsInstance->renderPass);
+	createRenderPass(pApp, &pGraphicsInstance->renderPass);
 	
 	/* Create Pipeline Layout */
 	pGraphicsInstance->pDescriptorSetLayouts =
@@ -523,13 +583,13 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 		};
 	}
 
-	VkPipelineVertexInputStateCreateInfo vertexinput = {
-	    .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-	};
-
-	VkPipelineInputAssemblyStateCreateInfo inputassembly = {
+	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {
 	    .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
 	    .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+	};
+
+	VkPipelineVertexInputStateCreateInfo vertexInput = {
+	    .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 	};
 
 	VkPipelineViewportStateCreateInfo viewportstate = {
@@ -537,9 +597,11 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	    .viewportCount = 1,
 	    .scissorCount = 1,
 	};
+
 	VkPipelineMultisampleStateCreateInfo multisamplestate = {
 	    .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-	    .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+	    .rasterizationSamples = pApp->msaaSampleCount,
+		.minSampleShading = 1.0f,
 	};
 
 	VkPipelineDepthStencilStateCreateInfo depthstencilstate = {
@@ -550,20 +612,25 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	};
 
 	VkPipelineColorBlendAttachmentState colorAttachmentState = {
-	    .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-	                      VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
-	    	.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
-	    	.dstColorBlendFactor = VK_BLEND_FACTOR_ONE,
-	    	.colorBlendOp = VK_BLEND_OP_ADD,
-	    	.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
-	    	.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
-	    	.alphaBlendOp = VK_BLEND_OP_ADD,
+		 .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+		.srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
+		.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
+		.colorBlendOp = VK_BLEND_OP_ADD,
+
+		.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+		.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+		.alphaBlendOp = VK_BLEND_OP_ADD,
 	};
 
 	VkPipelineColorBlendStateCreateInfo colorBlendState = {
 	    .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+		.logicOp = VK_LOGIC_OP_COPY,
 	    .attachmentCount = 1,
 	    .pAttachments = &colorAttachmentState,
+		.blendConstants[0] = 0.0f,
+		.blendConstants[1] = 0.0f,
+		.blendConstants[2] = 0.0f,
+		.blendConstants[3] = 0.0f,
 	};
 
 	VkDynamicState dynamicstates[] = {VK_DYNAMIC_STATE_VIEWPORT,
@@ -577,14 +644,18 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	VkPipelineRasterizationStateCreateInfo rasterizationState = {
 	    .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
 	    .lineWidth = 1.f,
+		.cullMode = VK_CULL_MODE_BACK_BIT,
 	};
 
 	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = {
 	    .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+
 	    .stageCount = pCreateInfo->shaderCount,
 	    .pStages = pShaderStageCreateInfos,
-	    .pVertexInputState = &vertexinput,
-	    .pInputAssemblyState = &inputassembly,
+
+	    .pInputAssemblyState = &inputAssembly,
+	    .pVertexInputState = &vertexInput,
+
 	    .pViewportState = &viewportstate,
 	    .pRasterizationState = &rasterizationState,
 	    .pMultisampleState = &multisamplestate,
@@ -604,6 +675,7 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 
 SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdateCommands** ppUpdateCommands) {
 
+	vkDeviceWaitIdle(pInitInfo->pApp->device);
 	SgUpdateCommands *pUpdateCommands = calloc(1, sizeof(pUpdateCommands[0]));
 
 	VkCommandBufferAllocateInfo commandAllocInfo = {

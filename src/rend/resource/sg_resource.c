@@ -107,7 +107,7 @@ SgResult sgCreateImage(const SgApp* pApp, SgImageCreateInfo* pCreateInfo, SgImag
 	    .initialLayout = pCreateInfo->layout,
 	    .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 	    .arrayLayers = 1,
-	    .samples = VK_SAMPLE_COUNT_1_BIT,
+	    .samples = pCreateInfo->samples,
 	};
 
 	VmaAllocationCreateInfo allocationInfo = {

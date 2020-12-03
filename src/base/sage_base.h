@@ -49,6 +49,7 @@ typedef struct SgApp {
 	uint32_t                  graphicsQueueFamilyIdx;
 	SurfaceAttributes         surfaceAttributes;
 	VkDevice                  device;
+	VkSampleCountFlags        msaaSampleCount;
 	VkQueue                   graphicsQueue;
 	VmaAllocator              allocator;
 
@@ -131,6 +132,8 @@ typedef struct SgSwapchain {
 	VkImageView*              pFrameImageViews;
 	SgImage                   depthImage;
 	SgImageView               depthImageView;
+	SgImage                   blendImage;
+	SgImageView               blendImageView;
 	VkFramebuffer*            pFrameBuffers;
 	VkExtent2D                extent;
 	uint32_t                  imageCount;
