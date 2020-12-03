@@ -494,6 +494,7 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 			.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT,
 			.subresourceRange.baseMipLevel = 0,
 			.subresourceRange.layerCount = 1,
+			.subresourceRange.levelCount = 1,
 			.subresourceRange.baseArrayLayer = 0,
 			.srcAccessMask = 0,
 			.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
@@ -631,7 +632,7 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	    .pSetLayouts = pDescriptorSetLayouts,
 	};
 	vkAllocateDescriptorSets(pApp->device, &descrriptorSetAllocInfo, pGraphicsInstance->pDescriptorSets);
-	free(pDescriptorSetLayouts);
+//	free(pDescriptorSetLayouts);
 
 	/* Create Swapchain */
 	SgSwapchainCreateInfo swapchainCreateInfo = {
