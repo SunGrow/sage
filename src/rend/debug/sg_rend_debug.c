@@ -3,30 +3,28 @@
 #include "log.h"
 
 #ifdef _DEBUG
-static VkBool32 VKAPI_CALL
-debugReportCallback(VkDebugReportFlagsEXT flags,
-                    VkDebugReportObjectTypeEXT objectType, uint64_t object,
-                    size_t location, int32_t messageCode,
-                    const char *pLayerPrefix, const char *pMessage,
-                    void *pUserData) {
-	(flags & VK_DEBUG_REPORT_ERROR_BIT_EXT)
-	                       ? log_error("%s", pMessage)
-	                       : (flags & VK_DEBUG_REPORT_WARNING_BIT_EXT)
-	                             ? log_warn("%s", pMessage)
-	                             : log_info("%s", pMessage);
+VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT flags,
+    VkDebugUtilsMessageTypeFlagsEXT messageType,
+    const VkDebugUtilsMessengerCallbackDataEXT* pData,
+    void* pUserData){
+	(flags & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+	                       ? log_error("[%s]: %s", pData->pMessageIdName, pData->pMessage)
+	                       : (flags & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+	                             ? log_warn("[%s]: %s", pData->pMessageIdName, pData->pMessage)
+	                             : log_info("[%s]: %s", pData->pMessageIdName, pData->pMessage);
 	return VK_FALSE;
 }
 
-VkDebugReportCallbackEXT registerDebugCallback(SgApp *pApp) {
-	VkDebugReportCallbackCreateInfoEXT createInfo = {
-	    .sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT,
-	    .flags = VK_DEBUG_REPORT_WARNING_BIT_EXT |
-	             VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT |
-	             VK_DEBUG_REPORT_ERROR_BIT_EXT,
-	    .pfnCallback = debugReportCallback,
+SgResult registerDebugCallback(SgApp *pApp) {
+	VkDebugUtilsMessengerCreateInfoEXT createInfo = {
+	    .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+		.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT,
+		.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT,
+	    .pfnUserCallback = debugCallback,
 	};
 
-	VkResult res = vkCreateDebugReportCallbackEXT(pApp->instance, &createInfo, 0, &pApp->debugCallback);
+	VkResult res = vkCreateDebugUtilsMessengerEXT(pApp->instance, &createInfo, 0, &pApp->debugCallback);
 
 	if (!res) {
 		log_info("[AppInit]: Vulkan debug report callback is setup");

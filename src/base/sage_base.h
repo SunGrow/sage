@@ -41,7 +41,7 @@ typedef struct SgApp {
 	GLFWwindow*               pWindow;
 	VkInstance                instance;
 #ifdef _DEBUG
-	VkDebugReportCallbackEXT  debugCallback;
+	VkDebugUtilsMessengerEXT  debugCallback;
 #endif
 	VkSurfaceKHR              surface;
 	VkPhysicalDevice          physicalDevice;
