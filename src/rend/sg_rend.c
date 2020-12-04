@@ -784,24 +784,6 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 		};
 		vkBeginCommandBuffer(pUpdateCommands->pCommandBuffers[i], &commandBufferBeginInfo); 
 
-		/* Image Barrier */
-		VkImageMemoryBarrier renderBeginBarrier = {
-			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-	    	.srcAccessMask = VK_NULL_HANDLE,
-	    	.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-	    	.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-	    	.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-	    	.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-	    	.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-	    	.image = pInitInfo->pGraphicsInstance->swapchain.pFrameImages[i],
-	    	.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-	    	.subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS,
-	    	.subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS,
-		};
-		VkImageMemoryBarrier pBeginBarriers[] = {renderBeginBarrier};
-		
-
-		vkCmdPipelineBarrier(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 1, pBeginBarriers);
 		/* */
 		vkCmdSetViewport(pUpdateCommands->pCommandBuffers[i], 0, 1, &viewport);
 		vkCmdSetScissor(pUpdateCommands->pCommandBuffers[i], 0, 1, &scissor);
@@ -816,24 +798,6 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 
 			vkCmdEndRenderPass(pUpdateCommands->pCommandBuffers[i]);
 		}
-		/* Image Barrier */
-		VkImageMemoryBarrier renderEndBarrier = {
-			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-	    	.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-	    	.dstAccessMask = VK_NULL_HANDLE,
-	    	.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-	    	.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-	    	.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-	    	.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-	    	.image = pInitInfo->pGraphicsInstance->swapchain.pFrameImages[i],
-	    	.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-	    	.subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS,
-	    	.subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS,
-		};
-		VkImageMemoryBarrier pEndBarriers[] = {renderEndBarrier};
-
-		vkCmdPipelineBarrier(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, NUMOF(pEndBarriers), pEndBarriers);
-		/**/
 		vkEndCommandBuffer(pUpdateCommands->pCommandBuffers[i]);
 	}
 	*ppUpdateCommands = pUpdateCommands;

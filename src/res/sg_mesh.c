@@ -51,6 +51,7 @@ void SgLoadMesh(const char *pPath, SgMesh **ppMesh) {
 		    realloc(pMesh->pIndices, totalindices * sizeof(uint32_t));
 		for (uint32_t i = 0; i < totalindices; ++i) {
 			pMesh->pIndices[i] = i;
+			pMesh->pVertices[i] = pvertices[i];
 		}
 		pMesh->vertexCount = totalindices;
 		pMesh->indexCount = totalindices;

@@ -36,31 +36,35 @@ SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreate
      /* TODO: texture type */
 	} else {
 		SgBufferCreateInfo bufferCreateInfo = {
-			.bytes = pCreateInfo->bytes,
+			.bytes = NULL,
 			.size  = pCreateInfo->size,
 			.type  = pCreateInfo->type,
 		};
 		SgBufferCreateInfo stagingBufferCreateInfo = {
-			.bytes = pCreateInfo->bytes,
+			.bytes = NULL,
 			.size  = pCreateInfo->size,
 			.type  = SG_RESOURCE_TYPE_STAGING,
 		};
+		void *data;
 		switch (pCreateInfo->type) {
 		case (SG_RESOURCE_TYPE_MESH):
 			sgCreateBuffer(pApp, &bufferCreateInfo, &pResource->dataBuffer);
 			sgCreateBuffer(pApp, &stagingBufferCreateInfo, &pResource->stagingBuffer);
-			vmaMapMemory(pApp->allocator,pResource->stagingBuffer.allocation, pResource->stagingBuffer.bytes);
+			vmaMapMemory(pApp->allocator,pResource->stagingBuffer.allocation, &data);
+			pResource->stagingBuffer.bytes = data;
 			memcpy(pResource->stagingBuffer.bytes, pCreateInfo->bytes, pCreateInfo->size);
 			break;
 		case (SG_RESOURCE_TYPE_UNIFORM):
 			sgCreateBuffer(pApp, &bufferCreateInfo, &pResource->dataBuffer);
-			vmaMapMemory(pApp->allocator,pResource->dataBuffer.allocation, pResource->dataBuffer.bytes);
+			vmaMapMemory(pApp->allocator,pResource->dataBuffer.allocation, &data);
+			pResource->dataBuffer.bytes = data;
 			memcpy(pResource->dataBuffer.bytes, pCreateInfo->bytes, pCreateInfo->size);
 			break;
 		case (SG_RESOURCE_TYPE_INDICES):
 			sgCreateBuffer(pApp, &bufferCreateInfo, &pResource->dataBuffer);
 			sgCreateBuffer(pApp, &stagingBufferCreateInfo, &pResource->stagingBuffer);
-			vmaMapMemory(pApp->allocator,pResource->stagingBuffer.allocation, pResource->stagingBuffer.bytes);
+			vmaMapMemory(pApp->allocator,pResource->stagingBuffer.allocation, &data);
+			pResource->stagingBuffer.bytes = data;
 			memcpy(pResource->stagingBuffer.bytes, pCreateInfo->bytes, pCreateInfo->size);
 			break;
 		}
@@ -76,11 +80,14 @@ SgResult sgCreateBuffer(const SgApp* pApp, SgBufferCreateInfo* pCreateInfo, SgBu
 	    .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
 	    .size = pCreateInfo->size,
 	};
+	pBuffer->size = pCreateInfo->size;
 	VmaAllocationCreateInfo allocationInfo = {0};
 	switch (pCreateInfo->type) {
 		case (SG_RESOURCE_TYPE_STAGING):
 			bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-			allocationInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+			allocationInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+			allocationInfo.preferredFlags = VK_MEMORY_PROPERTY_HOST_CACHED_BIT; 
+//			pBuffer->bytes = malloc(sizeof(pBuffer->size));
 			break;
 		case (SG_RESOURCE_TYPE_MESH):
 			bufferCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
@@ -88,7 +95,9 @@ SgResult sgCreateBuffer(const SgApp* pApp, SgBufferCreateInfo* pCreateInfo, SgBu
 			break;
 		case (SG_RESOURCE_TYPE_UNIFORM):
 			bufferCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-			allocationInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+			allocationInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+			allocationInfo.preferredFlags = VK_MEMORY_PROPERTY_HOST_CACHED_BIT; 
+//			pBuffer->bytes = malloc(sizeof(pBuffer->size));
 			break;
 		case (SG_RESOURCE_TYPE_INDICES):
 			bufferCreateInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
@@ -100,8 +109,6 @@ SgResult sgCreateBuffer(const SgApp* pApp, SgBufferCreateInfo* pCreateInfo, SgBu
 	if (res) {
 		log_warn("[Res]: Buffer creation error");
 	}
-	pBuffer->size = pCreateInfo->size;
-	pBuffer->bytes = pCreateInfo->bytes;
 	return SG_SUCCESS;
 }
 
