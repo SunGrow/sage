@@ -748,12 +748,13 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 
 	vkDeviceWaitIdle(pInitInfo->pApp->device);
 	SgUpdateCommands *pUpdateCommands = calloc(1, sizeof(pUpdateCommands[0]));
+	pUpdateCommands->pCommandBuffers = calloc(pInitInfo->pGraphicsInstance->swapchain.imageCount, sizeof(pUpdateCommands[0]));
 
 	VkCommandBufferAllocateInfo commandAllocInfo = {
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-    	.commandPool = pInitInfo->pApp->pCommandPools[0], // TODO: Use dedicated command pools
-    	.commandBufferCount = SG_FRAME_QUEUE_LENGTH,
+    	.commandPool = pInitInfo->pApp->pCommandPools[0],
+    	.commandBufferCount = pInitInfo->pGraphicsInstance->swapchain.imageCount,
 		.pNext = NULL,
 	};
 	vkAllocateCommandBuffers(pInitInfo->pApp->device, &commandAllocInfo, pUpdateCommands->pCommandBuffers);
@@ -762,7 +763,7 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 		{.color = {{0.04, 0.01, 0, 1}}},
 		{.depthStencil = {1.0f, 0}},
 	};
-	for (uint32_t i = 0; i < SG_FRAME_QUEUE_LENGTH; ++i) {
+	for (uint32_t i = 0; i < pInitInfo->pGraphicsInstance->swapchain.imageCount; ++i) {
 		VkRenderPassBeginInfo renderPassBeginInfo = {
 			.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 			.framebuffer = pInitInfo->pGraphicsInstance->swapchain.pFrameBuffers[i],
@@ -872,7 +873,7 @@ SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo) {
 	    .pWaitSemaphores = pWaitSemaphores,
 	    .pWaitDstStageMask = pWaitStages,
 	    .commandBufferCount = 1,
-	    .pCommandBuffers = &pUpdateInfo->pUpdateCommands->pCommandBuffers[pApp->currentFrame],
+	    .pCommandBuffers = &pUpdateInfo->pUpdateCommands->pCommandBuffers[pApp->frameImageIndex],
 	    .signalSemaphoreCount = 1,
 	    .pSignalSemaphores = &pApp->pFrameFinishedSemaphore[pApp->currentFrame],
 	};
@@ -885,13 +886,14 @@ SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo) {
 
 	VkPresentInfoKHR presentInfo = {
 	    .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-	    .pSwapchains = &pGraphicsInstance->swapchain.swapchain,
 	    .swapchainCount = 1,
+	    .pSwapchains = &pGraphicsInstance->swapchain.swapchain,
 	    .pImageIndices = &pApp->frameImageIndex,
 	    .waitSemaphoreCount = 1,
 	    .pWaitSemaphores = &pApp->pFrameFinishedSemaphore[pApp->currentFrame],
 	};
 	vkQueuePresentKHR(pApp->graphicsQueue, &presentInfo);
+	vkDeviceWaitIdle(pApp->device);
 
 	pApp->currentFrame = (pApp->currentFrame + 1) % SG_FRAME_QUEUE_LENGTH;
 	return 1;

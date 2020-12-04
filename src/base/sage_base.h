@@ -156,7 +156,7 @@ typedef struct SgGraphicsInstance {
 } SgGraphicsInstance;
 
 typedef struct SgUpdateCommands {
-	VkCommandBuffer             pCommandBuffers[SG_FRAME_QUEUE_LENGTH];
+	VkCommandBuffer*             pCommandBuffers;
 } SgUpdateCommands;
 
 typedef struct SgFile {
