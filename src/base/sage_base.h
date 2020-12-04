@@ -111,6 +111,7 @@ typedef struct SgResource {
 	VkSampler                    imageSampler;
 	SgBuffer                     stagingBuffer;
 	VkCommandBuffer              commandBuffer;
+	VkCommandPool                commandPool;
 	uint32_t                     binding;
 } SgResource;
 

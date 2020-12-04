@@ -752,7 +752,7 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 	VkCommandBufferAllocateInfo commandAllocInfo = {
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-    	.commandPool = pInitInfo->pApp->pCommandPools[1], // TODO: Use dedicated command pools
+    	.commandPool = pInitInfo->pApp->pCommandPools[0], // TODO: Use dedicated command pools
     	.commandBufferCount = SG_FRAME_QUEUE_LENGTH,
 		.pNext = NULL,
 	};

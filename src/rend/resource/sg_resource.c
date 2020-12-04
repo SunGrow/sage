@@ -13,10 +13,20 @@ SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreate
 	pResource->stagingBuffer.bytes = pCreateInfo->bytes;
 	pResource->stagingBuffer.size = pCreateInfo->size;
 	// Allocate transfer command buffer
+	VkCommandPoolCreateInfo commandPoolCreateInfo = {
+	    .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+	    .flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
+	    .queueFamilyIndex = pApp->graphicsQueueFamilyIdx,
+	};
+	VkResult vulkRes = vkCreateCommandPool(pApp->device, &commandPoolCreateInfo, VK_NULL_HANDLE, &pResource->commandPool);
+	if (vulkRes) {
+		log_warn("[Res]: Command Pool creation failure");
+	}
+
 	VkCommandBufferAllocateInfo commandAllocInfo = {
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-    	.commandPool = pApp->pCommandPools[0], // TODO: Use dedicated command pools
+    	.commandPool = pResource->commandPool, // TODO: Use dedicated command pools
     	.commandBufferCount = 1,
 	};
 
@@ -162,7 +172,7 @@ SgResult sgUpdateResource(const SgApp* pApp, SgResource** ppResource) {
 	
 	vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(pApp->graphicsQueue);
-	vkResetCommandPool(pApp->device, pApp->pCommandPools[0], 0);
+	vkFreeCommandBuffers(pApp->device, pResource->commandPool, 1, &pResource->commandBuffer);
 	*ppResource = pResource;
 	return SG_SUCCESS;
 }
