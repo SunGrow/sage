@@ -135,12 +135,11 @@ int main() {
 	sgCreateGraphicsInstance(app, &graphicsInstanceCreateInfo, &graphicsInstance);
 
 	SgResourceSetInitInfo initInfo = {
-		.resourceSet = resourceSet,
 		.graphicsInstance = graphicsInstance,
 		.pResources = pSetResources,
 		.resourceCount = 2,
 	};
-	sgInitResourceSet(app, &initInfo);
+	sgInitResourceSet(app, &initInfo, &resourceSet);
 	
 	SgUpdateCommandsInitInfo updateInitInfo = {
 		.app = app,

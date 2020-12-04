@@ -204,23 +204,24 @@ SgResult sgCreateResourceSet(const SgApp* pApp, const SgResourceSetCreateInfo *p
 	}
 	pResourceSet->setIndex = pCreateInfo->setIndex;
 	pResourceSet->resourceCount = pCreateInfo->resourceCount;
-	pResourceSet->pResources = *pCreateInfo->ppResources;
+	pResourceSet->ppResources = pCreateInfo->ppResources;
 
 	*ppSgResourceSet = pResourceSet;
 
 	return SG_SUCCESS;
 }
 
-SgResult sgInitResourceSet(const SgApp *pApp, const SgResourceSetInitInfo *pInitInfo) {
+SgResult sgInitResourceSet(const SgApp *pApp, SgResourceSetInitInfo *pInitInfo, SgResourceSet** ppResourceSet) {
+	SgResourceSet *pResourceSet = *ppResourceSet;
 	VkWriteDescriptorSet* pWriteDescriptorSets = calloc(pInitInfo->resourceCount, sizeof(pWriteDescriptorSets[0]));
 	for (uint32_t i = 0; i < pInitInfo->resourceCount; ++i) {
 		// Not sure if it works correctly. May cause issues
-		pInitInfo->pResourceSet->pResources[pInitInfo->ppResources[i]->binding] = *pInitInfo->ppResources[i];
+		pResourceSet->ppResources[pInitInfo->ppResources[i]->binding] = pInitInfo->ppResources[i];
 		//
 		VkDescriptorImageInfo *pImageInfo = VK_NULL_HANDLE;
 		VkDescriptorBufferInfo *pBufferInfo = VK_NULL_HANDLE;
 		pWriteDescriptorSets[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		pWriteDescriptorSets[i].dstSet = pInitInfo->pGraphicsInstance->pDescriptorSets[pInitInfo->pResourceSet->setIndex];
+		pWriteDescriptorSets[i].dstSet = pInitInfo->pGraphicsInstance->pDescriptorSets[pResourceSet->setIndex];
 		pWriteDescriptorSets[i].dstBinding = pInitInfo->ppResources[i]->binding;
 		pWriteDescriptorSets[i].descriptorCount = 1;
 		if (pInitInfo->ppResources[i]->type == SG_RESOURCE_TYPE_TEXTURE_2D) {
@@ -371,7 +372,7 @@ SgResult createRenderPass(const SgApp *pApp, VkRenderPass* pRenderPass) {
 
 SgResult createVkSwapchain(const SgApp* pApp, VkSwapchainKHR oldswapchain, VkSwapchainKHR* pSwapchain) {
 	VkSurfaceCapabilitiesKHR surfcap = pApp->surfaceAttributes.surfaceCapabilities;
-	VkCompositeAlphaFlagBitsKHR surfacecomposite =
+	VkCompositeAlphaFlagBitsKHR surfaceComposite =
 	    (surfcap.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
 	        ? VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR
 	        : (surfcap.supportedCompositeAlpha &
@@ -394,7 +395,7 @@ SgResult createVkSwapchain(const SgApp* pApp, VkSwapchainKHR oldswapchain, VkSwa
 	    .queueFamilyIndexCount = 1,
 	    .pQueueFamilyIndices = &pApp->graphicsQueueFamilyIdx,
 	    .preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
-	    .compositeAlpha = surfacecomposite,
+	    .compositeAlpha = surfaceComposite,
 	    .presentMode = pApp->surfaceAttributes.presentMode,
 	    .oldSwapchain = oldswapchain,
 	};
@@ -572,10 +573,9 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	createRenderPass(pApp, &pGraphicsInstance->renderPass);
 	
 	/* Create Pipeline Layout */
-	pGraphicsInstance->pDescriptorSetLayouts =
-	    malloc(sizeof(pGraphicsInstance->pDescriptorSetLayouts[0]) * pCreateInfo->setCount);
+	pGraphicsInstance->pDescriptorSetLayouts = malloc(sizeof(pGraphicsInstance->pDescriptorSetLayouts[0]) * pCreateInfo->setCount);
 	for (uint32_t i = 0; i < pCreateInfo->setCount; ++i) {
-		pGraphicsInstance->pDescriptorSetLayouts[i] = pCreateInfo->ppSets[i][0].setLayout;
+		pGraphicsInstance->pDescriptorSetLayouts[i] = pCreateInfo->ppSets[i]->setLayout;
 	}
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {
 	    .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
@@ -595,10 +595,13 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 			++poolSizeCount;
 		}
 	}
-	VkDescriptorPoolSize *pPoolSizes = malloc(poolSizeCount * sizeof(pPoolSizes[0]));
+	if (poolSizeCount == 0) {
+		log_warn("[Graphics Instance]: No descriptor pools");
+	}
+	VkDescriptorPoolSize *pPoolSizes = calloc(poolSizeCount, sizeof(pPoolSizes[0]));
 	for (uint32_t i = 0; i < pCreateInfo->setCount; ++i) {
 		for (uint32_t j = 0; j < pCreateInfo->ppSets[i]->resourceCount; ++j) {
-			switch (pCreateInfo->ppSets[i]->pResources[j].type) {
+			switch (pCreateInfo->ppSets[i]->ppResources[j]->type) {
 				case SG_RESOURCE_TYPE_TEXTURE_2D:
 					pPoolSizes[i + j * pCreateInfo->setCount].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 					break;
@@ -751,6 +754,7 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
     	.commandPool = pInitInfo->pApp->pCommandPools[1], // TODO: Use dedicated command pools
     	.commandBufferCount = SG_FRAME_QUEUE_LENGTH,
+		.pNext = NULL,
 	};
 	vkAllocateCommandBuffers(pInitInfo->pApp->device, &commandAllocInfo, pUpdateCommands->pCommandBuffers);
 
@@ -797,7 +801,7 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 		VkImageMemoryBarrier pBeginBarriers[] = {renderBeginBarrier};
 		
 
-//		vkCmdPipelineBarrier(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 1, pBeginBarriers);
+		vkCmdPipelineBarrier(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 1, pBeginBarriers);
 		/* */
 		vkCmdSetViewport(pUpdateCommands->pCommandBuffers[i], 0, 1, &viewport);
 		vkCmdSetScissor(pUpdateCommands->pCommandBuffers[i], 0, 1, &scissor);
@@ -828,7 +832,7 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 		};
 		VkImageMemoryBarrier pEndBarriers[] = {renderEndBarrier};
 
-//		vkCmdPipelineBarrier(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, NUMOF(pEndBarriers), pEndBarriers);
+		vkCmdPipelineBarrier(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, NUMOF(pEndBarriers), pEndBarriers);
 		/**/
 		vkEndCommandBuffer(pUpdateCommands->pCommandBuffers[i]);
 	}
@@ -874,17 +878,20 @@ SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo) {
 	};
 
     vkResetFences(pApp->device, 1, &pApp->pFrameFences[pApp->currentFrame]);
-	vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, pApp->pFrameFences[pApp->currentFrame]);
 
-	VkPresentInfoKHR presentinfo = {
+	if (vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, pApp->pFrameFences[pApp->currentFrame])) {
+		log_warn("[Queue Submit]: Draw command error");
+	}
+
+	VkPresentInfoKHR presentInfo = {
 	    .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+	    .pSwapchains = &pGraphicsInstance->swapchain.swapchain,
 	    .swapchainCount = 1,
 	    .pImageIndices = &pApp->frameImageIndex,
-	    .pSwapchains = &pGraphicsInstance->swapchain.swapchain,
 	    .waitSemaphoreCount = 1,
 	    .pWaitSemaphores = &pApp->pFrameFinishedSemaphore[pApp->currentFrame],
 	};
-	vkQueuePresentKHR(pApp->graphicsQueue, &presentinfo);
+	vkQueuePresentKHR(pApp->graphicsQueue, &presentInfo);
 
 	pApp->currentFrame = (pApp->currentFrame + 1) % SG_FRAME_QUEUE_LENGTH;
 	return 1;

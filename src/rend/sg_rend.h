@@ -32,13 +32,12 @@ typedef struct SgResourceSetCreateInfo {
 SgResult sgCreateResourceSet(const SgApp* pApp, const SgResourceSetCreateInfo *pCreateInfo, SgResourceSet **ppSgResourceSet);
 
 typedef struct SgResourceSetInitInfo {
-	SgResourceSet*                pResourceSet;
 	SgResource**                  ppResources;
 	uint32_t                      resourceCount;
 	SgGraphicsInstance*           pGraphicsInstance; 
 } SgResourceSetInitInfo;
 
-SgResult sgInitResourceSet(const SgApp *pApp, const SgResourceSetInitInfo *pInitInfo);
+SgResult sgInitResourceSet(const SgApp *pApp, SgResourceSetInitInfo *pInitInfo, SgResourceSet** ppResourceSet);
 
 typedef struct SgShaderCreateInfo {
 	SgFile*               pFile;

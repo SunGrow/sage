@@ -84,13 +84,12 @@ SgResult sgCreateGraphicsInstance(const SgApp app, const SgGraphicsInstanceCreat
 SgResult sgUpdateResource(const SgApp app, SgResource* pResource);
 
 typedef struct SgResourceSetInitInfo {
-	SgResourceSet                 resourceSet;
 	SgResource*                   pResources;
 	uint32_t                      resourceCount;
 	SgGraphicsInstance            graphicsInstance; 
 } SgResourceSetInitInfo;
 
-SgResult sgInitResourceSet(const SgApp app, const SgResourceSetInitInfo *pInitInfo);
+SgResult sgInitResourceSet(const SgApp app, const SgResourceSetInitInfo *pInitInfo, SgResourceSet* pResourceSet);
 
 typedef struct SgUpdateCommandsInitInfo {
 	SgApp                  app;

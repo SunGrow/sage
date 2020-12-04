@@ -1,6 +1,6 @@
 #ifndef SAGE_BASE
 #define SAGE_BASE
-#define _DEBUG
+//#define _DEBUG
 
 #include <stddef.h>
 #include <stdint.h>
@@ -64,7 +64,7 @@ typedef struct SgApp {
 	uint32_t                  currentFrame;
 	uint32_t                  frameImageIndex;
 	VkFence                   pFrameFences[SG_FRAME_QUEUE_LENGTH];
-	VkFence                   pFrameImageInFlightFences[SG_FRAME_QUEUE_LENGTH];
+	VkFence                   pFrameImageInFlightFences[SG_FRAME_QUEUE_LENGTH + 6];
 } SgApp;
 
 typedef enum SgResourceTypeFlagBits {
@@ -115,7 +115,7 @@ typedef struct SgResource {
 } SgResource;
 
 typedef struct SgResourceSet {
-	SgResource*                      pResources;
+	SgResource**                     ppResources;
 	uint32_t                         resourceCount;
 	uint32_t                         setIndex;
 	VkDescriptorSetLayoutBinding*    pSetLayoutBindings;
@@ -156,8 +156,6 @@ typedef struct SgGraphicsInstance {
 
 typedef struct SgUpdateCommands {
 	VkCommandBuffer             pCommandBuffers[SG_FRAME_QUEUE_LENGTH];
-	SgResource**           ppIndexResources;
-	uint32_t               indexResourceCount;
 } SgUpdateCommands;
 
 typedef struct SgFile {

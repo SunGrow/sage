@@ -141,7 +141,6 @@ SgResult sgCreateImageView(const SgApp* pApp, const SgImageViewCreateInfo *pCrea
 SgResult sgUpdateResource(const SgApp* pApp, SgResource** ppResource) {
 	VkCommandBufferBeginInfo beginInfo = {
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-		.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
 	};
 
 	SgResource* pResource = *ppResource;
@@ -163,6 +162,7 @@ SgResult sgUpdateResource(const SgApp* pApp, SgResource** ppResource) {
 	
 	vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(pApp->graphicsQueue);
+	vkResetCommandPool(pApp->device, pApp->pCommandPools[0], 0);
 	*ppResource = pResource;
 	return SG_SUCCESS;
 }
