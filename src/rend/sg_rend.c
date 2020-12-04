@@ -715,7 +715,6 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	VkPipelineRasterizationStateCreateInfo rasterizationState = {
 	    .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
 	    .lineWidth = 1.f,
-		.cullMode = VK_CULL_MODE_BACK_BIT,
 	};
 
 	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = {

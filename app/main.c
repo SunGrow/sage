@@ -73,7 +73,7 @@ int main() {
 	} Camera;
 
 	Camera camera = {
-	    .pos = {-3.0f, -1.0f, -1.0f},
+	    .pos = {-2.0f, -1.0f, -1.0f},
 	    .front = {2.0f, 0.0f, 0.0f},
 	    .up = {0.0f, 1.0f, 0.0f},
 	    .speed = 1,

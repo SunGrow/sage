@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "log.h"
 #include "sg_resource.h"
+#include <string.h>
 
 
 SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreateInfo, SgResource **ppResource) {
@@ -8,9 +9,7 @@ SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreate
 	pResource->stage = pCreateInfo->stage;
 	pResource->type = pCreateInfo->type;
 	pResource->binding = pCreateInfo->binding;
-	pResource->dataBuffer.bytes = pCreateInfo->bytes;
 	pResource->dataBuffer.size = pCreateInfo->size;
-	pResource->stagingBuffer.bytes = pCreateInfo->bytes;
 	pResource->stagingBuffer.size = pCreateInfo->size;
 	// Allocate transfer command buffer
 	VkCommandPoolCreateInfo commandPoolCreateInfo = {
@@ -51,15 +50,18 @@ SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreate
 			sgCreateBuffer(pApp, &bufferCreateInfo, &pResource->dataBuffer);
 			sgCreateBuffer(pApp, &stagingBufferCreateInfo, &pResource->stagingBuffer);
 			vmaMapMemory(pApp->allocator,pResource->stagingBuffer.allocation, pResource->stagingBuffer.bytes);
+			memcpy(pResource->stagingBuffer.bytes, pCreateInfo->bytes, pCreateInfo->size);
 			break;
 		case (SG_RESOURCE_TYPE_UNIFORM):
 			sgCreateBuffer(pApp, &bufferCreateInfo, &pResource->dataBuffer);
 			vmaMapMemory(pApp->allocator,pResource->dataBuffer.allocation, pResource->dataBuffer.bytes);
+			memcpy(pResource->dataBuffer.bytes, pCreateInfo->bytes, pCreateInfo->size);
 			break;
 		case (SG_RESOURCE_TYPE_INDICES):
 			sgCreateBuffer(pApp, &bufferCreateInfo, &pResource->dataBuffer);
 			sgCreateBuffer(pApp, &stagingBufferCreateInfo, &pResource->stagingBuffer);
 			vmaMapMemory(pApp->allocator,pResource->stagingBuffer.allocation, pResource->stagingBuffer.bytes);
+			memcpy(pResource->stagingBuffer.bytes, pCreateInfo->bytes, pCreateInfo->size);
 			break;
 		}
 	}
@@ -173,6 +175,7 @@ SgResult sgUpdateResource(const SgApp* pApp, SgResource** ppResource) {
 	vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(pApp->graphicsQueue);
 	vkFreeCommandBuffers(pApp->device, pResource->commandPool, 1, &pResource->commandBuffer);
+	vkResetCommandPool(pApp->device, pResource->commandPool, 0);
 	*ppResource = pResource;
 	return SG_SUCCESS;
 }
