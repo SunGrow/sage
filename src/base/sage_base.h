@@ -75,6 +75,8 @@ typedef enum SgResourceTypeFlagBits {
 	SG_RESOURCE_TYPE_STAGING      = 0x00000010, // Hidden from the outer API atm
 } SgResourceTypeFlagBits;
 typedef SgFlags SgResourceTypeFlags;
+static const SgResourceTypeFlags SG_RESOURCE_TYPE_REQIRE_STAGING_MASK = SG_RESOURCE_TYPE_MESH | SG_RESOURCE_TYPE_INDICES;
+static const SgResourceTypeFlags SG_RESOURCE_TYPE_IS_IMAGE_MASK = SG_RESOURCE_TYPE_TEXTURE_2D;
 
 typedef struct SgBuffer {
 	VkBuffer        buffer;
@@ -158,6 +160,12 @@ typedef struct SgGraphicsInstance {
 typedef struct SgUpdateCommands {
 	VkCommandBuffer*             pCommandBuffers;
 } SgUpdateCommands;
+
+// Really does look like a file, doesn't it?
+typedef struct SgData {
+	void*             bytes;
+	size_t            size;
+} SgData;
 
 typedef struct SgFile {
 	uint32_t*         pBytes;

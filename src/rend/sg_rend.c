@@ -276,6 +276,10 @@ SgResult sgCreateShader(const SgApp *pApp, const SgShaderCreateInfo* pCreateInfo
 }
 
 // TODO: Fix this static crap. Is a problem with an API, really. But I have no time to fix it
+// Comment: I guess, I meant that render pass and corresponding framebuffer content should be
+// changed from one place and thus everything in this function should change from the changes
+// in the input params... Or something along those lines. Should really teach myself to leave
+// better comments next time. Even at the times of frustration.
 SgResult createRenderPass(const SgApp *pApp, VkRenderPass* pRenderPass) {
 	VkDevice device = pApp->device;
 	VkFormat format = pApp->surfaceAttributes.format.format;
@@ -454,15 +458,6 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 	};
 	sgCreateImageView(pApp, &depthImageViewCreateInfo, &pSwapchain->depthImageView);
 	/* Transition depth image */
-	/*
-        (g_t_DepthImage,
-         depthFormat,
-         VK_IMAGE_LAYOUT_UNDEFINED,
-         VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1);
-		SpResult spTransitionImageLayout
-		    (VkImage image, VkFormat format, VkImageLayout oldLayout,
-		     VkImageLayout newLayout, uint32_t mipLevels)
-	 * */
 	{
 		/* Begin command buffer */
 		VkCommandBuffer commandBuffer;
@@ -635,7 +630,7 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	    .pSetLayouts = pDescriptorSetLayouts,
 	};
 	vkAllocateDescriptorSets(pApp->device, &descrriptorSetAllocInfo, pGraphicsInstance->pDescriptorSets);
-//	free(pDescriptorSetLayouts);
+	free(pDescriptorSetLayouts);
 
 	/* Create Swapchain */
 	SgSwapchainCreateInfo swapchainCreateInfo = {
@@ -772,6 +767,8 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 			.pClearValues = pClearValues,
 		};
 
+		// TODO: RESIZE SHOULD BE DYNAMIC! YOU YOURSELF MADE IT THAT WAY!
+		// YET NOW YOU ARE TOO LAZY TO MAKE IT A THING. WORK!
 		VkRect2D scissor = (VkRect2D){
 		    { 0, 0, },
 			pInitInfo->pGraphicsInstance->swapchain.extent,
@@ -856,7 +853,6 @@ SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo) {
 	    .pWaitSemaphores = &pApp->pFrameFinishedSemaphore[pApp->currentFrame],
 	};
 	vkQueuePresentKHR(pApp->graphicsQueue, &presentInfo);
-	vkDeviceWaitIdle(pApp->device);
 
 	pApp->currentFrame = (pApp->currentFrame + 1) % SG_FRAME_QUEUE_LENGTH;
 	return 1;

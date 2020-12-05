@@ -25,49 +25,42 @@ SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreate
 	VkCommandBufferAllocateInfo commandAllocInfo = {
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-    	.commandPool = pResource->commandPool, // TODO: Use dedicated command pools
+    	.commandPool = pResource->commandPool,
     	.commandBufferCount = 1,
 	};
 
 	vkAllocateCommandBuffers(pApp->device, &commandAllocInfo, &pResource->commandBuffer);
 
 	// Allocate resource buffer
-	if (pCreateInfo->type == SG_RESOURCE_TYPE_TEXTURE_2D) {
+	if (pCreateInfo->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
      /* TODO: texture type */
 	} else {
 		SgBufferCreateInfo bufferCreateInfo = {
-			.bytes = NULL,
 			.size  = pCreateInfo->size,
 			.type  = pCreateInfo->type,
 		};
 		SgBufferCreateInfo stagingBufferCreateInfo = {
-			.bytes = NULL,
 			.size  = pCreateInfo->size,
 			.type  = SG_RESOURCE_TYPE_STAGING,
 		};
 		void *data;
-		switch (pCreateInfo->type) {
-		case (SG_RESOURCE_TYPE_MESH):
+		if (SG_RESOURCE_TYPE_REQIRE_STAGING_MASK & pCreateInfo->type) {
 			sgCreateBuffer(pApp, &bufferCreateInfo, &pResource->dataBuffer);
 			sgCreateBuffer(pApp, &stagingBufferCreateInfo, &pResource->stagingBuffer);
 			vmaMapMemory(pApp->allocator,pResource->stagingBuffer.allocation, &data);
 			pResource->stagingBuffer.bytes = data;
 			memcpy(pResource->stagingBuffer.bytes, pCreateInfo->bytes, pCreateInfo->size);
-			break;
-		case (SG_RESOURCE_TYPE_UNIFORM):
+		} else {
 			sgCreateBuffer(pApp, &bufferCreateInfo, &pResource->dataBuffer);
 			vmaMapMemory(pApp->allocator,pResource->dataBuffer.allocation, &data);
 			pResource->dataBuffer.bytes = data;
 			memcpy(pResource->dataBuffer.bytes, pCreateInfo->bytes, pCreateInfo->size);
-			break;
-		case (SG_RESOURCE_TYPE_INDICES):
-			sgCreateBuffer(pApp, &bufferCreateInfo, &pResource->dataBuffer);
-			sgCreateBuffer(pApp, &stagingBufferCreateInfo, &pResource->stagingBuffer);
-			vmaMapMemory(pApp->allocator,pResource->stagingBuffer.allocation, &data);
-			pResource->stagingBuffer.bytes = data;
-			memcpy(pResource->stagingBuffer.bytes, pCreateInfo->bytes, pCreateInfo->size);
-			break;
 		}
+		SgData dataToCopyFrom = {
+			.bytes = pCreateInfo->bytes,
+			.size = pCreateInfo->size,
+		};
+		sgUpdateResource(pApp, &dataToCopyFrom, &pResource);
 	}
 
 	*ppResource = pResource;
@@ -87,7 +80,6 @@ SgResult sgCreateBuffer(const SgApp* pApp, SgBufferCreateInfo* pCreateInfo, SgBu
 			bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 			allocationInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 			allocationInfo.preferredFlags = VK_MEMORY_PROPERTY_HOST_CACHED_BIT; 
-//			pBuffer->bytes = malloc(sizeof(pBuffer->size));
 			break;
 		case (SG_RESOURCE_TYPE_MESH):
 			bufferCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
@@ -97,7 +89,6 @@ SgResult sgCreateBuffer(const SgApp* pApp, SgBufferCreateInfo* pCreateInfo, SgBu
 			bufferCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 			allocationInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 			allocationInfo.preferredFlags = VK_MEMORY_PROPERTY_HOST_CACHED_BIT; 
-//			pBuffer->bytes = malloc(sizeof(pBuffer->size));
 			break;
 		case (SG_RESOURCE_TYPE_INDICES):
 			bufferCreateInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
@@ -157,12 +148,31 @@ SgResult sgCreateImageView(const SgApp* pApp, const SgImageViewCreateInfo *pCrea
 
 // TODO: Confusing API. Fix when I'm less angry at life.
 // Add image
-SgResult sgUpdateResource(const SgApp* pApp, SgResource** ppResource) {
+SgResult sgUpdateResource(const SgApp* pApp, const SgData* pData, SgResource** ppResource) {
 	VkCommandBufferBeginInfo beginInfo = {
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 	};
 
 	SgResource* pResource = *ppResource;
+	// TODO: Image Type
+	if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
+		log_info("[Res]: Image Type is not yet implemented");
+		return SG_SUCCESS;
+	}
+
+	// Goodness gracious, this SG_RESOURCE_TYPE thing sure is 
+	// getting hard to maintain...
+
+	// TODO: Size safety
+	if (pData->size > pResource->dataBuffer.size) {
+		log_warn("[Res]: Data size exceeds resource size. Possible memory corruption");
+	}
+	if (SG_RESOURCE_TYPE_REQIRE_STAGING_MASK & pResource->type) {
+		memcpy(pResource->stagingBuffer.bytes, pData->bytes, pData->size);
+	} else {
+		memcpy(pResource->dataBuffer.bytes, pData->bytes, pData->size);
+		return SG_SUCCESS;
+	}
 
 	// From staging buffer to data
 	vkBeginCommandBuffer(pResource->commandBuffer, &beginInfo);

@@ -81,7 +81,11 @@ typedef struct SgGraphicsInstanceCreateInfo {
 SG_DEFINE_HANDLE(SgGraphicsInstance);
 SgResult sgCreateGraphicsInstance(const SgApp app, const SgGraphicsInstanceCreateInfo *pCreateInfo, SgGraphicsInstance *pGraphicsInstance);
 
-SgResult sgUpdateResource(const SgApp app, SgResource* pResource);
+typedef struct SgData {
+	void*             bytes;
+	size_t            size;
+} SgData;
+SgResult sgUpdateResource(const SgApp app, SgData* pData, SgResource* pResource);
 
 typedef struct SgResourceSetInitInfo {
 	SgResource*                   pResources;

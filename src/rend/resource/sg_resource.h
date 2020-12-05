@@ -12,7 +12,8 @@ typedef struct SgResourceCreateInfo {
 
 SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreateInfo, SgResource **ppResource);
 
-SgResult sgUpdateResource(const SgApp* pApp, SgResource** ppResource);
+
+SgResult sgUpdateResource(const SgApp* pApp, const SgData* pData, SgResource** ppResource);
 
 typedef struct SgBufferCreateInfo {
 	void*               bytes;

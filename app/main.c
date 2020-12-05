@@ -51,7 +51,6 @@ int main() {
 		.type = SG_RESOURCE_TYPE_MESH,
 	};
 	sgCreateResource(app, &meshResourceCreateInfo, &meshResource);
-	sgUpdateResource(app, &meshResource);
 
 	SgResource meshIndicesResource;
 	SgResourceCreateInfo meshIndicesResourceCreateInfo = {
@@ -60,7 +59,6 @@ int main() {
 		.type = SG_RESOURCE_TYPE_INDICES,
 	};
 	sgCreateResource(app, &meshIndicesResourceCreateInfo, &meshIndicesResource);
-	sgUpdateResource(app, &meshIndicesResource);
 
 	/* Should be inside of an API */
 	typedef struct Camera_T {
