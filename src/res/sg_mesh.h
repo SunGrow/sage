@@ -2,6 +2,7 @@
 #define SG_MESH
 
 #include "sage_base.h"
+#include "sg_math.h"
 
 // Mesh
 typedef struct SgVertex {
@@ -18,8 +19,16 @@ typedef struct SgMesh {
 } SgMesh;
 //
 
+
 // Mesh
-void SgLoadMesh(const char *pPath, SgMesh **ppMesh);
-void SgUnloadMesh(SgMesh **ppMesh);
+void sgLoadMesh(const char *pPath, SgMesh **ppMesh);
+void sgUnloadMesh(SgMesh **ppMesh);
+
+typedef struct SgMeshTransformInfo {
+	v3 move;
+	v3 scale;
+} SgMeshTransformInfo;
+
+void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t vertCount, SgVertex *pVertices);
 
 #endif

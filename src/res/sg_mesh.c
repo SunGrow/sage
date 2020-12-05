@@ -5,7 +5,7 @@
 #define FAST_OBJ_IMPLEMENTATION
 #include "fast_obj.h"
 
-void SgLoadMesh(const char *pPath, SgMesh **ppMesh) {
+void sgLoadMesh(const char *pPath, SgMesh **ppMesh) {
 	// obj mesh load
 	fastObjMesh *pObj = fast_obj_read(pPath);
 
@@ -80,10 +80,26 @@ void SgLoadMesh(const char *pPath, SgMesh **ppMesh) {
 	*/
 }
 
-void SgUnloadMesh(SgMesh **ppMesh) {
+void sgUnloadMesh(SgMesh **ppMesh) {
 	(*ppMesh)->indexCount = 0;
 	(*ppMesh)->vertexCount = 0;
 	free((*ppMesh)->pIndices);
 	free((*ppMesh)->pVertices);
 	free(*ppMesh);
 }
+
+
+void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t vertCount, SgVertex *pVertices) {
+	for (uint32_t i = 0; i < vertCount; ++i) {
+		pVertices[i].vx *= pTransformInfo->scale[0];
+		pVertices[i].vy *= pTransformInfo->scale[1];
+		pVertices[i].vz *= pTransformInfo->scale[2];
+
+		pVertices[i].vx += pTransformInfo->move[0];
+		pVertices[i].vy += pTransformInfo->move[1];
+		pVertices[i].vz += pTransformInfo->move[2];
+	}
+}
+
+
+

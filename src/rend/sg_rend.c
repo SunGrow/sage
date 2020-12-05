@@ -213,45 +213,47 @@ SgResult sgCreateResourceSet(const SgApp* pApp, const SgResourceSetCreateInfo *p
 
 SgResult sgInitResourceSet(const SgApp *pApp, SgResourceSetInitInfo *pInitInfo, SgResourceSet** ppResourceSet) {
 	SgResourceSet *pResourceSet = *ppResourceSet;
-	VkWriteDescriptorSet* pWriteDescriptorSets = calloc(pInitInfo->resourceCount, sizeof(pWriteDescriptorSets[0]));
+	if (pResourceSet->pWriteDescriptorSets == NULL) {
+		pResourceSet->pWriteDescriptorSets = calloc(pInitInfo->resourceCount, sizeof(pResourceSet->pWriteDescriptorSets[0]));
+	}
 	for (uint32_t i = 0; i < pInitInfo->resourceCount; ++i) {
 		// Not sure if it works correctly. May cause issues
 		pResourceSet->ppResources[pInitInfo->ppResources[i]->binding] = pInitInfo->ppResources[i];
 		//
 		VkDescriptorImageInfo *pImageInfo = VK_NULL_HANDLE;
 		VkDescriptorBufferInfo *pBufferInfo = VK_NULL_HANDLE;
-		pWriteDescriptorSets[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		pWriteDescriptorSets[i].dstSet = pInitInfo->pGraphicsInstance->pDescriptorSets[pResourceSet->setIndex];
-		pWriteDescriptorSets[i].dstBinding = pInitInfo->ppResources[i]->binding;
-		pWriteDescriptorSets[i].descriptorCount = 1;
+		pResourceSet->pWriteDescriptorSets[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		pResourceSet->pWriteDescriptorSets[i].dstSet = pInitInfo->pGraphicsInstance->pDescriptorSets[pResourceSet->setIndex];
+		pResourceSet->pWriteDescriptorSets[i].dstBinding = pInitInfo->ppResources[i]->binding;
+		pResourceSet->pWriteDescriptorSets[i].descriptorCount = 1;
 		if (pInitInfo->ppResources[i]->type == SG_RESOURCE_TYPE_TEXTURE_2D) {
 			/* Won't work unless image resource creation is completed */
 			pImageInfo = malloc(sizeof(pImageInfo[0]));
 			pImageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			pImageInfo->imageView = pInitInfo->ppResources[i]->imageView;
 			pImageInfo->sampler   = pInitInfo->ppResources[i]->imageSampler;
-			pWriteDescriptorSets[i].pImageInfo = pImageInfo;
+			pResourceSet->pWriteDescriptorSets[i].pImageInfo = pImageInfo;
 
 		} else {
 			pBufferInfo = malloc(sizeof(pBufferInfo[0]));
 			pBufferInfo->buffer = pInitInfo->ppResources[i]->dataBuffer.buffer;
 			pBufferInfo->offset = 0;
 			pBufferInfo->range = pInitInfo->ppResources[i]->dataBuffer.size;
-			pWriteDescriptorSets[i].pBufferInfo = pBufferInfo;
+			pResourceSet->pWriteDescriptorSets[i].pBufferInfo = pBufferInfo;
 		}
 		switch (pInitInfo->ppResources[i]->type) {
 			case (SG_RESOURCE_TYPE_UNIFORM):
-				pWriteDescriptorSets[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				pResourceSet->pWriteDescriptorSets[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				break;
 			case (SG_RESOURCE_TYPE_MESH):
-				pWriteDescriptorSets[i].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+				pResourceSet->pWriteDescriptorSets[i].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 				break;
 			case (SG_RESOURCE_TYPE_TEXTURE_2D):
-				pWriteDescriptorSets[i].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+				pResourceSet->pWriteDescriptorSets[i].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
 				break;
 		}
 	}
-	vkUpdateDescriptorSets(pApp->device, pInitInfo->resourceCount, pWriteDescriptorSets, 0, VK_NULL_HANDLE);
+	vkUpdateDescriptorSets(pApp->device, pInitInfo->resourceCount, pResourceSet->pWriteDescriptorSets, 0, VK_NULL_HANDLE);
 	return SG_SUCCESS;
 }
 

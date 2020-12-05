@@ -2,6 +2,7 @@
 #define SAGE_RES_H_ 1
 
 #include "sage_core.h"
+#include "sage_math.h"
 
 /* Make mesh load fit with the engine theme */
 typedef struct SgVertex {
@@ -17,8 +18,14 @@ typedef struct SgMesh {
 	uint32_t   indexCount;
 } SgMesh;
 
-void SgLoadMesh(const char *pPath, SgMesh **ppMesh);
-void SgUnloadMesh(SgMesh **ppMesh);
+void sgLoadMesh(const char *pPath, SgMesh **ppMesh);
+void sgUnloadMesh(SgMesh **ppMesh);
 
+typedef struct SgMeshTransformInfo {
+	v3 move;
+	v3 scale;
+} SgMeshTransformInfo;
+
+void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t vertCount, SgVertex *pVertices);
 
 #endif

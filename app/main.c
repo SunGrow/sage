@@ -38,7 +38,12 @@ int main() {
 	/* Placeholder Mesh */
 	SgMesh *pMesh;
 	
-	SgLoadMesh("res/kitten.obj", &pMesh);
+	sgLoadMesh("res/kitten.obj", &pMesh);
+	SgMeshTransformInfo kittenMeshTransformInfo = {
+		.move = {1.5, 0.1, 0.1},
+		.scale = {2, 2, 2,},
+	};
+	sgTransformMesh(&kittenMeshTransformInfo, pMesh->vertexCount, pMesh->pVertices);
 	/**/
 
 	/* Resource Init */
@@ -101,7 +106,7 @@ int main() {
 	/**/
 	SgResource cameraResource;
 	SgResourceCreateInfo cameraResourceCreateInfo = {
-		.binding = 1,
+		.binding = 0,
 		.bytes = &transformuniform,
 		.size = sizeof(TransformUniform),
 		.stage = SG_SHADER_STAGE_VERTEX_BIT,
@@ -111,18 +116,27 @@ int main() {
 
 
 	/* Resource Set Init */
-	SgResource pSetResources[] = {meshResource, cameraResource};
-	SgResourceSetCreateInfo resourceSetCreateInfo = {
-		.pResources = pSetResources,
-		.resourceCount = sizeof(pSetResources) / sizeof(pSetResources[0]),
+	SgResource pMeshSetResources[] = {meshResource};
+	SgResourceSetCreateInfo meshResourceSetCreateInfo = {
+		.pResources = pMeshSetResources,
+		.resourceCount = sizeof(pMeshSetResources) / sizeof(pMeshSetResources[0]),
 		.setIndex = 0,
 	};
-	SgResourceSet resourceSet;
-	sgCreateResourceSet(app, &resourceSetCreateInfo, &resourceSet);
+	SgResourceSet meshResourceSet;
+	sgCreateResourceSet(app, &meshResourceSetCreateInfo, &meshResourceSet);
+
+	SgResource pUniformSetResources[] = {cameraResource};
+	SgResourceSetCreateInfo uniformResourceSetCreateInfo = {
+		.pResources = pUniformSetResources,
+		.resourceCount = sizeof(pUniformSetResources) / sizeof(pUniformSetResources[0]),
+		.setIndex = 1,
+	};
+	SgResourceSet uniformResourceSet;
+	sgCreateResourceSet(app, &uniformResourceSetCreateInfo, &uniformResourceSet);
 
 	/* Graphics Instance Init */
 	SgShader pShaders[] = {vertShader, fragShader};
-	SgResourceSet pResourceSets[] = {resourceSet};
+	SgResourceSet pResourceSets[] = {meshResourceSet, uniformResourceSet};
 	SgGraphicsInstanceCreateInfo graphicsInstanceCreateInfo = {
 		.pShaders = pShaders,
 		.shaderCount = sizeof(pShaders) / sizeof(pShaders[0]),
@@ -132,12 +146,18 @@ int main() {
 	SgGraphicsInstance graphicsInstance;
 	sgCreateGraphicsInstance(app, &graphicsInstanceCreateInfo, &graphicsInstance);
 
-	SgResourceSetInitInfo initInfo = {
+	SgResourceSetInitInfo uniformSetInitInfo = {
 		.graphicsInstance = graphicsInstance,
-		.pResources = pSetResources,
-		.resourceCount = 2,
+		.pResources = pUniformSetResources,
+		.resourceCount = sizeof(pUniformSetResources)/sizeof(pUniformSetResources[0]),
 	};
-	sgInitResourceSet(app, &initInfo, &resourceSet);
+	sgInitResourceSet(app, &uniformSetInitInfo, &uniformResourceSet);
+	SgResourceSetInitInfo meshSetInitInfo = {
+		.graphicsInstance = graphicsInstance,
+		.pResources = pMeshSetResources,
+		.resourceCount = sizeof(pMeshSetResources)/sizeof(pMeshSetResources[0]),
+	};
+	sgInitResourceSet(app, &meshSetInitInfo, &meshResourceSet);
 	
 	SgUpdateCommandsInitInfo updateInitInfo = {
 		.app = app,

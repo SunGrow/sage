@@ -123,6 +123,7 @@ typedef struct SgResourceSet {
 	uint32_t                         setIndex;
 	VkDescriptorSetLayoutBinding*    pSetLayoutBindings;
 	VkDescriptorSetLayout            setLayout;
+	VkWriteDescriptorSet*            pWriteDescriptorSets;
 } SgResourceSet;
 
 typedef struct SgShader {
