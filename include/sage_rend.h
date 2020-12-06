@@ -28,6 +28,14 @@ typedef struct SgAppCreateInfo {
 SG_DEFINE_HANDLE(SgApp);
 SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp *pSgApp);
 
+/* Should not be here in the final version */
+/* To be replaced with a keybinding module */
+GLFWwindow *sgGetGLFWwindow(SgApp app);
+
+void sgSetKeyCallback(SgApp* pApp, GLFWkeyfun callback);
+void sgSetCursorPosCallback(SgApp* pApp, GLFWcursorposfun callback);
+/**/
+
 typedef enum SgShaderStageFlagBits {
     SG_SHADER_STAGE_VERTEX_BIT   = VK_SHADER_STAGE_VERTEX_BIT,
     SG_SHADER_STAGE_GEOMETRY_BIT = VK_SHADER_STAGE_GEOMETRY_BIT,

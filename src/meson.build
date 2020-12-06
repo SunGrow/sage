@@ -13,6 +13,9 @@ sage_libs += sgrend_lib
 subdir('res')
 sage_incs += sgres_inc
 sage_libs += sgres_lib
+subdir('scene')
+sage_incs += sgscene_inc
+sage_libs += sgscene_lib
 # entt_src = 
 # jobs_src =
 

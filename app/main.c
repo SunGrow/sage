@@ -2,18 +2,128 @@
 #include "sage_math.h"
 #include "sage_rend.h"
 #include "sage_res.h"
+#include "sage_scene.h"
 #include "log.h"
+#include "math.h"
+
+enum KeyBindings {
+	FOWARD_KEY = GLFW_KEY_I,
+	BACK_KEY = GLFW_KEY_N,
+	LEFT_KEY = GLFW_KEY_H,
+	RIGHT_KEY = GLFW_KEY_L,
+	UP_KEY = GLFW_KEY_K,
+	DOWN_KEY = GLFW_KEY_J,
+};
+
+typedef struct SgCameraTransformInfo {
+	v3              moveDirection;
+	v2              cursorOffset;
+	double          deltaTime;
+} SgCameraTransformInfo;
+
+SgScene scene = {0};
+
+SgCamera camera = {
+    .position = {-2.0f, -1.0f, -1.0f},
+    .front = {2.0f, 0.0f, 0.0f},
+    .up = {0.0f, 1.0f, 0.0f},
+    .speed = 1,
+    .sensitivity = 6,
+};
+
+void sgTransformCamera(const SgCameraTransformInfo* pTransformInfo, SgCamera* pCamera) {
+
+	/* Move */
+	v3 tmp;
+	v3 right;
+	v3_cross(right, pCamera->front, pCamera->up);
+	v3_normalize_to(right, right);
+
+	v3_scale_by(tmp, pCamera->speed * pTransformInfo->deltaTime * pTransformInfo->moveDirection[0], pCamera->front);
+	v3_add(pCamera->position, tmp, pCamera->position);
+	v3_scale_by(tmp, pCamera->speed * pTransformInfo->deltaTime * pTransformInfo->moveDirection[1], pCamera->up);
+	v3_add(pCamera->position, tmp, pCamera->position);
+	v3_scale_by(tmp, pCamera->speed * pTransformInfo->deltaTime * pTransformInfo->moveDirection[2], right);
+	v3_add(pCamera->position, tmp, pCamera->position);
+
+	/* Rotate */
+	v2 offset;
+	v2_scale_by(offset, pTransformInfo->deltaTime, pTransformInfo->cursorOffset);
+	v2_scale_by(offset, pCamera->sensitivity, offset);
+	static float yaw, pitch;
+
+	yaw += offset[0];
+	pitch += offset[1];
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	v3 direction;
+	direction[0] = cosf(deg_to_rad(yaw)) * cosf(deg_to_rad(pitch));
+	direction[1] = sinf(deg_to_rad(pitch));
+	direction[2] = sinf(deg_to_rad(yaw)) * cosf(deg_to_rad(pitch));
+	v3_normalize_to(pCamera->front, direction);
+
+	return;
+}
+
+static void keyPressCallback(GLFWwindow *pWindow, SgCamera *pCamera) {
+	int state;
+	v3 dir = {0.0f};
+	state = glfwGetKey(pWindow, FOWARD_KEY);
+	if (state == GLFW_PRESS)
+		dir[0] += 1.0f;
+	state = glfwGetKey(pWindow, LEFT_KEY);
+	if (state == GLFW_PRESS)
+		dir[2] -= 1.0f;
+	state = glfwGetKey(pWindow, BACK_KEY);
+	if (state == GLFW_PRESS)
+		dir[0] -= 1.0f;
+	state = glfwGetKey(pWindow, RIGHT_KEY);
+	if (state == GLFW_PRESS)
+		dir[2] += 1.0f;
+	state = glfwGetKey(pWindow, UP_KEY);
+	if (state == GLFW_PRESS)
+		dir[1] += 1.0f;
+	state = glfwGetKey(pWindow, DOWN_KEY);
+	if (state == GLFW_PRESS)
+		dir[1] -= 1.0f;
+	SgCameraTransformInfo transformInfo = {
+		.moveDirection = {dir[0], dir[1], dir[2]},
+		.deltaTime = scene.deltaTime,
+	};
+	sgTransformCamera(&transformInfo, &camera);
+}
+
+static void cursorPositionCallback(GLFWwindow *pWindow, double xPosition, double yPosition) {
+	SgCameraTransformInfo transformInfo = {
+		.cursorOffset = { xPosition - camera.cursorPosition[0], camera.cursorPosition[1] - yPosition },
+		.deltaTime = scene.deltaTime,
+	};
+	sgTransformCamera(&transformInfo, &camera);
+	camera.cursorPosition[0] = xPosition;
+	camera.cursorPosition[1] = yPosition;
+}
+
 
 int main() {
 	SgAppCreateInfo createInfo = {
 		.pName = "Space Invaders",
 		.size  = {640, 480},
+		.flags = SG_APP_CURSOR_HIDDEN,
 //		.flags = SG_APP_WINDOW_FULLSCREEN,
 	};
 
 	SgApp app;
 
 	sgCreateApp(&createInfo, &app);
+	sgSetCursorPosCallback(&app, cursorPositionCallback);
+
+	camera.aspectRatio = createInfo.size[0]/createInfo.size[1];
+	camera.fov = deg_to_rad(80.f);
+	sgSceneInit(&scene);
 
 	// Shaders
 	SgFile vertShaderFile;
@@ -36,50 +146,15 @@ int main() {
 	sgCloseFile(&fragShaderFile);
 
 	/* Should be inside of an API */
-	typedef struct Camera_T {
-		v3 pos;
-		v3 front;
-		v3 up;
-		float speed;
-		float sens;
-		double deltatime;
-	} Camera;
+	SgTransformUniform transformuniform = {0};
 
-	Camera camera = {
-	    .pos = {-2.0f, -1.0f, -1.0f},
-	    .front = {2.0f, 0.0f, 0.0f},
-	    .up = {0.0f, 1.0f, 0.0f},
-	    .speed = 1,
-	    .sens = 6,
-		.deltatime = 0.003,
-	};
-	typedef struct TransformUniform_T {
-		m4 model;
-		m4 view;
-		m4 proj;
-	} TransformUniform;
-
-	TransformUniform transformuniform = {0};
-	for (uint32_t i = 0; i < 4; ++i) {
-		for (uint32_t j = 0; j < 4; ++j) {
-			if (i == j)
-				transformuniform.model[i][j] = 1;
-			else
-				transformuniform.model[i][j] = 0;
-		}
-	}
-
-	v3 at;
-	v3_add(at, camera.pos, camera.front);
-	lookat(transformuniform.view, camera.pos, at, camera.up);
-	perspective(transformuniform.proj, deg_to_rad(80.0f),
-	            createInfo.size[0] / (float)createInfo.size[1], 0.1f, 10.0f);
+	sgInitTransformUniform(&camera, &transformuniform);
 	/**/
 	SgResource cameraResource;
 	SgResourceCreateInfo cameraResourceCreateInfo = {
 		.binding = 0,
 		.bytes = &transformuniform,
-		.size = sizeof(TransformUniform),
+		.size = sizeof(SgTransformUniform),
 		.stage = SG_SHADER_STAGE_VERTEX_BIT,
 		.type = SG_RESOURCE_TYPE_UNIFORM,
 	};
@@ -236,25 +311,14 @@ int main() {
 		.updateCommands = updateCommands,
 	};
 
+	GLFWwindow *pWindow = sgGetGLFWwindow(app);
 	while(sgAppUpdate(&updateInfo)) {
-		v3 tmp;
-		v3 right;
-		v3_cross(right, camera.front, camera.up);
-		v3_normalize_to(right, right);
-
-		v3_scale_by(tmp, camera.speed * camera.deltatime * 1, camera.front);
-		v3_add(camera.pos, tmp, camera.pos);
-		v3_scale_by(tmp, camera.speed * camera.deltatime * 1, camera.up);
-		v3_add(camera.pos, tmp, camera.pos);
-		v3_scale_by(tmp, camera.speed * camera.deltatime * 1, right);
-		v3_add(camera.pos, tmp, camera.pos);
-
-		v3 at;
-		v3_add(at, camera.pos, camera.front);
-		lookat(transformuniform.view, camera.pos, at, camera.up);
+		sgSceneUpdate(&scene);
+		keyPressCallback(pWindow, &camera);
+		sgUpdateTransformUniform(&camera, &transformuniform);
 		SgData cameraData = {
 			.bytes = &transformuniform,
-			.size = sizeof(transformuniform),
+			.size  = sizeof(transformuniform),
 		};
 		sgUpdateResource(app, &cameraData, &cameraResource);
 	}
