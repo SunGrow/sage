@@ -35,6 +35,9 @@ typedef struct SgResourceSetInitInfo {
 	SgResource**                  ppResources;
 	uint32_t                      resourceCount;
 	SgGraphicsInstance*           pGraphicsInstance; 
+
+	SgBool                        isMeshResourceSet;
+	uint32_t                      meshResourceSetID;
 } SgResourceSetInitInfo;
 
 SgResult sgInitResourceSet(const SgApp *pApp, SgResourceSetInitInfo *pInitInfo, SgResourceSet** ppResourceSet);
@@ -56,8 +59,12 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 typedef struct SgGraphicsInstanceCreateInfo {
 	SgShader**            ppShaders;
 	uint32_t              shaderCount;
+
 	SgResourceSet**       ppSets;
 	uint32_t              setCount;
+
+	SgResourceSet**       ppMeshSets;
+	uint32_t              meshSetCount;
 } SgGraphicsInstanceCreateInfo;
 
 SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCreateInfo *pCreateInfo, SgGraphicsInstance **ppGraphicsInstance);

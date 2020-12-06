@@ -151,7 +151,8 @@ typedef struct SgGraphicsInstance {
 	uint32_t                       setCount;
 	VkDescriptorSetLayout*         pDescriptorSetLayouts;
 	VkDescriptorPool               descriptorPool;
-	VkDescriptorSet*               pDescriptorSets;
+	VkDescriptorSet**              ppDescriptorSets;
+	uint32_t                       descriptorSetsCount;
 
 	VkPipelineLayout               pipelineLayout;
 	SgSwapchain                    swapchain;

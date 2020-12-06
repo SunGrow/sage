@@ -74,8 +74,12 @@ SG_DEFINE_HANDLE(SgResourceSet);
 typedef struct SgGraphicsInstanceCreateInfo {
 	SgShader*             pShaders;
 	uint32_t              shaderCount;
+
 	SgResourceSet*        pSets;
 	uint32_t              setCount;
+
+	SgResourceSet*        pMeshSets;
+	uint32_t              meshSetCount;
 } SgGraphicsInstanceCreateInfo;
 
 SG_DEFINE_HANDLE(SgGraphicsInstance);
@@ -91,6 +95,9 @@ typedef struct SgResourceSetInitInfo {
 	SgResource*                   pResources;
 	uint32_t                      resourceCount;
 	SgGraphicsInstance            graphicsInstance; 
+
+	SgBool                        isMeshResourceSet;
+	uint32_t                      meshResourceSetID;
 } SgResourceSetInitInfo;
 
 SgResult sgInitResourceSet(const SgApp app, const SgResourceSetInitInfo *pInitInfo, SgResourceSet* pResourceSet);

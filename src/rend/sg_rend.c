@@ -216,44 +216,57 @@ SgResult sgInitResourceSet(const SgApp *pApp, SgResourceSetInitInfo *pInitInfo, 
 	if (pResourceSet->pWriteDescriptorSets == NULL) {
 		pResourceSet->pWriteDescriptorSets = calloc(pInitInfo->resourceCount, sizeof(pResourceSet->pWriteDescriptorSets[0]));
 	}
-	for (uint32_t i = 0; i < pInitInfo->resourceCount; ++i) {
-		// Not sure if it works correctly. May cause issues
-		pResourceSet->ppResources[pInitInfo->ppResources[i]->binding] = pInitInfo->ppResources[i];
-		//
-		VkDescriptorImageInfo *pImageInfo = VK_NULL_HANDLE;
-		VkDescriptorBufferInfo *pBufferInfo = VK_NULL_HANDLE;
-		pResourceSet->pWriteDescriptorSets[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		pResourceSet->pWriteDescriptorSets[i].dstSet = pInitInfo->pGraphicsInstance->pDescriptorSets[pResourceSet->setIndex];
-		pResourceSet->pWriteDescriptorSets[i].dstBinding = pInitInfo->ppResources[i]->binding;
-		pResourceSet->pWriteDescriptorSets[i].descriptorCount = 1;
-		if (pInitInfo->ppResources[i]->type == SG_RESOURCE_TYPE_TEXTURE_2D) {
-			/* Won't work unless image resource creation is completed */
-			pImageInfo = malloc(sizeof(pImageInfo[0]));
-			pImageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			pImageInfo->imageView = pInitInfo->ppResources[i]->imageView;
-			pImageInfo->sampler   = pInitInfo->ppResources[i]->imageSampler;
-			pResourceSet->pWriteDescriptorSets[i].pImageInfo = pImageInfo;
+	for (uint32_t i = 0; i < pInitInfo->pGraphicsInstance->descriptorSetsCount; ++i) {
+		for (uint32_t j = 0; j < pInitInfo->resourceCount; ++j) {
+			// Not sure if it works correctly. May cause issues
+			pResourceSet->ppResources[pInitInfo->ppResources[j]->binding] = pInitInfo->ppResources[j];
+			//
+			
+			pResourceSet->pWriteDescriptorSets[j].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			if (pInitInfo->isMeshResourceSet) {
+				pResourceSet->pWriteDescriptorSets[j].dstSet = pInitInfo->pGraphicsInstance->ppDescriptorSets[pInitInfo->meshResourceSetID][pResourceSet->setIndex];
+			} else {
+				pResourceSet->pWriteDescriptorSets[j].dstSet = pInitInfo->pGraphicsInstance->ppDescriptorSets[i][pResourceSet->setIndex];
+			}
+			pResourceSet->pWriteDescriptorSets[j].dstBinding = pInitInfo->ppResources[j]->binding;
+			pResourceSet->pWriteDescriptorSets[j].descriptorCount = 1;
 
-		} else {
-			pBufferInfo = malloc(sizeof(pBufferInfo[0]));
-			pBufferInfo->buffer = pInitInfo->ppResources[i]->dataBuffer.buffer;
-			pBufferInfo->offset = 0;
-			pBufferInfo->range = pInitInfo->ppResources[i]->dataBuffer.size;
-			pResourceSet->pWriteDescriptorSets[i].pBufferInfo = pBufferInfo;
+			VkDescriptorImageInfo *pImageInfo = VK_NULL_HANDLE;
+			VkDescriptorBufferInfo *pBufferInfo = VK_NULL_HANDLE;
+			if (pInitInfo->ppResources[j]->type == SG_RESOURCE_TYPE_TEXTURE_2D) {
+				/* Won't work unless image resource creation is completed */
+				pImageInfo = malloc(sizeof(pImageInfo[0]));
+				pImageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				pImageInfo->imageView = pInitInfo->ppResources[j]->imageView;
+				pImageInfo->sampler   = pInitInfo->ppResources[j]->imageSampler;
+				pResourceSet->pWriteDescriptorSets[j].pImageInfo = pImageInfo;
+			} else {
+				pBufferInfo = malloc(sizeof(pBufferInfo[0]));
+				pBufferInfo->buffer = pInitInfo->ppResources[j]->dataBuffer.buffer;
+				pBufferInfo->offset = 0;
+				pBufferInfo->range = pInitInfo->ppResources[j]->dataBuffer.size;
+				pResourceSet->pWriteDescriptorSets[j].pBufferInfo = pBufferInfo;
+			}
+
+			switch (pInitInfo->ppResources[j]->type) {
+				case (SG_RESOURCE_TYPE_UNIFORM):
+					pResourceSet->pWriteDescriptorSets[j].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+					break;
+				case (SG_RESOURCE_TYPE_MESH):
+					pResourceSet->pWriteDescriptorSets[j].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+					break;
+				case (SG_RESOURCE_TYPE_TEXTURE_2D):
+					pResourceSet->pWriteDescriptorSets[j].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+					break;
+			}
+
 		}
-		switch (pInitInfo->ppResources[i]->type) {
-			case (SG_RESOURCE_TYPE_UNIFORM):
-				pResourceSet->pWriteDescriptorSets[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				break;
-			case (SG_RESOURCE_TYPE_MESH):
-				pResourceSet->pWriteDescriptorSets[i].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-				break;
-			case (SG_RESOURCE_TYPE_TEXTURE_2D):
-				pResourceSet->pWriteDescriptorSets[i].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-				break;
+		vkUpdateDescriptorSets(pApp->device, pInitInfo->resourceCount, pResourceSet->pWriteDescriptorSets, 0, VK_NULL_HANDLE);
+		if (pInitInfo->isMeshResourceSet) {
+			break;
 		}
 	}
-	vkUpdateDescriptorSets(pApp->device, pInitInfo->resourceCount, pResourceSet->pWriteDescriptorSets, 0, VK_NULL_HANDLE);
+	*ppResourceSet = pResourceSet;
 	return SG_SUCCESS;
 }
 
@@ -570,13 +583,21 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	createRenderPass(pApp, &pGraphicsInstance->renderPass);
 	
 	/* Create Pipeline Layout */
-	pGraphicsInstance->pDescriptorSetLayouts = malloc(sizeof(pGraphicsInstance->pDescriptorSetLayouts[0]) * pCreateInfo->setCount);
+	uint32_t hasMeshDescriptors = (pCreateInfo->meshSetCount > 0) ? 1: 0;
+	uint32_t baseSetCount = (hasMeshDescriptors) ? pCreateInfo->meshSetCount : 1;
+
+	pGraphicsInstance->pDescriptorSetLayouts = malloc(sizeof(pGraphicsInstance->pDescriptorSetLayouts[0]) * pCreateInfo->setCount + hasMeshDescriptors);
+
 	for (uint32_t i = 0; i < pCreateInfo->setCount; ++i) {
-		pGraphicsInstance->pDescriptorSetLayouts[i] = pCreateInfo->ppSets[i]->setLayout;
+		pGraphicsInstance->pDescriptorSetLayouts[pCreateInfo->ppSets[i]->setIndex] = pCreateInfo->ppSets[i]->setLayout;
 	}
+	if (hasMeshDescriptors) {
+		pGraphicsInstance->pDescriptorSetLayouts[pCreateInfo->ppMeshSets[0]->setIndex] = pCreateInfo->ppMeshSets[0]->setLayout;
+	}
+
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {
 	    .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-	    .setLayoutCount = pCreateInfo->setCount,
+	    .setLayoutCount = pCreateInfo->setCount + hasMeshDescriptors,
 	    .pSetLayouts = pGraphicsInstance->pDescriptorSetLayouts,
 	};
 	if(vkCreatePipelineLayout(pApp->device, &pipelineLayoutCreateInfo, VK_NULL_HANDLE, &pGraphicsInstance->pipelineLayout) == VK_SUCCESS) {
@@ -584,46 +605,87 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	} else {
 		log_error("[Graphics Instance]: Grapics Pipeline Layout Initialization Error");
 	}
-	pGraphicsInstance->setCount = pCreateInfo->setCount;
+
+	pGraphicsInstance->setCount = pCreateInfo->setCount + hasMeshDescriptors;
+
+
 	/* Create Descriptor Sets */
 	uint32_t poolSizeCount = 0;
-	for (uint32_t i = 0; i < pCreateInfo->setCount; ++i) {
-		for (uint32_t j = 0; j < pCreateInfo->ppSets[i]->resourceCount; ++j) {
-			++poolSizeCount;
+	for (uint32_t i = 0; i < baseSetCount; ++i) {
+		for (uint32_t j = 0; j < pCreateInfo->setCount; ++j) {
+			poolSizeCount += pCreateInfo->ppSets[j]->resourceCount;
 		}
+		poolSizeCount += (hasMeshDescriptors)
+			? pCreateInfo->ppMeshSets[i]->resourceCount 
+			: 0;
 	}
+	/* Num of pool sizes = count of the resources in each non-mesh
+	 * specific descriptor set * the amount of mesh descriptor sets if there
+	 * are some + count of the resources in mesh-specific descriptor sets
+	 * */
 	if (poolSizeCount == 0) {
 		log_warn("[Graphics Instance]: No descriptor pools");
 	}
+	uint32_t offset = 0;
 	VkDescriptorPoolSize *pPoolSizes = calloc(poolSizeCount, sizeof(pPoolSizes[0]));
-	for (uint32_t i = 0; i < pCreateInfo->setCount; ++i) {
-		for (uint32_t j = 0; j < pCreateInfo->ppSets[i]->resourceCount; ++j) {
-			switch (pCreateInfo->ppSets[i]->ppResources[j]->type) {
+	for (uint32_t i = 0; i < baseSetCount; ++i) {
+		for (uint32_t j = 0; j < pCreateInfo->setCount; ++j) {
+			for (uint32_t k = 0; k < pCreateInfo->ppSets[j]->resourceCount; ++k) {
+				switch (pCreateInfo->ppSets[j]->ppResources[k]->type) {
 				case SG_RESOURCE_TYPE_TEXTURE_2D:
-					pPoolSizes[i + j * pCreateInfo->setCount].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+					pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 					break;
 				case SG_RESOURCE_TYPE_MESH:
-					pPoolSizes[i + j * pCreateInfo->setCount].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+					pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 					break;
 				case SG_RESOURCE_TYPE_UNIFORM:
-					pPoolSizes[i + j * pCreateInfo->setCount].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+					pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 					break;
+				}
+				pPoolSizes[offset].descriptorCount = 1;
+				++offset;
 			}
-			pPoolSizes[i + j * pCreateInfo->setCount].descriptorCount = 1;
+		}
+
+		if (hasMeshDescriptors) {
+		for (uint32_t j = 0; j < pCreateInfo->ppMeshSets[i]->resourceCount; ++j) {
+			switch (pCreateInfo->ppMeshSets[i]->ppResources[j]->type) {
+				case SG_RESOURCE_TYPE_TEXTURE_2D:
+					pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+					break;
+				case SG_RESOURCE_TYPE_MESH:
+					pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+					break;
+				case SG_RESOURCE_TYPE_UNIFORM:
+					pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+					break;
+
+			}
+			pPoolSizes[offset].descriptorCount = 1;
+			++offset;
+		}
 		}
 	}
 	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {
 	    .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
 	    .pPoolSizes = pPoolSizes,
 	    .poolSizeCount = poolSizeCount,
-	    .maxSets = pCreateInfo->setCount,
+	    .maxSets = (pCreateInfo->setCount + hasMeshDescriptors)* ((hasMeshDescriptors) ? pCreateInfo->meshSetCount : 1 ),
 	};
+
 	vkCreateDescriptorPool(pApp->device, &descriptorPoolCreateInfo, VK_NULL_HANDLE, &pGraphicsInstance->descriptorPool);
 	free(pPoolSizes);
-	pGraphicsInstance->pDescriptorSets = malloc(pGraphicsInstance->setCount * sizeof(pGraphicsInstance->pDescriptorSets[0]));
-	VkDescriptorSetLayout *pDescriptorSetLayouts = malloc(sizeof(pDescriptorSetLayouts[0]) * pGraphicsInstance->setCount);
-	for (uint32_t i = 0; i < pGraphicsInstance->setCount; ++i) {
-		pDescriptorSetLayouts[i] = pGraphicsInstance->ppSets[i]->setLayout;
+	pGraphicsInstance->descriptorSetsCount = baseSetCount;
+	pGraphicsInstance->ppDescriptorSets = malloc(pGraphicsInstance->descriptorSetsCount * sizeof(pGraphicsInstance->ppDescriptorSets[0]));
+	for (uint32_t i = 0; i < pGraphicsInstance->descriptorSetsCount; ++i) {
+		pGraphicsInstance->ppDescriptorSets[i] = malloc((pCreateInfo->setCount + hasMeshDescriptors) * sizeof(pGraphicsInstance->ppDescriptorSets[0][0]));
+	}
+	VkDescriptorSetLayout *pDescriptorSetLayouts = malloc(sizeof(pDescriptorSetLayouts[0]) * (pGraphicsInstance->setCount));
+	for (uint32_t i = 0; i < pCreateInfo->setCount; ++i) {
+		pDescriptorSetLayouts[pGraphicsInstance->ppSets[i]->setIndex] = pGraphicsInstance->ppSets[i]->setLayout;
+	}
+	if (hasMeshDescriptors) {
+		pDescriptorSetLayouts[pCreateInfo->ppMeshSets[0]->setIndex] = pCreateInfo->ppMeshSets[0]->setLayout;
 	}
 	VkDescriptorSetAllocateInfo descrriptorSetAllocInfo = {
 	    .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
@@ -631,7 +693,9 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	    .descriptorSetCount = pGraphicsInstance->setCount,
 	    .pSetLayouts = pDescriptorSetLayouts,
 	};
-	vkAllocateDescriptorSets(pApp->device, &descrriptorSetAllocInfo, pGraphicsInstance->pDescriptorSets);
+	for (uint32_t i = 0; i < pGraphicsInstance->descriptorSetsCount; ++i) {
+		vkAllocateDescriptorSets(pApp->device, &descrriptorSetAllocInfo, pGraphicsInstance->ppDescriptorSets[i]);
+	}
 	free(pDescriptorSetLayouts);
 
 	/* Create Swapchain */
@@ -723,14 +787,14 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	    .pInputAssemblyState = &inputAssembly,
 	    .pVertexInputState = &vertexInput,
 
-	    .pViewportState = &viewportstate,
-	    .pRasterizationState = &rasterizationState,
-	    .pMultisampleState = &multisamplestate,
-	    .pDepthStencilState = &depthstencilstate,
-	    .pColorBlendState = &colorBlendState,
-	    .pDynamicState = &dynamicstate,
-	    .layout = pGraphicsInstance->pipelineLayout,
-	    .renderPass = pGraphicsInstance->renderPass,
+		.pViewportState = &viewportstate,
+		.pRasterizationState = &rasterizationState,
+		.pMultisampleState = &multisamplestate,
+		.pDepthStencilState = &depthstencilstate,
+		.pColorBlendState = &colorBlendState,
+		.pDynamicState = &dynamicstate,
+		.layout = pGraphicsInstance->pipelineLayout,
+		.renderPass = pGraphicsInstance->renderPass,
 	};
 
 	vkCreateGraphicsPipelines(pApp->device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, 0, &pGraphicsInstance->graphicsPipeline);
@@ -788,15 +852,15 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 		vkCmdSetScissor(pUpdateCommands->pCommandBuffers[i], 0, 1, &scissor);
 		vkCmdBindPipeline(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pInitInfo->pGraphicsInstance->graphicsPipeline);
 
+		vkCmdBeginRenderPass(pUpdateCommands->pCommandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 		for (uint32_t j = 0; j < pInitInfo->indexResourceCount; ++j) {
-			vkCmdBeginRenderPass(pUpdateCommands->pCommandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			vkCmdBindDescriptorSets(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pInitInfo->pGraphicsInstance->pipelineLayout, 0, pInitInfo->pGraphicsInstance->setCount, pInitInfo->pGraphicsInstance->pDescriptorSets, 0, NULL);
+			vkCmdBindDescriptorSets(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pInitInfo->pGraphicsInstance->pipelineLayout, 0, pInitInfo->pGraphicsInstance->setCount, pInitInfo->pGraphicsInstance->ppDescriptorSets[j], 0, NULL);
 			vkCmdBindIndexBuffer(pUpdateCommands->pCommandBuffers[i], pInitInfo->ppIndexResources[j]->dataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
 			vkCmdDrawIndexed(pUpdateCommands->pCommandBuffers[i], pInitInfo->ppIndexResources[j]->dataBuffer.size/sizeof(uint32_t), 1, 0, 0, 0);
 
-			vkCmdEndRenderPass(pUpdateCommands->pCommandBuffers[i]);
 		}
+		vkCmdEndRenderPass(pUpdateCommands->pCommandBuffers[i]);
 		vkEndCommandBuffer(pUpdateCommands->pCommandBuffers[i]);
 	}
 	*ppUpdateCommands = pUpdateCommands;
