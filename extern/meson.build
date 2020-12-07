@@ -18,7 +18,7 @@ volk_inc  = include_directories('volk')
 volk_lib  = static_library('volk',
                     sources: 'volk/volk.c',
 					dependencies: [dl_lib],
-			        include_directories: volk_inc)
+			        include_directories: [volk_inc, vk_inc])
 volk_dep = declare_dependency(link_with : volk_lib,
 							  include_directories: volk_inc)
 extern_incs += volk_inc
@@ -28,7 +28,7 @@ vma_inc   = include_directories('VulkanMemoryAllocator/src')
 vma_lib   = static_library('vma',
                     sources: 'vma_implement.cpp',
 	                dependencies: [volk_dep],
-			        include_directories: vma_inc)
+			        include_directories: [vma_inc, vk_inc])
 vma_dep   = declare_dependency(link_with : vma_lib,
 							   include_directories: vma_inc)
 extern_incs += vma_inc
