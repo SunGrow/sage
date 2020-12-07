@@ -330,6 +330,12 @@ int main() {
 		sgUpdateResource(app, &cameraData, &cameraResource);
 	}
 
+	sgDestroyResource(app, &meshIndicesResource);
+	sgDestroyResource(app, &meshIndicesResource2);
+	sgDestroyResource(app, &cameraResource);
+	sgDestroyResourceSet(app, &meshResourceSet);
+	sgDestroyResourceSet(app, &meshResourceSet2);
+	sgDestroyResourceSet(app, &uniformResourceSet);
 	sgDeinitUpdateCommands(app, &updateCommands);
 	sgDestroyGraphicsInstance(app, &graphicsInstance);
 	sgDestroyApp(&app);

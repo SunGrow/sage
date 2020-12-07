@@ -935,6 +935,35 @@ SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo) {
 	return 1;
 }
 
+void sgDestroyResource(const SgApp *pApp, SgResource **ppResource) {
+	vkDeviceWaitIdle(pApp->device);
+	SgResource* pResource = *ppResource;
+	if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
+		vkDestroyImageView(pApp->device, pResource->imageView, VK_NULL_HANDLE);
+		vmaUnmapMemory(pApp->allocator, pResource->image.allocation);
+	} else {
+		if (pResource->type & SG_RESOURCE_TYPE_REQIRE_STAGING_MASK) {
+			vmaUnmapMemory(pApp->allocator, pResource->stagingBuffer.allocation);
+			vmaDestroyBuffer(pApp->allocator, pResource->stagingBuffer.buffer, pResource->stagingBuffer.allocation);
+			vmaDestroyBuffer(pApp->allocator, pResource->dataBuffer.buffer, pResource->dataBuffer.allocation);
+		} else {
+			vmaUnmapMemory(pApp->allocator, pResource->dataBuffer.allocation);
+			vmaDestroyBuffer(pApp->allocator, pResource->dataBuffer.buffer, pResource->dataBuffer.allocation);
+		}
+	}
+
+	free(pResource);
+	ppResource = NULL;
+}
+
+void sgDestroyResourceSet(const SgApp *pApp, SgResourceSet** ppResourceSet) {
+	SgResourceSet *pResourceSet = *ppResourceSet;
+
+	free(pResourceSet->pWriteDescriptorSets);
+	free(pResourceSet);
+	ppResourceSet = NULL;
+}
+
 void sgDeinitUpdateCommands(const SgApp *pApp, SgUpdateCommands** ppUpdateCommands) {
 	SgUpdateCommands *pUpdateCommands = *ppUpdateCommands;
 	free(pUpdateCommands->pCommandBuffers);
