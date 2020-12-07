@@ -4,6 +4,7 @@
 #include "log.h"
 #define FAST_OBJ_IMPLEMENTATION
 #include "fast_obj.h"
+#include "meshoptimizer.h"
 
 void sgLoadMesh(const char *pPath, SgMesh **ppMesh) {
 	// obj mesh load
@@ -43,8 +44,8 @@ void sgLoadMesh(const char *pPath, SgMesh **ppMesh) {
 		indexoffset += pObj->face_vertices[i];
 	}
 	fast_obj_destroy(pObj);
-	//
-	if (1) {
+	// Debug
+	if (0) {
 		pMesh->pVertices =
 		    realloc(pMesh->pVertices, totalindices * sizeof(SgVertex));
 		pMesh->pIndices =
@@ -59,25 +60,25 @@ void sgLoadMesh(const char *pPath, SgMesh **ppMesh) {
 		log_info("[Res]: Mesh Read Successfull");
 		return;
 	}
-/*
 	uint32_t *premap = malloc(totalindices * sizeof(uint32_t));
 
 	uint32_t totalvertices = meshopt_generateVertexRemap(
-	    premap, NULL, totalindices, pvertices, totalindices, sizeof(Vertex));
+	    premap, NULL, totalindices, pvertices, totalindices, sizeof(SgVertex));
 
 	// Return value fillup
-	pmesh->pVertices = malloc(totalvertices * sizeof(Vertex));
-	pmesh->pIndices = malloc(totalindices * sizeof(uint32_t));
+	pMesh->pVertices = malloc(totalvertices * sizeof(SgVertex));
+	pMesh->pIndices = malloc(totalindices * sizeof(uint32_t));
 
-	meshopt_remapVertexBuffer(pmesh->pVertices, pvertices, totalindices,
-	                          sizeof(Vertex), premap);
+	meshopt_remapVertexBuffer(pMesh->pVertices, pvertices, totalindices,
+	                          sizeof(SgVertex), premap);
 
-	meshopt_remapIndexBuffer(pmesh->pIndices, NULL, totalindices, premap);
-	pmesh->indexCount = totalindices;
-	pmesh->vertexCount = totalvertices;
+	meshopt_remapIndexBuffer(pMesh->pIndices, NULL, totalindices, premap);
+	pMesh->indexCount = totalindices;
+	pMesh->vertexCount = totalvertices;
+	*ppMesh = pMesh;
+	log_info("[Res]: Mesh Read Successfull");
 
 	free(premap);
-	*/
 }
 
 void sgUnloadMesh(SgMesh **ppMesh) {

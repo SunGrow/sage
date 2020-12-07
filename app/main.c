@@ -98,6 +98,13 @@ static void keyPressCallback(GLFWwindow *pWindow, SgCamera *pCamera) {
 }
 
 static void cursorPositionCallback(GLFWwindow *pWindow, double xPosition, double yPosition) {
+	int wsizex, wsizey;
+	glfwGetWindowSize(pWindow, &wsizex, &wsizey);
+	if (xPosition == wsizex/2 && yPosition == wsizey/2) {
+		camera.cursorPosition[0] = xPosition;
+		camera.cursorPosition[1] = yPosition;
+		return;
+	}
 	SgCameraTransformInfo transformInfo = {
 		.cursorOffset = { xPosition - camera.cursorPosition[0], camera.cursorPosition[1] - yPosition },
 		.deltaTime = scene.deltaTime,

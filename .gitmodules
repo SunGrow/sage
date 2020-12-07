@@ -17,8 +17,11 @@
 	path = extern/fast_obj
 	url = https://github.com/thisistherk/fast_obj
 [submodule "extern/meshoptimizer"]
-	path = subprojects/meshoptimizer
+	path = extern/meshoptimizer
 	url = https://github.com/zeux/meshoptimizer
 [submodule "subprojects/glfw"]
 	path = subprojects/glfw
 	url = https://github.com/glfw/glfw
+[submodule "extern/Vulkan-Headers"]
+	path = extern/Vulkan-Headers
+	url = https://github.com/KhronosGroup/Vulkan-Headers
