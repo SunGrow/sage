@@ -9,7 +9,13 @@
 
 ## Build
 
+First, recursively copy the repository.
 
+Than you should just launch a simple python script, and everything should be compiled.
+
+```sh
+python compile.py
+```
 
 ## Contributing
 

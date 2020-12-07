@@ -1,6 +1,6 @@
 sgscene_src = files(['sg_scene.c'])
 sgscene_inc = include_directories('.')
-sgscene_lib = library('sg_scene',
+sgscene_lib = static_library('sg_scene',
                           sources: [sgscene_src],
 	                      dependencies: [extern_deps],
 						  link_with:[sgmath_lib],

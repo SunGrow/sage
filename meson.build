@@ -20,22 +20,24 @@ glfw_subproj = cmake.subproject('glfw')
 glfw_inc = glfw_subproj.include_directories('glfw')
 glfw_dep = glfw_subproj.dependency('glfw')
 extern_deps += glfw_dep
+
+
+# Scripts
+base_dir = meson.current_source_dir()
+scripts_dir = join_paths(base_dir, 'scripts')
+postinstallcopy = join_paths(scripts_dir, 'foldercopy.py')
+
+projroot_dir = meson.project_source_root()
+buildroot_dir = meson.project_build_root()
+
+projshader_dir = join_paths(projroot_dir, 'shaders')
+buildapp_dir = join_paths(buildroot_dir, 'app')
+buildshader_dir = join_paths(buildapp_dir, 'shaders')
+
+run_command('python', postinstallcopy, projshader_dir, buildshader_dir)
 #
-#base_dir = meson.current_source_dir()
-#scripts_dir = join_paths(base_dir, 'scripts')
-#foldercopier_filename = join_paths(base_dir, 'foldercopy.py')
-#
-#message(scripts_dir)
-#foldercopier = find_program('foldercopy.py', dirs: scripts_dir)
-#
-#a_p = custom_target('res',
-#    input : 'res',
-#    output : 'app/res',
-#    command : [foldercopier, '@INPUT@', '@OUTPUT@'])
-#a_p = custom_target('shaders',
-#    input : 'shaders',
-#    output : 'res/shaders',
-#    command : [foldercopier, '@INPUT@', '@OUTPUT@'])
+
+
 subdir('src')
 subdir('lib')
 subdir('app')
