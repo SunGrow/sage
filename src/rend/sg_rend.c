@@ -935,10 +935,56 @@ SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo) {
 	return 1;
 }
 
+void sgDeinitUpdateCommands(const SgApp *pApp, SgUpdateCommands** ppUpdateCommands) {
+	SgUpdateCommands *pUpdateCommands = *ppUpdateCommands;
+	free(pUpdateCommands->pCommandBuffers);
+}
+
+void sgDestroyGraphicsInstance(const SgApp *pApp, SgGraphicsInstance **ppGraphicsInstance) {
+	SgGraphicsInstance *pGraphicsInstance = *ppGraphicsInstance;
+	vkDeviceWaitIdle(pApp->device);
+
+
+	vkResetDescriptorPool(pApp->device, pGraphicsInstance->descriptorPool, 0);
+	for (uint32_t i = 0; i < pGraphicsInstance->descriptorSetsCount; ++i) {
+		free(pGraphicsInstance->ppDescriptorSets[i]);
+	}
+	free(pGraphicsInstance->ppDescriptorSets);
+
+	for (uint32_t i = 0; i < pGraphicsInstance->setCount; ++i) {
+		vkDestroyDescriptorSetLayout(pApp->device, pGraphicsInstance->pDescriptorSetLayouts[i], VK_NULL_HANDLE);
+	}
+
+	vkDestroyPipelineLayout(pApp->device, pGraphicsInstance->pipelineLayout, VK_NULL_HANDLE);
+	vkDestroyPipeline(pApp->device, pGraphicsInstance->graphicsPipeline, VK_NULL_HANDLE);
+	vkDestroyRenderPass(pApp->device, pGraphicsInstance->renderPass, VK_NULL_HANDLE);
+
+	vmaDestroyImage(pApp->allocator, pGraphicsInstance->swapchain.depthImage.image, pGraphicsInstance->swapchain.depthImage.allocation);
+	vkDestroyImageView(pApp->device, pGraphicsInstance->swapchain.blendImageView.imageView, VK_NULL_HANDLE);
+	vmaDestroyImage(pApp->allocator, pGraphicsInstance->swapchain.blendImage.image, pGraphicsInstance->swapchain.blendImage.allocation);
+	vkDestroyImageView(pApp->device, pGraphicsInstance->swapchain.depthImageView.imageView, VK_NULL_HANDLE);
+	for (uint32_t i = 0; i < pGraphicsInstance->swapchain.imageCount; ++i) {
+		vkDestroyImageView(pApp->device, pGraphicsInstance->swapchain.pFrameImageViews[i], VK_NULL_HANDLE);
+		vkDestroyFramebuffer(pApp->device, pGraphicsInstance->swapchain.pFrameBuffers[i], VK_NULL_HANDLE);
+	}
+	free(pGraphicsInstance->swapchain.pFrameImages);
+	free(pGraphicsInstance->swapchain.pFrameImageViews);
+	free(pGraphicsInstance->swapchain.pFrameBuffers);
+
+	vkDestroySwapchainKHR(pApp->device, pGraphicsInstance->swapchain.swapchain, VK_NULL_HANDLE);
+
+	free(pGraphicsInstance);
+	ppGraphicsInstance = NULL;
+}
+
 void sgDestroyApp(SgApp **ppApp) {
 	SgApp* pApp = *ppApp;
 	vkDeviceWaitIdle(pApp->device);
+	glfwTerminate();
 	
+	for (uint32_t i = 0; i < SG_THREADS_COUNT * SG_FRAME_QUEUE_LENGTH; ++i) {
+		vkResetCommandPool(pApp->device, pApp->pCommandPools[i], VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
+	}
 	for (uint32_t i = 0; i < SG_FRAME_QUEUE_LENGTH; ++i) {
 		vkDestroySemaphore(pApp->device, pApp->pFrameReadySemaphore[i], VK_NULL_HANDLE);
 		vkDestroySemaphore(pApp->device, pApp->pFrameFinishedSemaphore[i], VK_NULL_HANDLE);
@@ -954,5 +1000,6 @@ void sgDestroyApp(SgApp **ppApp) {
 	vkDestroyDevice(pApp->device, VK_NULL_HANDLE);
 	vkDestroySurfaceKHR(pApp->instance, pApp->surface, VK_NULL_HANDLE);
 	vkDestroyInstance(pApp->instance, VK_NULL_HANDLE);
+	free(pApp);
 	ppApp = NULL;
 }

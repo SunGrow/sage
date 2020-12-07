@@ -91,6 +91,8 @@ typedef struct SgAppUpdateInfo {
 } SgAppUpdateInfo;
 SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo);
 
+void sgDeinitUpdateCommands(const SgApp *pApp, SgUpdateCommands** ppUpdateCommands);
+void sgDestroyGraphicsInstance(const SgApp *pApp, SgGraphicsInstance **ppGraphicsInstance);
 void sgDestroyApp(SgApp **ppApp);
 
 #endif

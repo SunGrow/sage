@@ -31,7 +31,7 @@ SgCamera camera = {
     .sensitivity = 6,
 };
 
-void sgTransformCamera(const SgCameraTransformInfo* pTransformInfo, SgCamera* pCamera) {
+static void sgTransformCamera(const SgCameraTransformInfo* pTransformInfo, SgCamera* pCamera) {
 
 	/* Move */
 	v3 tmp;
@@ -330,6 +330,8 @@ int main() {
 		sgUpdateResource(app, &cameraData, &cameraResource);
 	}
 
+	sgDeinitUpdateCommands(app, &updateCommands);
+	sgDestroyGraphicsInstance(app, &graphicsInstance);
 	sgDestroyApp(&app);
 
 	return 0;
