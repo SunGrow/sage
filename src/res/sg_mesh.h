@@ -3,6 +3,7 @@
 
 #include "sage_base.h"
 #include "sg_math.h"
+#include "stb_image.h"
 
 // Mesh
 typedef struct SgVertex {
@@ -30,5 +31,13 @@ typedef struct SgMeshTransformInfo {
 } SgMeshTransformInfo;
 
 void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t vertCount, SgVertex *pVertices);
+
+typedef struct SgTexture {
+	int32_t width, height, channels;
+	stbi_uc *pixels;
+} SgTexture;
+
+void sgLoadTexture(const char *pPath, SgTexture **ppTexture);
+void sgUnloadTexture(SgTexture **ppTexture);
 
 #endif

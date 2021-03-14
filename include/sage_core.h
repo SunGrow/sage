@@ -8,6 +8,7 @@ extern "C" {
 #include "sage_platform.h"
 
 #define SG_DEFINE_HANDLE( object ) typedef struct object##_T *object;
+#define BIT(n)     (1UL << (n))
 
 typedef enum {
 	SG_SUCCESS = 0,

@@ -14,6 +14,9 @@
 
 #define SG_DEFINE_HANDLE( object ) typedef struct object##_T *object;
 #define NUMOF(arr) (sizeof(arr) / sizeof((arr)[0]))
+#define BIT(n)     (1UL << (n))
+#define SG_CALLOC_NUM(object, num) (object) = (calloc((num), sizeof((*object))));
+#define SG_MALLOC_NUM(object, num) (object) = (malloc((num) * sizeof((*object))));
 
 typedef enum {
 	SG_SUCCESS = 0,
@@ -68,11 +71,11 @@ typedef struct SgApp {
 } SgApp;
 
 typedef enum SgResourceTypeFlagBits {
-	SG_RESOURCE_TYPE_TEXTURE_2D   = 0x00000001,
-	SG_RESOURCE_TYPE_MESH         = 0x00000002,
-	SG_RESOURCE_TYPE_UNIFORM      = 0x00000004,
-	SG_RESOURCE_TYPE_INDICES      = 0x00000008,
-	SG_RESOURCE_TYPE_STAGING      = 0x00000010, // Hidden from the outer API atm
+	SG_RESOURCE_TYPE_TEXTURE_2D   = BIT(0),
+	SG_RESOURCE_TYPE_MESH         = BIT(1),
+	SG_RESOURCE_TYPE_UNIFORM      = BIT(2),
+	SG_RESOURCE_TYPE_INDICES      = BIT(3),
+	SG_RESOURCE_TYPE_STAGING      = BIT(4), // Hidden from the outer API atm
 } SgResourceTypeFlagBits;
 typedef SgFlags SgResourceTypeFlags;
 static const SgResourceTypeFlags SG_RESOURCE_TYPE_REQIRE_STAGING_MASK = SG_RESOURCE_TYPE_MESH | SG_RESOURCE_TYPE_INDICES;

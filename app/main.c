@@ -3,6 +3,7 @@
 #include "sage_rend.h"
 #include "sage_res.h"
 #include "sage_scene.h"
+#include "sage_input.h"
 #include "log.h"
 #include "math.h"
 
@@ -69,53 +70,162 @@ static void sgTransformCamera(const SgCameraTransformInfo* pTransformInfo, SgCam
 	return;
 }
 
-static void keyPressCallback(GLFWwindow *pWindow, SgCamera *pCamera) {
-	int state;
-	v3 dir = {0.0f};
-	state = glfwGetKey(pWindow, FOWARD_KEY);
-	if (state == GLFW_PRESS)
-		dir[0] += 1.0f;
-	state = glfwGetKey(pWindow, LEFT_KEY);
-	if (state == GLFW_PRESS)
-		dir[2] -= 1.0f;
-	state = glfwGetKey(pWindow, BACK_KEY);
-	if (state == GLFW_PRESS)
-		dir[0] -= 1.0f;
-	state = glfwGetKey(pWindow, RIGHT_KEY);
-	if (state == GLFW_PRESS)
-		dir[2] += 1.0f;
-	state = glfwGetKey(pWindow, UP_KEY);
-	if (state == GLFW_PRESS)
-		dir[1] += 1.0f;
-	state = glfwGetKey(pWindow, DOWN_KEY);
-	if (state == GLFW_PRESS)
-		dir[1] -= 1.0f;
-	SgCameraTransformInfo transformInfo = {
-		.moveDirection = {dir[0], dir[1], dir[2]},
-		.deltaTime = scene.deltaTime,
-	};
-	sgTransformCamera(&transformInfo, &camera);
+static void cursorEnterCallback(GLFWwindow* window, int entered) {
+    if (entered) {
+		int wsizex, wsizey;
+		glfwGetWindowSize(window, &wsizex, &wsizey);
+		camera.cursorPosition[0] = wsizex/2;
+		camera.cursorPosition[1] = wsizey/2;
+	} 
 }
 
-static void cursorPositionCallback(GLFWwindow *pWindow, double xPosition, double yPosition) {
+static void rotateCamera(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
 	int wsizex, wsizey;
+	SgCameraTransformInfo* pTransformInfo = (SgCameraTransformInfo*) actor;
 	glfwGetWindowSize(pWindow, &wsizex, &wsizey);
-	if (xPosition == wsizex/2 && yPosition == wsizey/2) {
-		camera.cursorPosition[0] = xPosition;
-		camera.cursorPosition[1] = yPosition;
+	if (rangeX == wsizex/2 && rangeY == wsizey/2) {
+		camera.cursorPosition[0] = rangeX;
+		camera.cursorPosition[1] = rangeY;
 		return;
 	}
-	SgCameraTransformInfo transformInfo = {
-		.cursorOffset = { xPosition - camera.cursorPosition[0], camera.cursorPosition[1] - yPosition },
-		.deltaTime = scene.deltaTime,
-	};
-	sgTransformCamera(&transformInfo, &camera);
-	camera.cursorPosition[0] = xPosition;
-	camera.cursorPosition[1] = yPosition;
+	pTransformInfo->cursorOffset[0] = rangeX - camera.cursorPosition[0];
+	pTransformInfo->cursorOffset[1] = camera.cursorPosition[1] - rangeY;
+
+	camera.cursorPosition[0] = rangeX;
+	camera.cursorPosition[1] = rangeY;
 }
 
+static void keyPressForward(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
+	transformInfo->moveDirection[0] = isPressed ? 1.0f : 0.0f;
+	return;
+}
+static void keyPressUp(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
+	transformInfo->moveDirection[1] = isPressed ? 1.0f : 0.0f;
+	return;
+}
+static void keyPressLeft(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
+	transformInfo->moveDirection[2] = isPressed ? -1.0f : 0.0f;
+	return;
+}
+static void keyPressRight(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
+	transformInfo->moveDirection[2] = isPressed ? 1.0f : 0.0f;
+	return;
+}
+static void keyPressDown(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
+	transformInfo->moveDirection[1] = isPressed ? -1.0f : 0.0f;
+	return;
+}
+static void keyPressBack(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
+	transformInfo->moveDirection[0] = isPressed ? -1.0f : 0.0f;
+	return;
+}
+
+static void keyShoot(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+	if (isPressed)
+		log_warn("shooty shooty bang bang");
+	return;
+}
 
 int main() {
+	// Testing
+	
+	SgFile configFile;
+	sgOpenFile("cfg/contexts.json", &configFile);
+
+	SgInputAction inputActions[] = {
+		keyPressForward,
+		keyPressLeft,
+		keyPressBack,
+		keyPressRight,
+		keyPressUp,
+		keyPressDown,
+		keyShoot,
+		rotateCamera,
+	};
+	char* inputActionNames[] = {
+		"moveForward",
+		"moveLeft",  
+		"moveBack",  
+		"moveRight", 
+		"moveUp",
+		"moveDown",
+		"keyShoot",
+		"rotateCamera",
+	};
+
+	SgCameraTransformInfo cameraTransform = {0};
+	SgActor testActors[] = {
+		&cameraTransform
+	};
+
+	char* actorNames[] = {
+		"cameraTransform",
+	};
+
+	SgInputSignal inputSignals[] = {
+		{
+			.key     = FOWARD_KEY,
+			.keyName = "i",
+			.type    = SG_INPUT_TYPE_KEYBOARD,
+		},
+		{
+			.key     = LEFT_KEY,
+			.keyName = "h",
+			.type    = SG_INPUT_TYPE_KEYBOARD,
+		},
+		{
+			.key     = BACK_KEY,
+			.keyName = "n",
+			.type    = SG_INPUT_TYPE_KEYBOARD,
+		},
+		{
+			.key     = RIGHT_KEY,
+			.keyName = "l",
+			.type    = SG_INPUT_TYPE_KEYBOARD,
+		},
+		{
+			.key     = UP_KEY,
+			.keyName = "k",
+			.type    = SG_INPUT_TYPE_KEYBOARD,
+		},
+		{
+			.key     = DOWN_KEY,
+			.keyName = "j",
+			.type    = SG_INPUT_TYPE_KEYBOARD,
+		},
+		{
+			.key     = GLFW_MOUSE_BUTTON_1,
+			.keyName = "left",
+			.type    = SG_INPUT_TYPE_MOUSE,
+		},
+	};
+
+	SgActiveContexts contexts;
+	SgActiveContextsCreateInfo activeContextsCreateInfo = {
+
+		.pActionFuncs  = inputActions,
+		.pActionNames  = inputActionNames,
+		.actionCount   = sizeof(inputActions) / sizeof(*inputActions),
+
+		.pActors       = testActors,
+		.pActorNames   = actorNames,
+		.actorCount    = sizeof(testActors) / sizeof(*testActors),
+
+		.pInputSignals = inputSignals,
+		.signalCount   = sizeof(inputSignals) / sizeof(*inputSignals),
+
+		.file          = configFile,
+	};
+	sgLoadContexts(&activeContextsCreateInfo, &contexts);
+
+	//
+	
 	SgAppCreateInfo createInfo = {
 		.pName = "Space Invaders",
 		.size  = {640, 480},
@@ -126,7 +236,6 @@ int main() {
 	SgApp app;
 
 	sgCreateApp(&createInfo, &app);
-	sgSetCursorPosCallback(&app, cursorPositionCallback);
 
 	camera.aspectRatio = createInfo.size[0]/createInfo.size[1];
 	camera.fov = deg_to_rad(80.f);
@@ -317,12 +426,15 @@ int main() {
 		.graphicsInstance = graphicsInstance,
 		.updateCommands = updateCommands,
 	};
+	sgSetActiveContexts(contexts, &app);
 
-	GLFWwindow *pWindow = sgGetGLFWwindow(app);
 	while(sgAppUpdate(&updateInfo)) {
 		sgSceneUpdate(&scene);
-		keyPressCallback(pWindow, &camera);
+		cameraTransform.deltaTime = scene.deltaTime;
+		sgTransformCamera(&cameraTransform, &camera);
 		sgUpdateTransformUniform(&camera, &transformuniform);
+		cameraTransform.cursorOffset[0] = 0;
+		cameraTransform.cursorOffset[1] = 0;
 		SgData cameraData = {
 			.bytes = &transformuniform,
 			.size  = sizeof(transformuniform),
@@ -330,7 +442,9 @@ int main() {
 		sgUpdateResource(app, &cameraData, &cameraResource);
 	}
 
+	sgDestroyResource(app, &meshResource);
 	sgDestroyResource(app, &meshIndicesResource);
+	sgDestroyResource(app, &meshResource2);
 	sgDestroyResource(app, &meshIndicesResource2);
 	sgDestroyResource(app, &cameraResource);
 	sgDestroyResourceSet(app, &meshResourceSet);

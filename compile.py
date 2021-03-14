@@ -12,6 +12,7 @@ os.system("meson build")
 
 copyAndOverride("shaders", "build/app/shaders")
 copyAndOverride("res", "build/app/res")
+copyAndOverride("cfg", "build/app/cfg")
 
 os.chdir("build")
 os.system("meson compile")

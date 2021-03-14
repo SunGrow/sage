@@ -9,6 +9,7 @@ extern "C" {
 #define VK_NO_PROTOTYPES
 #include "volk.h"
 #define GLFW_INCLUDE_VULKAN
+#define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
 typedef enum SgAppCreateFlagBits {
@@ -27,13 +28,6 @@ typedef struct SgAppCreateInfo {
 
 SG_DEFINE_HANDLE(SgApp);
 SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp *pSgApp);
-
-/* Should not be here in the final version */
-/* To be replaced with a keybinding module */
-GLFWwindow *sgGetGLFWwindow(SgApp app);
-
-void sgSetKeyCallback(SgApp* pApp, GLFWkeyfun callback);
-void sgSetCursorPosCallback(SgApp* pApp, GLFWcursorposfun callback);
 /**/
 
 typedef enum SgShaderStageFlagBits {
@@ -49,13 +43,13 @@ typedef struct SgShaderCreateInfo {
 }SgShaderCreateInfo;
 
 SG_DEFINE_HANDLE(SgShader);
-SgResult sgCreateShader(const SgApp pApp, const SgShaderCreateInfo* pCreateInfo, SgShader *pShader);
+SgResult sgCreateShader(const SgApp app, const SgShaderCreateInfo* pCreateInfo, SgShader *pShader);
 
 typedef enum SgResourceTypeFlagBits {
-	SG_RESOURCE_TYPE_TEXTURE_2D   = 0x00000001,
-	SG_RESOURCE_TYPE_MESH         = 0x00000002,
-	SG_RESOURCE_TYPE_UNIFORM      = 0x00000004,
-	SG_RESOURCE_TYPE_INDICES      = 0x00000008,
+	SG_RESOURCE_TYPE_TEXTURE_2D   = BIT(0),
+	SG_RESOURCE_TYPE_MESH         = BIT(1),
+	SG_RESOURCE_TYPE_UNIFORM      = BIT(2),
+	SG_RESOURCE_TYPE_INDICES      = BIT(3),
 } SgResourceTypeFlagBits;
 typedef SgFlags SgResourceTypeFlags;
 

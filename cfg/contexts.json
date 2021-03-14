@@ -1,0 +1,36 @@
+{
+	"contexts" : [
+		{
+			"name" : "cameraMovement",
+			"priority" : 0,
+			"actorNames" : ["cameraTransform"],
+			"toggleMap" : [
+			],
+			"triggerMap" : [
+				{"type" : "keyboard", "input" : "i",    "mod" : "", "actionName" : "moveForward",  "actorID" : 0},
+				{"type" : "keyboard", "input" : "h",    "mod" : "", "actionName" : "moveLeft",     "actorID" : 0},
+				{"type" : "keyboard", "input" : "n",    "mod" : "", "actionName" : "moveBack",     "actorID" : 0},
+				{"type" : "keyboard", "input" : "l",    "mod" : "", "actionName" : "moveRight",    "actorID" : 0},
+				{"type" : "keyboard", "input" : "k",    "mod" : "", "actionName" : "moveUp",       "actorID" : 0},
+				{"type" : "keyboard", "input" : "j",    "mod" : "", "actionName" : "moveDown",     "actorID" : 0},
+
+				{"type" : "mouse",    "input" : "left", "mod" : "", "actionName" : "keyShoot",     "actorID" : 0}
+			],
+			"rangeMap" : [
+				{"type" : "mouse",    "input" : "",     "mod" : "", "actionName" : "rotateCamera", "actorID" : 0}
+			]
+		},
+		{
+			"name" : "appInfo",
+			"priority" : 0,
+			"actorNames" : ["mainScene"],
+			"toggleMap" : [
+			],                      
+			"triggerMap" : [
+			],
+			"rangeMap" : [
+			]
+		}
+	]
+}
+

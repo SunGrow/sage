@@ -190,8 +190,8 @@ SgResult sgUpdateResource(const SgApp* pApp, const SgData* pData, SgResource** p
 	};
 	
 	vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(pApp->graphicsQueue);
-	vkFreeCommandBuffers(pApp->device, pResource->commandPool, 1, &pResource->commandBuffer);
+	vkQueueWaitIdle(pApp->graphicsQueue); // TMP
+//	vkFreeCommandBuffers(pApp->device, pResource->commandPool, 1, &pResource->commandBuffer);
 	vkResetCommandPool(pApp->device, pResource->commandPool, 0);
 	*ppResource = pResource;
 	return SG_SUCCESS;

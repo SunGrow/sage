@@ -25,3 +25,9 @@
 [submodule "extern/Vulkan-Headers"]
 	path = extern/Vulkan-Headers
 	url = https://github.com/KhronosGroup/Vulkan-Headers
+[submodule "extern/hashmap.c"]
+	path = extern/hashmap.c
+	url = https://github.com/tidwall/hashmap.c
+[submodule "extern/cJSON"]
+	path = extern/cJSON
+	url = https://github.com/DaveGamble/cJSON

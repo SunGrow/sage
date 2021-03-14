@@ -45,6 +45,30 @@ logc_dep = declare_dependency(link_with : logc_lib,
 extern_incs += logc_inc
 extern_deps += logc_dep
 
+hashmapc_inc = include_directories('hashmap.c')
+hashmapc_lib = static_library('hashmapc',
+                    sources: 'hashmap.c/hashmap.c',
+			        include_directories: hashmapc_inc,
+			        )
+hashmapc_dep = declare_dependency(link_with : hashmapc_lib,
+                                  include_directories : hashmapc_inc
+								  )
+
+extern_incs += hashmapc_inc
+extern_deps += hashmapc_dep
+
+json_inc = include_directories('cJSON')
+json_lib = static_library('json',
+                sources: 'cJSON/cJSON.c',
+    	        include_directories: json_inc,
+    	        )
+json_dep = declare_dependency(link_with : json_lib,
+                                  include_directories : json_inc,
+								  )
+
+extern_incs += json_inc
+extern_deps += json_dep
+
 meshopt_files = files(['meshoptimizer/src/allocator.cpp', 'meshoptimizer/src/clusterizer.cpp', 'meshoptimizer/src/indexcodec.cpp', 'meshoptimizer/src/indexgenerator.cpp', 'meshoptimizer/src/overdrawanalyzer.cpp', 'meshoptimizer/src/overdrawoptimizer.cpp', 'meshoptimizer/src/simplifier.cpp', 'meshoptimizer/src/spatialorder.cpp', 'meshoptimizer/src/stripifier.cpp', 'meshoptimizer/src/vcacheanalyzer.cpp', 'meshoptimizer/src/vcacheoptimizer.cpp', 'meshoptimizer/src/vertexcodec.cpp', 'meshoptimizer/src/vertexfilter.cpp', 'meshoptimizer/src/vfetchanalyzer.cpp', 'meshoptimizer/src/vfetchoptimizer.cpp'])
 meshopt_inc = include_directories('meshoptimizer/src')
 meshopt_lib = static_library('meshoptimizer',
@@ -55,4 +79,7 @@ meshopt_dep = declare_dependency(link_with : meshopt_lib,
                                  include_directories: meshopt_inc)
 extern_incs += meshopt_inc
 extern_deps += meshopt_dep
+
+stb_inc = include_directories('stb')
+extern_incs += stb_inc
  

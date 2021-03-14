@@ -1,8 +1,9 @@
+#define FAST_OBJ_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
 #include "sg_mesh.h"
 #include "stdlib.h"
 #include "stdio.h"
 #include "log.h"
-#define FAST_OBJ_IMPLEMENTATION
 #include "fast_obj.h"
 #include "meshoptimizer.h"
 
@@ -100,6 +101,24 @@ void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t vertCou
 		pVertices[i].vy += pTransformInfo->move[1];
 		pVertices[i].vz += pTransformInfo->move[2];
 	}
+}
+
+void sgLoadTexture(const char *pPath, SgTexture **ppTexture) {
+	SgTexture *pTexture = calloc(1, sizeof(pTexture[0]));
+	pTexture->pixels = stbi_load(pPath, &pTexture->width, &pTexture->height,
+	                            &pTexture->channels, STBI_rgb_alpha);
+	if (!pTexture->pixels) {
+		fprintf(stderr, "[Warning]: Texture on path < %s > not found\n", pPath);
+	}
+	*ppTexture = pTexture;
+}
+void sgUnloadTexture(SgTexture **ppTexture) {
+	stbi_image_free(ppTexture[0]->pixels);
+	ppTexture[0]->pixels = NULL;
+	ppTexture[0]->channels = 0;
+	ppTexture[0]->width = 0;
+	ppTexture[0]->height = 0;
+	free(*ppTexture);
 }
 
 
