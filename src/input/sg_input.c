@@ -198,18 +198,27 @@ static void sgCallActions(SgActiveContexts* pActiveContexts, SgInputType inputTy
 static void onKeyboardKey(GLFWwindow *pWindow, int key, int scancode, int actions, int mods)
 {
     SgActiveContexts* pActiveContexts = glfwGetWindowUserPointer(pWindow);
+	if (!pActiveContexts) {
+		return;
+	}
 	sgCallActions(pActiveContexts, SG_INPUT_TYPE_KEYBOARD, SG_ACTION_TYPE_TRIGGER, key, mods, actions, 0, 0, pWindow);
 	sgCallActions(pActiveContexts, SG_INPUT_TYPE_KEYBOARD, SG_ACTION_TYPE_TOGGLE, key, mods, actions, 0, 0, pWindow);
 }
 
 static void onMouseKey(GLFWwindow *pWindow, int key, int actions, int mods) {
     SgActiveContexts* pActiveContexts = glfwGetWindowUserPointer(pWindow);
+	if (!pActiveContexts) {
+		return;
+	}
 	sgCallActions(pActiveContexts, SG_INPUT_TYPE_MOUSE, SG_ACTION_TYPE_TRIGGER, key, mods, actions, 0, 0, pWindow);
 	sgCallActions(pActiveContexts, SG_INPUT_TYPE_MOUSE, SG_ACTION_TYPE_TOGGLE, key, mods, actions, 0, 0, pWindow);
 }
 
 static void onCursorPosition(GLFWwindow *pWindow, double xPosition, double yPosition) {
     SgActiveContexts* pActiveContexts = glfwGetWindowUserPointer(pWindow);
+	if (!pActiveContexts) {
+		return;
+	}
 	sgCallActions(pActiveContexts, SG_INPUT_TYPE_MOUSE, SG_ACTION_TYPE_RANGE, 0, 0, 0, xPosition, yPosition, pWindow);
 }
 
@@ -219,4 +228,39 @@ void sgSetActiveContexts(SgActiveContexts *pActiveContexts, SgApp **ppApp) {
 	glfwSetKeyCallback(pApp->pWindow, onKeyboardKey);
 	glfwSetMouseButtonCallback(pApp->pWindow, onMouseKey);
 	glfwSetCursorPosCallback(pApp->pWindow, onCursorPosition);
+}
+
+static void sgUnloadMap(SgActionMap *pActionMap) {
+	hashmap_free(pActionMap->actionMap);
+	if (pActionMap->actionFuncs) {
+		free(pActionMap->actionFuncs);
+		pActionMap->actionCount = 0;
+	}
+	if (pActionMap->actorIDs) {
+		free(pActionMap->actorIDs);
+	}
+	if (pActionMap->states) {
+		free(pActionMap->states);
+	}
+}
+
+void sgUnloadContexts(const SgApp *pApp, SgActiveContexts** ppContexts) {
+	SgActiveContexts* pContexts = *ppContexts;
+	if (pContexts->pContexts) {
+		for (uint32_t i = 0; i < pContexts->contextCount; ++i) {
+			sgUnloadMap(&pContexts->pContexts[i].triggerMap);
+			sgUnloadMap(&pContexts->pContexts[i].toggleMap);
+			sgUnloadMap(&pContexts->pContexts[i].rangeMap);
+			if (pContexts->pContexts[i].pActors) {
+				free(pContexts->pContexts[i].pActors);
+				pContexts->pContexts[i].actorCount = 0;
+			}
+		}
+		free(pContexts->pContexts);
+	}
+	pContexts->contextCount = 0;
+	free(pContexts);
+	ppContexts = NULL;
+	glfwSetWindowUserPointer(pApp->pWindow, NULL);
+	return;
 }

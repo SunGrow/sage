@@ -121,6 +121,7 @@ typedef struct SgAppUpdateInfo {
 } SgAppUpdateInfo;
 SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo);
 
+void sgDestroyShader(const SgApp app, SgShader *pShader);
 void sgDestroyResource(const SgApp app, SgResource *pResource);
 void sgDestroyResourceSet(const SgApp app, SgResourceSet* pResourceSet);
 void sgDeinitUpdateCommands(const SgApp app, SgUpdateCommands* pUpdateCommands);

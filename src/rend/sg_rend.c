@@ -935,6 +935,14 @@ SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo) {
 	return 1;
 }
 
+void sgDestroyShader(const SgApp *pApp, SgShader **ppShader) {
+	SgShader *pShader = *ppShader;
+	vkDeviceWaitIdle(pApp->device);
+	vkDestroyShaderModule(pApp->device, pShader->shader, VK_NULL_HANDLE);
+	free(pShader);
+	ppShader = NULL;
+}
+
 void sgDestroyResource(const SgApp *pApp, SgResource **ppResource) {
 	vkDeviceWaitIdle(pApp->device);
 	SgResource* pResource = *ppResource;

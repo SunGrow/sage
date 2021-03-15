@@ -92,7 +92,7 @@ SgResult sgLoadContexts(const SgActiveContextsCreateInfo* pCreateInfo, SgActiveC
 
 void sgSetActiveContexts(SgActiveContexts *pActiveContexts, SgApp **ppApp);
 
-SgResult sgUnloadContexts(SgActiveContexts** ppContexts);
+void sgUnloadContexts(const SgApp *pApp, SgActiveContexts** ppContexts);
 
 
 #endif

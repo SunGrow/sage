@@ -200,6 +200,31 @@ int main() {
 			.type    = SG_INPUT_TYPE_KEYBOARD,
 		},
 		{
+			.key     = GLFW_KEY_W,
+			.keyName = "w",
+			.type    = SG_INPUT_TYPE_KEYBOARD,
+		},
+		{
+			.key     = GLFW_KEY_A,
+			.keyName = "a",
+			.type    = SG_INPUT_TYPE_KEYBOARD,
+		},
+		{
+			.key     = GLFW_KEY_S,
+			.keyName = "s",
+			.type    = SG_INPUT_TYPE_KEYBOARD,
+		},
+		{
+			.key     = GLFW_KEY_D,
+			.keyName = "d",
+			.type    = SG_INPUT_TYPE_KEYBOARD,
+		},
+		{
+			.key     = GLFW_KEY_SPACE,
+			.keyName = "space",
+			.type    = SG_INPUT_TYPE_KEYBOARD,
+		},
+		{
 			.key     = GLFW_MOUSE_BUTTON_1,
 			.keyName = "left",
 			.type    = SG_INPUT_TYPE_MOUSE,
@@ -452,6 +477,9 @@ int main() {
 	sgDestroyResourceSet(app, &uniformResourceSet);
 	sgDeinitUpdateCommands(app, &updateCommands);
 	sgDestroyGraphicsInstance(app, &graphicsInstance);
+	sgDestroyShader(app, &vertShader);
+	sgDestroyShader(app, &fragShader);
+	sgUnloadContexts(app, &contexts); 
 	sgDestroyApp(&app);
 
 	return 0;
