@@ -7,7 +7,7 @@
 			"toggleMap" : [
 			],
 			"triggerMap" : [
-				{"type" : "keyboard", "input" : "w",    "mod" : "", "actionName" : "moveForward",  "actorID" : 0},
+				{"type" : "keyboard", "input" : "i",    "mod" : "", "actionName" : "moveForward",  "actorID" : 0},
 				{"type" : "keyboard", "input" : "h",    "mod" : "", "actionName" : "moveLeft",     "actorID" : 0},
 				{"type" : "keyboard", "input" : "n",    "mod" : "", "actionName" : "moveBack",     "actorID" : 0},
 				{"type" : "keyboard", "input" : "l",    "mod" : "", "actionName" : "moveRight",    "actorID" : 0},

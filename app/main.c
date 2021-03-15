@@ -79,7 +79,7 @@ static void cursorEnterCallback(GLFWwindow* window, int entered) {
 	} 
 }
 
-static void rotateCamera(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+static void rotateCamera(SgBool isPressed, double rangeX, double rangeY, SgActor actor, GLFWwindow *pWindow) {
 	int wsizex, wsizey;
 	SgCameraTransformInfo* pTransformInfo = (SgCameraTransformInfo*) actor;
 	glfwGetWindowSize(pWindow, &wsizex, &wsizey);
@@ -95,38 +95,38 @@ static void rotateCamera(SgBool isPressed, float rangeX, float rangeY, SgActor a
 	camera.cursorPosition[1] = rangeY;
 }
 
-static void keyPressForward(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+static void keyPressForward(SgBool isPressed, double rangeX, double rangeY, SgActor actor, GLFWwindow *pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
 	transformInfo->moveDirection[0] = isPressed ? 1.0f : 0.0f;
 	return;
 }
-static void keyPressUp(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+static void keyPressUp(SgBool isPressed, double rangeX, double rangeY, SgActor actor, GLFWwindow *pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
 	transformInfo->moveDirection[1] = isPressed ? 1.0f : 0.0f;
 	return;
 }
-static void keyPressLeft(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+static void keyPressLeft(SgBool isPressed, double rangeX, double rangeY, SgActor actor, GLFWwindow *pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
 	transformInfo->moveDirection[2] = isPressed ? -1.0f : 0.0f;
 	return;
 }
-static void keyPressRight(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+static void keyPressRight(SgBool isPressed, double rangeX, double rangeY, SgActor actor, GLFWwindow *pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
 	transformInfo->moveDirection[2] = isPressed ? 1.0f : 0.0f;
 	return;
 }
-static void keyPressDown(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+static void keyPressDown(SgBool isPressed, double rangeX, double rangeY, SgActor actor, GLFWwindow *pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
 	transformInfo->moveDirection[1] = isPressed ? -1.0f : 0.0f;
 	return;
 }
-static void keyPressBack(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+static void keyPressBack(SgBool isPressed, double rangeX, double rangeY, SgActor actor, GLFWwindow *pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
 	transformInfo->moveDirection[0] = isPressed ? -1.0f : 0.0f;
 	return;
 }
 
-static void keyShoot(SgBool isPressed, float rangeX, float rangeY, SgActor actor, GLFWwindow *pWindow) {
+static void keyShoot(SgBool isPressed, double rangeX, double rangeY, SgActor actor, GLFWwindow *pWindow) {
 	if (isPressed)
 		log_warn("shooty shooty bang bang");
 	return;

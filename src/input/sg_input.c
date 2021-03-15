@@ -171,7 +171,7 @@ SgResult sgLoadContexts(const SgActiveContextsCreateInfo* pCreateInfo, SgActiveC
 	return SG_SUCCESS;
 }
 
-static void sgCallActions(SgActiveContexts* pActiveContexts, SgInputType inputType, SgActionType actionType, int key, int mods, int actions, float rangeX, float rangeY, GLFWwindow *pWindow) {
+static void sgCallActions(SgActiveContexts* pActiveContexts, SgInputType inputType, SgActionType actionType, int key, int mods, int actions, double rangeX, double rangeY, GLFWwindow *pWindow) {
 	SgActionMap activeMap = {0};
 	for (uint32_t i = 0; i < pActiveContexts->contextCount; ++i) {
 		if ((actionType == SG_ACTION_TYPE_TRIGGER) && (actions == GLFW_PRESS || actions == GLFW_RELEASE)) {
