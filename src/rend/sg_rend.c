@@ -959,13 +959,14 @@ void sgDestroyResource(const SgApp *pApp, SgResource **ppResource) {
 			vmaDestroyBuffer(pApp->allocator, pResource->dataBuffer.buffer, pResource->dataBuffer.allocation);
 		}
 	}
-
 	free(pResource);
+	vkDestroyCommandPool(pApp->device, pResource->commandPool, VK_NULL_HANDLE);
 	ppResource = NULL;
 }
 
 void sgDestroyResourceSet(const SgApp *pApp, SgResourceSet** ppResourceSet) {
 	SgResourceSet *pResourceSet = *ppResourceSet;
+	vkDestroyDescriptorSetLayout(pApp->device, pResourceSet->setLayout, VK_NULL_HANDLE);
 
 	free(pResourceSet->pWriteDescriptorSets);
 	free(pResourceSet);
@@ -981,16 +982,12 @@ void sgDestroyGraphicsInstance(const SgApp *pApp, SgGraphicsInstance **ppGraphic
 	SgGraphicsInstance *pGraphicsInstance = *ppGraphicsInstance;
 	vkDeviceWaitIdle(pApp->device);
 
-
 	vkResetDescriptorPool(pApp->device, pGraphicsInstance->descriptorPool, 0);
+	vkDestroyDescriptorPool(pApp->device, pGraphicsInstance->descriptorPool, VK_NULL_HANDLE);
 	for (uint32_t i = 0; i < pGraphicsInstance->descriptorSetsCount; ++i) {
 		free(pGraphicsInstance->ppDescriptorSets[i]);
 	}
 	free(pGraphicsInstance->ppDescriptorSets);
-
-	for (uint32_t i = 0; i < pGraphicsInstance->setCount; ++i) {
-		vkDestroyDescriptorSetLayout(pApp->device, pGraphicsInstance->pDescriptorSetLayouts[i], VK_NULL_HANDLE);
-	}
 
 	vkDestroyPipelineLayout(pApp->device, pGraphicsInstance->pipelineLayout, VK_NULL_HANDLE);
 	vkDestroyPipeline(pApp->device, pGraphicsInstance->graphicsPipeline, VK_NULL_HANDLE);

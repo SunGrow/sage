@@ -112,7 +112,6 @@ static SgResult sgFillActionMap(const SgActiveContextsCreateInfo* pCreateInfo, c
 		inputKey.id = j;
 		hashmap_set(pActionMap->actionMap, &inputKey);
 	}
-	hashmap_scan(pActionMap->actionMap, keyIter, NULL);
 
 	return SG_SUCCESS;
 }
@@ -126,7 +125,6 @@ SgResult sgLoadContexts(const SgActiveContextsCreateInfo* pCreateInfo, SgActiveC
 			return -1;
         }
     }
-	log_info("[JSON]: YES");
 	cJSON* contexts = cJSON_GetObjectItem(contexts_json, "contexts");
 
 	SgActiveContexts* pActiveContexts;
@@ -140,9 +138,6 @@ SgResult sgLoadContexts(const SgActiveContextsCreateInfo* pCreateInfo, SgActiveC
 	for (uint32_t i = 0; i < cJSON_GetArraySize(contexts); ++i) {
 		cJSON* context = cJSON_GetArrayItem(contexts, i);
 
-		cJSON* name = cJSON_GetObjectItem(context, "name");
-		log_info("[JSON]: Context Name: \"%s\"", name->valuestring);
-
 		cJSON* actorNames = cJSON_GetObjectItem(context, "actorNames");
 		SG_CALLOC_NUM(pActiveContexts->pContexts[i].pActors, cJSON_GetArraySize(actorNames));
 		pActiveContexts->pContexts[i].actorCount = cJSON_GetArraySize(actorNames);
@@ -151,10 +146,8 @@ SgResult sgLoadContexts(const SgActiveContextsCreateInfo* pCreateInfo, SgActiveC
 			for (uint32_t k = 0; k < pCreateInfo->actorCount; ++k) {
 				if (strcmp(actorName->valuestring, pCreateInfo->pActorNames[k]) == SG_SUCCESS) {
 					pActiveContexts->pContexts[i].pActors[j] = pCreateInfo->pActors[k];
-					log_info("[JSON]: Actor %s found", actorName->valuestring);
 				}
 			}
-			log_info("[JSON]: Actor Name: \"%s\"", actorName->valuestring);
 		}
 		cJSON* toggleMap = cJSON_GetObjectItem(context, "toggleMap");
 		sgFillActionMap(pCreateInfo, toggleMap, &pActiveContexts->pContexts[i].toggleMap);
