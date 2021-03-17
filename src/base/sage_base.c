@@ -13,18 +13,20 @@ SgResult sgOpenFile(const char* path, SgFile **ppFile) {
 	uint32_t length = ftell(file);
 	fseek(file, 0, SEEK_SET);
 
-	uint32_t *buffer = malloc(length * sizeof(char));
+	char* buffer;
+	SG_MALLOC_NUM(buffer, length+1);
+	buffer[length] = 0;
 	if (!buffer) {
 		log_error("[Base]: File allocation failure");
 		return -1;
 	}
-	size_t rc = fread(buffer, 1, length, file);
+	size_t rc = fread(buffer, sizeof(char), length, file);
 	if (rc != (size_t)length) {
 		log_warn("[Base]: File read failure");
 	}
 	fclose(file);
 	SgFile *pFile = malloc(sizeof(pFile[0]));
-	pFile->pBytes = buffer;
+	pFile->pBytes = (uint32_t*) buffer;
 	pFile->size   = length;
 	*ppFile = pFile;
 

@@ -7,15 +7,6 @@
 #include "log.h"
 #include "math.h"
 
-enum KeyBindings {
-	FOWARD_KEY = GLFW_KEY_I,
-	BACK_KEY = GLFW_KEY_N,
-	LEFT_KEY = GLFW_KEY_H,
-	RIGHT_KEY = GLFW_KEY_L,
-	UP_KEY = GLFW_KEY_K,
-	DOWN_KEY = GLFW_KEY_J,
-};
-
 typedef struct SgCameraTransformInfo {
 	v3              moveDirection;
 	v2              cursorOffset;
@@ -51,6 +42,7 @@ static void sgTransformCamera(const SgCameraTransformInfo* pTransformInfo, SgCam
 	v2 offset;
 	v2_scale_by(offset, pTransformInfo->deltaTime, pTransformInfo->cursorOffset);
 	v2_scale_by(offset, pCamera->sensitivity, offset);
+
 	static float yaw, pitch;
 
 	yaw += offset[0];
@@ -76,7 +68,7 @@ static void cursorEnterCallback(GLFWwindow* window, int entered) {
 		glfwGetWindowSize(window, &wsizex, &wsizey);
 		camera.cursorPosition[0] = wsizex/2;
 		camera.cursorPosition[1] = wsizey/2;
-	} 
+	}
 }
 
 static void rotateCamera(SgBool isPressed, double rangeX, double rangeY, SgActor actor, GLFWwindow *pWindow) {
@@ -170,32 +162,32 @@ int main() {
 
 	SgInputSignal inputSignals[] = {
 		{
-			.key     = FOWARD_KEY,
+			.key     = GLFW_KEY_I,
 			.keyName = "i",
 			.type    = SG_INPUT_TYPE_KEYBOARD,
 		},
 		{
-			.key     = LEFT_KEY,
+			.key     = GLFW_KEY_H,
 			.keyName = "h",
 			.type    = SG_INPUT_TYPE_KEYBOARD,
 		},
 		{
-			.key     = BACK_KEY,
+			.key     = GLFW_KEY_N,
 			.keyName = "n",
 			.type    = SG_INPUT_TYPE_KEYBOARD,
 		},
 		{
-			.key     = RIGHT_KEY,
+			.key     = GLFW_KEY_L,
 			.keyName = "l",
 			.type    = SG_INPUT_TYPE_KEYBOARD,
 		},
 		{
-			.key     = UP_KEY,
+			.key     = GLFW_KEY_K,
 			.keyName = "k",
 			.type    = SG_INPUT_TYPE_KEYBOARD,
 		},
 		{
-			.key     = DOWN_KEY,
+			.key     = GLFW_KEY_J,
 			.keyName = "j",
 			.type    = SG_INPUT_TYPE_KEYBOARD,
 		},
@@ -481,6 +473,8 @@ int main() {
 	sgDestroyShader(app, &fragShader);
 	sgUnloadContexts(app, &contexts); 
 	sgDestroyApp(&app);
+	sgUnloadMesh(&pMesh);
+	sgUnloadMesh(&pMesh2);
 
 	return 0;
 }

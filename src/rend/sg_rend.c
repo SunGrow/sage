@@ -597,7 +597,7 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	uint32_t hasMeshDescriptors = (pCreateInfo->meshSetCount > 0) ? 1: 0;
 	uint32_t baseSetCount = (hasMeshDescriptors) ? pCreateInfo->meshSetCount : 1;
 
-	pGraphicsInstance->pDescriptorSetLayouts = malloc(sizeof(pGraphicsInstance->pDescriptorSetLayouts[0]) * pCreateInfo->setCount + hasMeshDescriptors);
+	pGraphicsInstance->pDescriptorSetLayouts = malloc(sizeof(pGraphicsInstance->pDescriptorSetLayouts[0]) * (pCreateInfo->setCount + hasMeshDescriptors));
 
 	for (uint32_t i = 0; i < pCreateInfo->setCount; ++i) {
 		pGraphicsInstance->pDescriptorSetLayouts[pCreateInfo->ppSets[i]->setIndex] = pCreateInfo->ppSets[i]->setLayout;
@@ -959,8 +959,8 @@ void sgDestroyResource(const SgApp *pApp, SgResource **ppResource) {
 			vmaDestroyBuffer(pApp->allocator, pResource->dataBuffer.buffer, pResource->dataBuffer.allocation);
 		}
 	}
-	free(pResource);
 	vkDestroyCommandPool(pApp->device, pResource->commandPool, VK_NULL_HANDLE);
+	free(pResource);
 	ppResource = NULL;
 }
 
@@ -968,7 +968,19 @@ void sgDestroyResourceSet(const SgApp *pApp, SgResourceSet** ppResourceSet) {
 	SgResourceSet *pResourceSet = *ppResourceSet;
 	vkDestroyDescriptorSetLayout(pApp->device, pResourceSet->setLayout, VK_NULL_HANDLE);
 
+	for (uint32_t i = 0; i < pResourceSet->resourceCount; ++i) {
+		if (pResourceSet->pWriteDescriptorSets[i].pImageInfo) {
+			free((VkDescriptorImageInfo*) pResourceSet->pWriteDescriptorSets[i].pImageInfo);
+		} 
+		if (pResourceSet->pWriteDescriptorSets[i].pBufferInfo) {
+			free((VkDescriptorBufferInfo*) pResourceSet->pWriteDescriptorSets[i].pBufferInfo);
+		} 
+		if (pResourceSet->pWriteDescriptorSets[i].pTexelBufferView) {
+			free((void*) pResourceSet->pWriteDescriptorSets[i].pTexelBufferView);
+		}
+	}
 	free(pResourceSet->pWriteDescriptorSets);
+	free(pResourceSet->pSetLayoutBindings);
 	free(pResourceSet);
 	ppResourceSet = NULL;
 }
@@ -976,6 +988,8 @@ void sgDestroyResourceSet(const SgApp *pApp, SgResourceSet** ppResourceSet) {
 void sgDeinitUpdateCommands(const SgApp *pApp, SgUpdateCommands** ppUpdateCommands) {
 	SgUpdateCommands *pUpdateCommands = *ppUpdateCommands;
 	free(pUpdateCommands->pCommandBuffers);
+	free(pUpdateCommands);
+	ppUpdateCommands = NULL;
 }
 
 void sgDestroyGraphicsInstance(const SgApp *pApp, SgGraphicsInstance **ppGraphicsInstance) {
@@ -1007,6 +1021,8 @@ void sgDestroyGraphicsInstance(const SgApp *pApp, SgGraphicsInstance **ppGraphic
 
 	vkDestroySwapchainKHR(pApp->device, pGraphicsInstance->swapchain.swapchain, VK_NULL_HANDLE);
 
+	free(pGraphicsInstance->pDescriptorSetLayouts);
+
 	free(pGraphicsInstance);
 	ppGraphicsInstance = NULL;
 }
@@ -1014,7 +1030,6 @@ void sgDestroyGraphicsInstance(const SgApp *pApp, SgGraphicsInstance **ppGraphic
 void sgDestroyApp(SgApp **ppApp) {
 	SgApp* pApp = *ppApp;
 	vkDeviceWaitIdle(pApp->device);
-	glfwTerminate();
 	
 	for (uint32_t i = 0; i < SG_THREADS_COUNT * SG_FRAME_QUEUE_LENGTH; ++i) {
 		vkResetCommandPool(pApp->device, pApp->pCommandPools[i], VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
@@ -1034,6 +1049,8 @@ void sgDestroyApp(SgApp **ppApp) {
 	vkDestroyDevice(pApp->device, VK_NULL_HANDLE);
 	vkDestroySurfaceKHR(pApp->instance, pApp->surface, VK_NULL_HANDLE);
 	vkDestroyInstance(pApp->instance, VK_NULL_HANDLE);
+	glfwDestroyWindow(pApp->pWindow);
+	glfwTerminate();
 	free(pApp);
 	ppApp = NULL;
 }

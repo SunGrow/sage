@@ -117,9 +117,9 @@ static SgResult sgFillActionMap(const SgActiveContextsCreateInfo* pCreateInfo, c
 }
 
 SgResult sgLoadContexts(const SgActiveContextsCreateInfo* pCreateInfo, SgActiveContexts** ppContexts) {
-	cJSON* contexts_json = cJSON_Parse((char*) pCreateInfo->pFile->pBytes);
+	const char *error_ptr;
+	cJSON* contexts_json = cJSON_ParseWithOpts((char*) pCreateInfo->pFile->pBytes, &error_ptr, 1);
 	if (contexts_json == NULL) {
-        const char *error_ptr = cJSON_GetErrorPtr();
         if (error_ptr != NULL) {
             log_error("[JSON]: Error before: %s\n", error_ptr);
 			return -1;
@@ -160,6 +160,7 @@ SgResult sgLoadContexts(const SgActiveContextsCreateInfo* pCreateInfo, SgActiveC
 	}
 
 	*ppContexts = pActiveContexts;
+	cJSON_Delete(contexts_json);
 
 	return SG_SUCCESS;
 }

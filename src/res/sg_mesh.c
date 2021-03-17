@@ -77,6 +77,7 @@ void sgLoadMesh(const char *pPath, SgMesh **ppMesh) {
 	pMesh->indexCount = totalindices;
 	pMesh->vertexCount = totalvertices;
 	*ppMesh = pMesh;
+	free(pvertices);
 	log_info("[Res]: Mesh Read Successfull");
 
 	free(premap);
