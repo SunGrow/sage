@@ -240,6 +240,7 @@ int main() {
 		.file          = configFile,
 	};
 	sgLoadContexts(&activeContextsCreateInfo, &contexts);
+	sgCloseFile(&configFile);
 
 	//
 	
