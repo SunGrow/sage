@@ -91,6 +91,7 @@ typedef struct SgBuffer {
 typedef struct SgImage {
 	VkImage             image;
 	void*               bytes;
+	VkExtent3D          extent;
 	uint32_t            size;
 	VmaAllocation       allocation;
 	VkFormat            format;

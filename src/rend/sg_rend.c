@@ -250,14 +250,14 @@ SgResult sgInitResourceSet(const SgApp *pApp, SgResourceSetInitInfo *pInitInfo, 
 				pImageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 				pImageInfo->imageView = pInitInfo->ppResources[j]->imageView;
 				pImageInfo->sampler   = pInitInfo->ppResources[j]->imageSampler;
-				pResourceSet->pWriteDescriptorSets[j].pImageInfo = pImageInfo;
 			} else {
 				pBufferInfo = malloc(sizeof(pBufferInfo[0]));
 				pBufferInfo->buffer = pInitInfo->ppResources[j]->dataBuffer.buffer;
 				pBufferInfo->offset = 0;
 				pBufferInfo->range = pInitInfo->ppResources[j]->dataBuffer.size;
-				pResourceSet->pWriteDescriptorSets[j].pBufferInfo = pBufferInfo;
 			}
+			pResourceSet->pWriteDescriptorSets[j].pImageInfo = pImageInfo;
+			pResourceSet->pWriteDescriptorSets[j].pBufferInfo = pBufferInfo;
 
 			switch (pInitInfo->ppResources[j]->type) {
 				case (SG_RESOURCE_TYPE_UNIFORM):
@@ -267,7 +267,7 @@ SgResult sgInitResourceSet(const SgApp *pApp, SgResourceSetInitInfo *pInitInfo, 
 					pResourceSet->pWriteDescriptorSets[j].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 					break;
 				case (SG_RESOURCE_TYPE_TEXTURE_2D):
-					pResourceSet->pWriteDescriptorSets[j].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+					pResourceSet->pWriteDescriptorSets[j].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 					break;
 			}
 
@@ -659,22 +659,22 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 		}
 
 		if (hasMeshDescriptors) {
-		for (uint32_t j = 0; j < pCreateInfo->ppMeshSets[i]->resourceCount; ++j) {
-			switch (pCreateInfo->ppMeshSets[i]->ppResources[j]->type) {
-				case SG_RESOURCE_TYPE_TEXTURE_2D:
-					pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-					break;
-				case SG_RESOURCE_TYPE_MESH:
-					pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-					break;
-				case SG_RESOURCE_TYPE_UNIFORM:
-					pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-					break;
+			for (uint32_t j = 0; j < pCreateInfo->ppMeshSets[i]->resourceCount; ++j) {
+				switch (pCreateInfo->ppMeshSets[i]->ppResources[j]->type) {
+					case SG_RESOURCE_TYPE_TEXTURE_2D:
+						pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+						break;
+					case SG_RESOURCE_TYPE_MESH:
+						pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+						break;
+					case SG_RESOURCE_TYPE_UNIFORM:
+						pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+						break;
 
+				}
+				pPoolSizes[offset].descriptorCount = 1;
+				++offset;
 			}
-			pPoolSizes[offset].descriptorCount = 1;
-			++offset;
-		}
 		}
 	}
 	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {
@@ -948,7 +948,14 @@ void sgDestroyResource(const SgApp *pApp, SgResource **ppResource) {
 	SgResource* pResource = *ppResource;
 	if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
 		vkDestroyImageView(pApp->device, pResource->imageView, VK_NULL_HANDLE);
-		vmaUnmapMemory(pApp->allocator, pResource->image.allocation);
+		vkDestroySampler(pApp->device, pResource->imageSampler, VK_NULL_HANDLE);
+		if (pResource->stagingBuffer.allocation) {
+			vmaUnmapMemory(pApp->allocator, pResource->stagingBuffer.allocation);
+			vmaDestroyBuffer(pApp->allocator, pResource->stagingBuffer.buffer, pResource->stagingBuffer.allocation);
+		} else {
+			vmaUnmapMemory(pApp->allocator, pResource->image.allocation);
+		}
+		vmaDestroyImage(pApp->allocator, pResource->image.image, pResource->image.allocation);
 	} else {
 		if (pResource->type & SG_RESOURCE_TYPE_REQIRE_STAGING_MASK) {
 			vmaUnmapMemory(pApp->allocator, pResource->stagingBuffer.allocation);

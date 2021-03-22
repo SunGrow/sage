@@ -34,6 +34,7 @@ void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t vertCou
 
 typedef struct SgTexture {
 	int32_t width, height, channels;
+	uint32_t size;
 	stbi_uc *pixels;
 } SgTexture;
 

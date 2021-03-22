@@ -14,8 +14,7 @@ SgResult sgOpenFile(const char* path, SgFile **ppFile) {
 	fseek(file, 0, SEEK_SET);
 
 	char* buffer;
-	SG_MALLOC_NUM(buffer, length+1);
-	buffer[length] = 0;
+	SG_MALLOC_NUM(buffer, length);
 	if (!buffer) {
 		log_error("[Base]: File allocation failure");
 		return -1;

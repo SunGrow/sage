@@ -3,6 +3,7 @@
 
 #include "sage_core.h"
 #include "sage_math.h"
+#include "stb_image.h"
 
 /* Make mesh load fit with the engine theme */
 typedef struct SgVertex {
@@ -26,6 +27,14 @@ typedef struct SgMeshTransformInfo {
 	v3 scale;
 } SgMeshTransformInfo;
 
+typedef struct SgTexture {
+	int32_t width, height, channels;
+	uint32_t size;
+	stbi_uc *pixels;
+} SgTexture;
+
+void sgLoadTexture(const char *pPath, SgTexture **pTexture);
 void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t vertCount, SgVertex *pVertices);
+void sgUnloadTexture(SgTexture **ppTexture);
 
 #endif

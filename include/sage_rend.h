@@ -58,6 +58,7 @@ typedef struct SgResourceCreateInfo {
 	SgShaderStageFlags  stage;
 	void*               bytes;
 	uint32_t            size;
+	VkExtent3D          extent;
 	uint32_t            binding;
 } SgResourceCreateInfo;
 

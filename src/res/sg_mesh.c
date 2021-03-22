@@ -30,8 +30,8 @@ void sgLoadMesh(const char *pPath, SgMesh **ppMesh) {
 			    .nx = pObj->normals[gi.n * 3 + 0],
 			    .ny = pObj->normals[gi.n * 3 + 1],
 			    .nz = pObj->normals[gi.n * 3 + 2],
-			    .tu = pObj->texcoords[gi.t * 3 + 0],
-			    .tv = pObj->texcoords[gi.t * 3 + 1],
+			    .tu = pObj->texcoords[gi.t * 2 + 0],
+			    .tv = 1.0f - pObj->texcoords[gi.t * 2 + 1],
 			};
 
 			// triangulation
@@ -111,6 +111,10 @@ void sgLoadTexture(const char *pPath, SgTexture **ppTexture) {
 	if (!pTexture->pixels) {
 		fprintf(stderr, "[Warning]: Texture on path < %s > not found\n", pPath);
 	}
+	pTexture->size = pTexture->height;
+	pTexture->size *= pTexture->width;
+	pTexture->size <<= 2;
+
 	*ppTexture = pTexture;
 }
 void sgUnloadTexture(SgTexture **ppTexture) {
