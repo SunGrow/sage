@@ -190,11 +190,8 @@ SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreate
     		vkFreeCommandBuffers(pApp->device, pApp->pCommandPools[2], 1, &commandBuffer);
 			/**/
 		}
-
-
 		/**/
 		//
-     /* TODO: texture type */
 	} else {
 		SgBufferCreateInfo bufferCreateInfo = {
 			.size  = pCreateInfo->size,

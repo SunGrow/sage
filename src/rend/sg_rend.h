@@ -22,12 +22,7 @@ typedef struct SgAppCreateInfo {
 } SgAppCreateInfo;
 
 SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppApp);
-
-/* Should not be here in the final version */
-GLFWwindow *sgGetGLFWwindow(SgApp *pApp);
-
-void sgSetKeyCallback(SgApp** pApp, GLFWkeyfun callback);
-void sgSetCursorPosCallback(SgApp** pApp, GLFWcursorposfun callback);
+SgWindow* sgGetWindow(SgApp* pApp);
 
 typedef struct SgResourceSetCreateInfo {
 	SgResource**         ppResources;

@@ -13,5 +13,5 @@ void main() {
 	vec4 depth = vec4(gl_FragCoord.z,gl_FragCoord.z,gl_FragCoord.z, 1.0);
 	vec4 tex = texture(u_TexSampler, v_TexCoord);
 	// No transfer on tex coord and normal
-	o_Color  = v_Color * tex * depth;
+	o_Color  = tex * depth;
 }

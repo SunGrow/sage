@@ -19,6 +19,9 @@ sage_libs += sgscene_lib
 subdir('input')
 sage_incs += sginput_inc
 sage_libs += sginput_lib
+subdir('window')
+sage_incs += sgwindow_inc
+sage_libs += sgwindow_lib
 # entt_src = 
 # jobs_src =
 

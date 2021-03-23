@@ -40,8 +40,10 @@ enum {
 	SG_FRAME_QUEUE_LENGTH = 3,
 };
 
+typedef GLFWwindow SgWindow;
+
 typedef struct SgApp {
-	GLFWwindow*               pWindow;
+	SgWindow*                 pWindow;
 	VkInstance                instance;
 #ifdef _DEBUG
 	VkDebugUtilsMessengerEXT  debugCallback;

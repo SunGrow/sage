@@ -6,7 +6,7 @@
 
 SG_DEFINE_HANDLE(SgActiveContexts);
 typedef void* SgActor;
-typedef void (*SgInputAction) (/* State */ uint32_t, /* rangeX */ double, /* rangeY */ double, SgActor, GLFWwindow*);
+typedef void (*SgInputAction) (/* State */ uint32_t, /* rangeX */ double, /* rangeY */ double, SgActor, SgWindow);
 
 typedef enum SgInputType {
 	SG_INPUT_TYPE_KEYBOARD = BIT(0),
@@ -43,5 +43,6 @@ SgResult sgLoadContexts(const SgActiveContextsCreateInfo* pCreateInfo, SgActiveC
 void sgSetActiveContexts(SgActiveContexts activeContexts, SgApp *pApp);
 
 void sgUnloadContexts(const SgApp app, SgActiveContexts* pContexts);
+
 
 #endif

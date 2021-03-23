@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 #include "sage_core.h"
+#include "sage_window.h"
 #include "sage_math.h"
 #define VK_NO_PROTOTYPES
 #include "volk.h"
@@ -28,6 +29,7 @@ typedef struct SgAppCreateInfo {
 
 SG_DEFINE_HANDLE(SgApp);
 SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp *pSgApp);
+SgWindow sgGetWindow(SgApp app);
 /**/
 
 typedef enum SgShaderStageFlagBits {

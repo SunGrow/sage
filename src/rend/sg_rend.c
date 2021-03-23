@@ -168,15 +168,8 @@ SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppSgApp) {
 	return SG_SUCCESS;
 }
 
-GLFWwindow *sgGetGLFWwindow(SgApp *pApp) {
+SgWindow* sgGetWindow(SgApp *pApp) {
 	return pApp->pWindow;
-}
-
-void sgSetKeyCallback(SgApp** pApp, GLFWkeyfun callback) {
-	glfwSetKeyCallback(pApp[0]->pWindow, callback);
-}
-void sgSetCursorPosCallback(SgApp** pApp, GLFWcursorposfun callback) {
-	glfwSetCursorPosCallback(pApp[0]->pWindow, callback);
 }
 
 SgResult sgCreateResourceSet(const SgApp* pApp, const SgResourceSetCreateInfo *pCreateInfo, SgResourceSet **ppSgResourceSet) {

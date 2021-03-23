@@ -13,7 +13,7 @@ typedef struct SgInput {
 } SgInput;
 
 typedef void* SgActor;
-typedef void (*SgInputAction) (uint32_t, double, double, SgActor, GLFWwindow*);
+typedef void (*SgInputAction) (uint32_t, double, double, SgActor, SgWindow*);
 
 #define SG_INPUT_TYPE_KEYBOARD_NAME "keyboard"
 #define SG_INPUT_TYPE_MOUSE_NAME    "mouse"
