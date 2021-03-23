@@ -24,14 +24,20 @@ void sgLoadMesh(const char *pPath, SgMesh **ppMesh) {
 			fastObjIndex gi = pObj->indices[indexoffset + j];
 
 			SgVertex v = {
-			    .vx = pObj->positions[gi.p * 3 + 0],
-			    .vy = pObj->positions[gi.p * 3 + 1],
-			    .vz = pObj->positions[gi.p * 3 + 2],
-			    .nx = pObj->normals[gi.n * 3 + 0],
-			    .ny = pObj->normals[gi.n * 3 + 1],
-			    .nz = pObj->normals[gi.n * 3 + 2],
-			    .tu = pObj->texcoords[gi.t * 2 + 0],
-			    .tv = 1.0f - pObj->texcoords[gi.t * 2 + 1],
+				.vert = {
+					pObj->positions[gi.p * 3 + 0],
+					pObj->positions[gi.p * 3 + 1],
+					pObj->positions[gi.p * 3 + 2],
+				},
+				.norm = {
+					pObj->normals[gi.n * 3 + 0],
+					pObj->normals[gi.n * 3 + 1],
+					pObj->normals[gi.n * 3 + 2],
+				},
+			    .tex = {
+					pObj->texcoords[gi.t * 2 + 0],
+					1.0f - pObj->texcoords[gi.t * 2 + 1],
+				}, 
 			};
 
 			// triangulation
@@ -52,7 +58,7 @@ void sgLoadMesh(const char *pPath, SgMesh **ppMesh) {
 		pMesh->pIndices =
 		    realloc(pMesh->pIndices, totalindices * sizeof(uint32_t));
 		for (uint32_t i = 0; i < totalindices; ++i) {
-			pMesh->pIndices[i] = i;
+			pMesh->pIndices[i]  = i;
 			pMesh->pVertices[i] = pvertices[i];
 		}
 		pMesh->vertexCount = totalindices;
@@ -94,13 +100,13 @@ void sgUnloadMesh(SgMesh **ppMesh) {
 
 void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t vertCount, SgVertex *pVertices) {
 	for (uint32_t i = 0; i < vertCount; ++i) {
-		pVertices[i].vx *= pTransformInfo->scale[0];
-		pVertices[i].vy *= pTransformInfo->scale[1];
-		pVertices[i].vz *= pTransformInfo->scale[2];
+		pVertices[i].vert[0] *= pTransformInfo->scale[0];
+		pVertices[i].vert[1] *= pTransformInfo->scale[1];
+		pVertices[i].vert[2] *= pTransformInfo->scale[2];
 
-		pVertices[i].vx += pTransformInfo->move[0];
-		pVertices[i].vy += pTransformInfo->move[1];
-		pVertices[i].vz += pTransformInfo->move[2];
+		pVertices[i].vert[0] += pTransformInfo->move[0];
+		pVertices[i].vert[1] += pTransformInfo->move[1];
+		pVertices[i].vert[2] += pTransformInfo->move[2];
 	}
 }
 

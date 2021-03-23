@@ -7,9 +7,9 @@
 
 // Mesh
 typedef struct SgVertex {
-	float vx, vy, vz;
-	float nx, ny, nz;
-	float tu, tv;
+	v3 vert;
+	v3 norm;
+	v2 tex;
 } SgVertex;
 
 typedef struct SgMesh {
