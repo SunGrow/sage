@@ -1,0 +1,58 @@
+{
+	"shaders" : [
+		{
+			"name"      : "vertexShader",
+			"stageName" : "vertex",
+			"dir"       : ""
+		},
+		{
+			"name"      : "fragmentShader",
+			"stageName" : "fragment",
+			"dir"       : ""
+		}
+	],
+	"meshes" : [
+		{
+			"name" : "kitten",
+			"dir"  : "res/kitten.obj",
+			"type" : "obj"
+		}
+	],
+	"textures" : [
+		{
+			"name"   : "skin",
+			"dir"    : "res/skin.jpg",
+			"format" : "R8G8B8A8",
+			"type"   : "jpg"
+		}
+	],
+	"materials" : [ 
+		{
+			"name" : "based",
+			"shaders" : {
+				"vertexName" : "vertexShader",
+				"fragmentName" : "fragmentShader"
+			},
+			"layout" : {
+				"sets" : [
+					{
+						"position" : 0,
+						"resources" : [
+							"location" : 0,
+							"descriptorTypeName" : "mesh"
+						]
+					}
+				],
+				"pushConstants" : [
+					{
+						"name" : "vertexPushConstant",
+						"stageName" : "vertex",
+						"descriptorTypeName" : "uniform",
+						"byteOffset"     : 0,
+						"layoutByteSize" : 4
+					}
+				]
+			}
+		}
+	]
+}
