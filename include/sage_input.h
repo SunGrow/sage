@@ -39,10 +39,36 @@ typedef struct SgActiveContextsCreateInfo {
 } SgActiveContextsCreateInfo;
 
 SgResult sgLoadContexts(const SgActiveContextsCreateInfo* pCreateInfo, SgActiveContexts* pContexts);
+void sgUpdateContext(const SgActiveContextsCreateInfo* pCreateInfo, SgActiveContexts* pContexts);
+
+typedef enum SgActionType {
+	SG_ACTION_TYPE_TRIGGER = BIT(0),
+	SG_ACTION_TYPE_TOGGLE  = BIT(1),
+	SG_ACTION_TYPE_RANGE   = BIT(2),
+} SgActionType;
+
+typedef struct SgActionNames {
+	SgActionType actionType;
+
+	SgInputType inputType;
+	char* inputName;
+	char* modName;
+	char* actionName;
+} SgActionNames;
+
+typedef struct SgActiveContextsChangeInfo {
+	SgActionNames* pOldActions;
+	SgActionNames* pNewActions;
+	uint32_t       count;
+} SgActiveContextsChangeInfo;
+
+void sgChangeContext(const SgActiveContextsChangeInfo* pChangeInfo, SgActiveContexts* pContexts);
+void sgSaveContext(const SgActiveContexts contexts, char* fileDir);
 
 void sgSetActiveContexts(SgActiveContexts activeContexts, SgApp *pApp);
 
 void sgUnloadContexts(const SgApp app, SgActiveContexts* pContexts);
+
 
 
 #endif

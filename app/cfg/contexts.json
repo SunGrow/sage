@@ -2,7 +2,6 @@
 	"contexts" : [
 		{
 			"name" : "cameraMovement",
-			"priority" : 0,
 			"actorNames" : ["cameraTransform"],
 			"toggleMap" : [
 			],

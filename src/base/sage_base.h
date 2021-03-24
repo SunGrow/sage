@@ -181,6 +181,7 @@ typedef struct SgFile {
 } SgFile;
 
 SgResult sgOpenFile(const char* path, SgFile **ppFile);
+SgResult sgWriteFile(const char* path, SgFile *pFile);
 SgResult sgCloseFile(SgFile **ppFile);
 
 #endif

@@ -5,10 +5,10 @@
 #include "GLFW/glfw3.h"
 #include "hashmap.h"
 #include "log.h"
+#include "cJSON.h"
 
 typedef struct SgInput {
 	uint32_t actorID;
-	uint32_t signalID; // Mb don't need it
 	SgBool   state;
 } SgInput;
 
@@ -30,10 +30,10 @@ typedef enum SgInputType {
 } SgInputType;
 
 typedef struct SgInputKey {
-	int32_t key;
-	int32_t mods;
+	int32_t     key;
+	int32_t     mods;
 	SgInputType type;
-	uint64_t id;
+	uint64_t    id;
 } SgInputKey;
 
 typedef struct SgActionMap {
@@ -51,7 +51,6 @@ typedef struct SgActionMap {
 typedef struct SgContext {
 	SgActionMap           triggerMap;
 	SgActionMap           toggleMap;
-
 	SgActionMap           rangeMap;
 
 	SgActor*              pActors;      // Map addresed by actorID
@@ -71,6 +70,8 @@ typedef struct SgInputSignal {
 typedef struct SgActiveContexts {
 	SgContext* pContexts;
 	uint32_t   contextCount;
+
+	cJSON*     contextsJSON;
 } SgActiveContexts;
 
 typedef struct SgActiveContextsCreateInfo {
@@ -89,6 +90,25 @@ typedef struct SgActiveContextsCreateInfo {
 } SgActiveContextsCreateInfo;
 
 SgResult sgLoadContexts(const SgActiveContextsCreateInfo* pCreateInfo, SgActiveContexts** ppContexts);
+void sgUpdateContext(const SgActiveContextsCreateInfo* pCreateInfo, SgActiveContexts** ppContexts);
+
+typedef struct SgActionNames {
+	SgActionType actionType;
+
+	SgInputType inputType;
+	char* inputName;
+	char* modName;
+	char* actionName;
+} SgActionNames;
+
+typedef struct SgActiveContextsChangeInfo {
+	SgActionNames* pOldActions;
+	SgActionNames* pNewActions;
+	uint32_t       count;
+} SgActiveContextsChangeInfo;
+
+void sgChangeContext(const SgActiveContextsChangeInfo* pChangeInfo, SgActiveContexts** ppContexts);
+void sgSaveContext(const SgActiveContexts* pContexts, char* fileDir);
 
 void sgSetActiveContexts(SgActiveContexts *pActiveContexts, SgApp **ppApp);
 

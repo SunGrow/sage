@@ -9,24 +9,6 @@
 #include "inputKeys.h"
 #include "inputFuncs.h"
 
-SgScene scene = {0};
-
-SgCamera camera = {
-    .position = {-2.0f, -1.0f, -1.0f},
-    .front = {2.0f, 0.0f, 0.0f},
-    .up = {0.0f, 1.0f, 0.0f},
-    .speed = 1,
-    .sensitivity = 6,
-};
-
-static void cursorEnterCallback(SgWindow window, int entered) {
-    if (entered) {
-		int wsizex, wsizey;
-		sgGetWindowSize(window, &wsizex, &wsizey);
-		camera.cursorPosition[0] = wsizex/2;
-		camera.cursorPosition[1] = wsizey/2;
-	}
-}
 
 int main() {
 	// Testing
@@ -55,8 +37,18 @@ int main() {
 		"rotateCamera",
 	};
 
+	SgCamera camera = {
+	    .position = {-2.0f, -1.0f, -1.0f},
+	    .front = {2.0f, 0.0f, 0.0f},
+	    .up = {0.0f, 1.0f, 0.0f},
+	    .speed = 1,
+	    .sensitivity = 6,
+	};
+
 	SgCameraTransformInfo cameraTransform = {0};
 	cameraTransform.camera = camera;
+
+	SgScene scene = {0};
 
 	SgActor testActors[] = {
 		&cameraTransform
@@ -82,12 +74,53 @@ int main() {
 
 		.file          = configFile,
 	};
+
 	sgLoadContexts(&activeContextsCreateInfo, &contexts);
 	sgCloseFile(&configFile);
-
+	SgActionNames oldNames[] = {
+		{
+			.actionType = SG_ACTION_TYPE_TRIGGER,
+			.inputType = SG_INPUT_TYPE_KEYBOARD,
+			.inputName = "k",
+			.modName = "",
+			.actionName = "moveUp",
+		},
+		{
+			.actionType = SG_ACTION_TYPE_TRIGGER,
+			.inputType = SG_INPUT_TYPE_KEYBOARD,
+			.inputName = "i",
+			.modName = "",
+			.actionName = "moveForward",
+		},
+	};
+	SgActionNames newNames[] = {
+		{
+			.actionType = SG_ACTION_TYPE_TRIGGER,
+			.inputType = SG_INPUT_TYPE_KEYBOARD,
+			.inputName = "space",
+			.modName = "",
+			.actionName = "moveUp",
+		},
+		{
+			.actionType = SG_ACTION_TYPE_TRIGGER,
+			.inputType = SG_INPUT_TYPE_KEYBOARD,
+			.inputName = "w",
+			.modName = "",
+			.actionName = "moveForward",
+		},
+	};
+	SgActiveContextsChangeInfo changeInfo = {
+		.pOldActions = oldNames,
+		.pNewActions = newNames,
+		.count = sizeof(oldNames) / sizeof(*oldNames),
+	};
+	sgChangeContext(&changeInfo, &contexts);
+	sgUpdateContext(&activeContextsCreateInfo, &contexts);
+	sgSaveContext(contexts, "cfg/contexts2.json");
 
 	//
 	
+
 	SgAppCreateInfo createInfo = {
 		.pName = "Space Invaders",
 		.size  = {640, 480},
@@ -98,8 +131,6 @@ int main() {
 	SgApp app;
 
 	sgCreateApp(&createInfo, &app);
-	SgWindow window = sgGetWindow(app);
-	sgSetCursorEnterCallback(window, cursorEnterCallback);
 
 	cameraTransform.camera.aspectRatio = createInfo.size[0]/createInfo.size[1];
 	cameraTransform.camera.fov = deg_to_rad(80.f);

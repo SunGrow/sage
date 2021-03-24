@@ -32,6 +32,17 @@ SgResult sgOpenFile(const char* path, SgFile **ppFile) {
 	return SG_SUCCESS;
 }
 
+SgResult sgWriteFile(const char* path, SgFile *pFile) {
+	FILE *file = fopen(path, "wb");
+	if (!file) {
+		log_warn("[Base]: On path < %s > file could not be created/opened", path);
+		return 1;
+	}
+	fwrite(pFile->pBytes, sizeof(char), pFile->size, file);
+	fclose(file);
+	return SG_SUCCESS;
+}
+
 SgResult sgCloseFile(SgFile **ppFile) {
 	if((*ppFile)->pBytes){
 		free((*ppFile)->pBytes);
