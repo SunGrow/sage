@@ -76,48 +76,89 @@ int main() {
 	};
 
 	sgLoadContexts(&activeContextsCreateInfo, &contexts);
-	sgCloseFile(&configFile);
-	SgActionNames oldNames[] = {
-		{
-			.actionType = SG_ACTION_TYPE_TRIGGER,
-			.inputType = SG_INPUT_TYPE_KEYBOARD,
-			.inputName = "k",
-			.modName = "",
-			.actionName = "moveUp",
-		},
-		{
-			.actionType = SG_ACTION_TYPE_TRIGGER,
-			.inputType = SG_INPUT_TYPE_KEYBOARD,
-			.inputName = "i",
-			.modName = "",
-			.actionName = "moveForward",
-		},
-	};
-	SgActionNames newNames[] = {
-		{
-			.actionType = SG_ACTION_TYPE_TRIGGER,
-			.inputType = SG_INPUT_TYPE_KEYBOARD,
-			.inputName = "space",
-			.modName = "",
-			.actionName = "moveUp",
-		},
-		{
-			.actionType = SG_ACTION_TYPE_TRIGGER,
-			.inputType = SG_INPUT_TYPE_KEYBOARD,
-			.inputName = "w",
-			.modName = "",
-			.actionName = "moveForward",
-		},
-	};
-	SgActiveContextsChangeInfo changeInfo = {
-		.pOldActions = oldNames,
-		.pNewActions = newNames,
-		.count = sizeof(oldNames) / sizeof(*oldNames),
-	};
-	sgChangeContext(&changeInfo, &contexts);
-	sgUpdateContext(&activeContextsCreateInfo, &contexts);
-	sgSaveContext(contexts, "cfg/contexts2.json");
-
+	//sgCloseFile(&configFile);
+	//SgActionNames oldNames[] = {
+	//	{
+	//		.actionType = SG_ACTION_TYPE_TRIGGER,
+	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
+	//		.inputName = "k",
+	//		.modName = "",
+	//		.actionName = "moveUp",
+	//	},
+	//	{
+	//		.actionType = SG_ACTION_TYPE_TRIGGER,
+	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
+	//		.inputName = "i",
+	//		.modName = "",
+	//		.actionName = "moveForward",
+	//	},
+	//	{
+	//		.actionType = SG_ACTION_TYPE_TRIGGER,
+	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
+	//		.inputName = "n",
+	//		.modName = "",
+	//		.actionName = "moveBack",
+	//	},
+	//	{
+	//		.actionType = SG_ACTION_TYPE_TRIGGER,
+	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
+	//		.inputName = "l",
+	//		.modName = "",
+	//		.actionName = "moveRight",
+	//	},
+	//	{
+	//		.actionType = SG_ACTION_TYPE_TRIGGER,
+	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
+	//		.inputName = "h",
+	//		.modName = "",
+	//		.actionName = "moveLeft",
+	//	},
+	//};
+	//SgActionNames newNames[] = {
+	//	{
+	//		.actionType = SG_ACTION_TYPE_TRIGGER,
+	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
+	//		.inputName = "space",
+	//		.modName = "",
+	//		.actionName = "moveUp",
+	//	},
+	//	{
+	//		.actionType = SG_ACTION_TYPE_TRIGGER,
+	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
+	//		.inputName = "w",
+	//		.modName = "",
+	//		.actionName = "moveForward",
+	//	},
+	//	{
+	//		.actionType = SG_ACTION_TYPE_TRIGGER,
+	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
+	//		.inputName = "s",
+	//		.modName = "",
+	//		.actionName = "moveBack",
+	//	},
+	//	{
+	//		.actionType = SG_ACTION_TYPE_TRIGGER,
+	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
+	//		.inputName = "d",
+	//		.modName = "",
+	//		.actionName = "moveRight",
+	//	},
+	//	{
+	//		.actionType = SG_ACTION_TYPE_TRIGGER,
+	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
+	//		.inputName = "a",
+	//		.modName = "",
+	//		.actionName = "moveLeft",
+	//	},
+	//};
+	//SgActiveContextsChangeInfo changeInfo = {
+	//	.pOldActions = oldNames,
+	//	.pNewActions = newNames,
+	//	.count = sizeof(oldNames) / sizeof(*oldNames),
+	//};
+	//sgChangeContext(&changeInfo, &contexts);
+	//sgUpdateContext(&activeContextsCreateInfo, &contexts);
+	//sgSaveContext(contexts, "cfg/contexts.json");
 	//
 	
 

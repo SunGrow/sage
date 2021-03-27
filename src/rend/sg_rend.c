@@ -112,7 +112,8 @@ SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppSgApp) {
 	// static could be an alternative... But it is not thread safe. Mb will change to static later.
 	/* TODO: Make execution order explicit where it matters.           *
 	 * Having to setup individual small createinfo structures may help */
-	SgApp* pApp = calloc(1,sizeof(pApp[0]));
+	SgApp* pApp;
+	SG_CALLOC_NUM(pApp, 1);
 
 	glfwInit();
 	volkInitialize();
@@ -173,9 +174,11 @@ SgWindow* sgGetWindow(SgApp *pApp) {
 }
 
 SgResult sgCreateResourceSet(const SgApp* pApp, const SgResourceSetCreateInfo *pCreateInfo, SgResourceSet **ppSgResourceSet) {
-	SgResourceSet* pResourceSet = calloc(1, sizeof(pResourceSet[0]));
+	SgResourceSet* pResourceSet;
+	SG_CALLOC_NUM(pResourceSet, 1);
 
-	VkDescriptorSetLayoutBinding* pSetLayoutBindings = calloc(pCreateInfo->resourceCount, sizeof(pSetLayoutBindings[0]));
+	VkDescriptorSetLayoutBinding* pSetLayoutBindings;
+	SG_CALLOC_NUM(pSetLayoutBindings, pCreateInfo->resourceCount);
 
 	for (uint32_t i = 0; i < pCreateInfo->resourceCount; ++i) {
 		pSetLayoutBindings[i].binding = pCreateInfo->ppResources[i][0].binding;
@@ -218,7 +221,7 @@ SgResult sgCreateResourceSet(const SgApp* pApp, const SgResourceSetCreateInfo *p
 SgResult sgInitResourceSet(const SgApp *pApp, SgResourceSetInitInfo *pInitInfo, SgResourceSet** ppResourceSet) {
 	SgResourceSet *pResourceSet = *ppResourceSet;
 	if (pResourceSet->pWriteDescriptorSets == NULL) {
-		pResourceSet->pWriteDescriptorSets = calloc(pInitInfo->resourceCount, sizeof(pResourceSet->pWriteDescriptorSets[0]));
+		SG_CALLOC_NUM(pResourceSet->pWriteDescriptorSets, pInitInfo->resourceCount);
 	}
 	for (uint32_t i = 0; i < pInitInfo->pGraphicsInstance->descriptorSetsCount; ++i) {
 		for (uint32_t j = 0; j < pInitInfo->resourceCount; ++j) {
@@ -275,7 +278,8 @@ SgResult sgInitResourceSet(const SgApp *pApp, SgResourceSetInitInfo *pInitInfo, 
 }
 
 SgResult sgCreateShader(const SgApp *pApp, const SgShaderCreateInfo* pCreateInfo, SgShader **ppShader) {
-	SgShader* pShader = calloc(1, sizeof(pShader[0]));
+	SgShader* pShader;
+	SG_CALLOC_NUM(pShader, 1);
 	SgFile* pFile = pCreateInfo->pFile;
 	VkShaderModuleCreateInfo createInfo = {
 		.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
@@ -478,34 +482,12 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 	sgCreateImageView(pApp, &depthImageViewCreateInfo, &pSwapchain->depthImageView);
 	/* Transition depth image */
 	{
-		/* Begin command buffer */
-		VkCommandBuffer commandBuffer;
-		VkCommandBufferAllocateInfo allocInfo = {
-			.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-    		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-    		.commandPool = pApp->pCommandPools[2],
-    		.commandBufferCount = 1,
-		};
-
-    	
-    	vkAllocateCommandBuffers(pApp->device, &allocInfo, &commandBuffer);
-
-    	VkCommandBufferBeginInfo beginInfo = {
-			.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-			.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
-		};
-
-    	vkBeginCommandBuffer(commandBuffer, &beginInfo);
-		/**/
-
-
-		VkImageMemoryBarrier barrier = {
-			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-			.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-			.newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-			.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-			.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-			.image = pSwapchain->depthImage.image,
+		SgImageTransferInfo transferInfo = {
+			.image = pSwapchain->depthImage,
+			.srcImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.dstImageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+			.srcQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
+			.dstQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
 			.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT,
 			.subresourceRange.baseMipLevel = 0,
 			.subresourceRange.layerCount = 1,
@@ -514,24 +496,7 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 			.srcAccessMask = 0,
 			.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 		};
-
-		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, 0, 0, NULL, 0, NULL, 1, &barrier);
-
-		
-		/* End command buffer */
-		vkEndCommandBuffer(commandBuffer);
-
-    	VkSubmitInfo submitInfo = {
-			.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-    		.commandBufferCount = 1,
-    		.pCommandBuffers = &commandBuffer,
-		};
-
-    	vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    	vkQueueWaitIdle(pApp->graphicsQueue);
-
-    	vkFreeCommandBuffers(pApp->device, pApp->pCommandPools[2], 1, &commandBuffer);
-		/**/
+		sgTransferImage(pApp, &transferInfo);
 	}
 
 	/**/
@@ -581,7 +546,8 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 }
 
 SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCreateInfo *pCreateInfo, SgGraphicsInstance **ppGraphicsInstance) {
-	SgGraphicsInstance* pGraphicsInstance = calloc(1, sizeof(pGraphicsInstance[0]));
+	SgGraphicsInstance* pGraphicsInstance;
+	SG_CALLOC_NUM(pGraphicsInstance, 1);
 	pGraphicsInstance->ppSets = pCreateInfo->ppSets;
 	/* Create Render Passes */
 	createRenderPass(pApp, &pGraphicsInstance->renderPass);
@@ -631,7 +597,8 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 		log_warn("[Graphics Instance]: No descriptor pools");
 	}
 	uint32_t offset = 0;
-	VkDescriptorPoolSize *pPoolSizes = calloc(poolSizeCount, sizeof(pPoolSizes[0]));
+	VkDescriptorPoolSize *pPoolSizes;
+	SG_CALLOC_NUM(pPoolSizes, poolSizeCount);
 	for (uint32_t i = 0; i < baseSetCount; ++i) {
 		for (uint32_t j = 0; j < pCreateInfo->setCount; ++j) {
 			for (uint32_t k = 0; k < pCreateInfo->ppSets[j]->resourceCount; ++k) {
@@ -709,7 +676,8 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	sgCreateSwapchain(pApp, &swapchainCreateInfo, &pGraphicsInstance->swapchain);
 
 	/* Create Graphics Pipeline */
-	VkPipelineShaderStageCreateInfo *pShaderStageCreateInfos = calloc(pCreateInfo->shaderCount, sizeof(pShaderStageCreateInfos[0]));
+	VkPipelineShaderStageCreateInfo *pShaderStageCreateInfos;
+	SG_CALLOC_NUM(pShaderStageCreateInfos, pCreateInfo->shaderCount);
 	for (uint32_t i = 0; i < pCreateInfo->shaderCount; ++i) {
 		pShaderStageCreateInfos[i] = (VkPipelineShaderStageCreateInfo) {
 	        .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
@@ -811,8 +779,9 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdateCommands** ppUpdateCommands) {
 
 	vkDeviceWaitIdle(pInitInfo->pApp->device);
-	SgUpdateCommands *pUpdateCommands = calloc(1, sizeof(pUpdateCommands[0]));
-	pUpdateCommands->pCommandBuffers = calloc(pInitInfo->pGraphicsInstance->swapchain.imageCount, sizeof(pUpdateCommands[0]));
+	SgUpdateCommands *pUpdateCommands;
+	SG_CALLOC_NUM(pUpdateCommands, 1);
+	SG_CALLOC_NUM(pUpdateCommands->pCommandBuffers, pInitInfo->pGraphicsInstance->swapchain.imageCount);
 
 	VkCommandBufferAllocateInfo commandAllocInfo = {
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,

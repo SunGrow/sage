@@ -1,0 +1,11 @@
+{
+	"window" : {
+		"width" : 640,
+		"height" : 480,
+		"cursor" : "hidden",
+		"fullscreen" : "off"
+	},
+	"graphics" : {
+		"msaa" : 2
+	}
+}

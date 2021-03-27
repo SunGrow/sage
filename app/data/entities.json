@@ -1,0 +1,19 @@
+{
+	"entities" : [
+		"materialLayouts" : [
+			{
+				"materialName" : "based",
+				"layout" : {
+					"sets" : [
+						{
+							"position" : 0,
+							"data" : {
+								"resourceName" : "skin"
+							}
+						}
+					]
+				}
+			}
+		]
+	]
+}

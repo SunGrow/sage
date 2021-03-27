@@ -54,6 +54,7 @@ typedef struct SgActionNames {
 	char* inputName;
 	char* modName;
 	char* actionName;
+	uint32_t actorID;
 } SgActionNames;
 
 typedef struct SgActiveContextsChangeInfo {

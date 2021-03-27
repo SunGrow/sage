@@ -3,12 +3,12 @@
 		{
 			"name"      : "vertexShader",
 			"stageName" : "vertex",
-			"dir"       : ""
+			"dir"       : "mesh3.vert.spv"
 		},
 		{
 			"name"      : "fragmentShader",
 			"stageName" : "fragment",
-			"dir"       : ""
+			"dir"       : "mesh3.frag.spv"
 		}
 	],
 	"meshes" : [
@@ -16,12 +16,45 @@
 			"name" : "kitten",
 			"dir"  : "res/kitten.obj",
 			"type" : "obj"
+		},
+		{
+			"name" : "myriam",
+			"dir"  : "res/myriam.obj",
+			"type" : "obj"
+		},
+		{
+			"name" : "cube",
+			"dir"  : "res/cube.obj",
+			"type" : "obj"
+		},
+		{
+			"name" : "sphere",
+			"dir"  : "res/sphere.obj",
+			"type" : "obj"
 		}
 	],
 	"textures" : [
 		{
 			"name"   : "skin",
 			"dir"    : "res/skin.jpg",
+			"format" : "R8G8B8A8",
+			"type"   : "jpg"
+		},
+		{
+			"name"   : "crow",
+			"dir"    : "res/crow.jpg",
+			"format" : "R8G8B8A8",
+			"type"   : "jpg"
+		},
+		{
+			"name"   : "def",
+			"dir"    : "res/def.jpg",
+			"format" : "R8G8B8A8",
+			"type"   : "jpg"
+		},
+		{
+			"name"   : "chalet",
+			"dir"    : "res/chalet.jpg",
 			"format" : "R8G8B8A8",
 			"type"   : "jpg"
 		}
@@ -38,21 +71,42 @@
 					{
 						"position" : 0,
 						"resources" : [
-							"location" : 0,
-							"descriptorTypeName" : "mesh"
+							{
+								"location" : 0,
+								"descriptorTypeName" : "storageBuffer"
+							},
+							{
+								"location" : 1,
+								"descriptorTypeName" : "imageSampler"
+							}
+						]
+					},
+					{
+						"position" : 1,
+						"resources" : [
+							{
+								"location" : 0,
+								"descriptorTypeName" : "uniformBuffer"
+							}
 						]
 					}
 				],
 				"pushConstants" : [
 					{
-						"name" : "vertexPushConstant",
-						"stageName" : "vertex",
-						"descriptorTypeName" : "uniform",
-						"byteOffset"     : 0,
-						"layoutByteSize" : 4
+						"name" : "",
+						"stageName" : "",
+						"descriptorTypeName" : "",
+						"byteOffset"     : ,
+						"layoutByteSize" : 
 					}
 				]
 			}
+		}
+	],
+	"resources" : [
+		{
+			"name" : "skin",
+			"type" : "texture"
 		}
 	]
 }

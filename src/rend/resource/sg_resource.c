@@ -1,11 +1,13 @@
 #include <stdlib.h>
 #include "log.h"
 #include "sg_resource.h"
+#include "command/sg_rend_command.h"
 #include <string.h>
 
 
 SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreateInfo, SgResource **ppResource) {
-	SgResource *pResource = calloc(1, sizeof(pResource[0]));
+	SgResource *pResource;
+	SG_CALLOC_NUM(pResource, 1);
 	pResource->stage = pCreateInfo->stage;
 	pResource->type = pCreateInfo->type;
 	pResource->binding = pCreateInfo->binding;
@@ -75,34 +77,12 @@ SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreate
 		vkCreateSampler(pApp->device, &samplerInfo, VK_NULL_HANDLE, &pResource->imageSampler);
 		/* Transition image */
 		{
-			/* Begin command buffer */
-			VkCommandBuffer commandBuffer;
-			VkCommandBufferAllocateInfo allocInfo = {
-				.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-    			.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-    			.commandPool = pApp->pCommandPools[2],
-    			.commandBufferCount = 1,
-			};
-
-    		
-    		vkAllocateCommandBuffers(pApp->device, &allocInfo, &commandBuffer);
-
-    		VkCommandBufferBeginInfo beginInfo = {
-				.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-				.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
-			};
-
-    		vkBeginCommandBuffer(commandBuffer, &beginInfo);
-			/**/
-
-
-			VkImageMemoryBarrier barrier = {
-				.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-				.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-				.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-				.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-				.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-				.image = pResource->image.image,
+			SgImageTransferInfo transferInfo = {
+				.image = pResource->image,
+				.srcImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+				.dstImageLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+				.srcQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
+				.dstQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
 				.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
 				.subresourceRange.baseMipLevel = 0,
 				.subresourceRange.layerCount = 1,
@@ -110,24 +90,10 @@ SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreate
 				.subresourceRange.baseArrayLayer = 0,
 				.srcAccessMask = 0,
 				.dstAccessMask = 0,
+				.srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+				.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 			};
-
-			vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, 0, 0, NULL, 0, NULL, 1, &barrier);
-			
-			/* End command buffer */
-			vkEndCommandBuffer(commandBuffer);
-
-    		VkSubmitInfo submitInfo = {
-				.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-    			.commandBufferCount = 1,
-    			.pCommandBuffers = &commandBuffer,
-			};
-
-    		vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    		vkQueueWaitIdle(pApp->graphicsQueue);
-
-    		vkFreeCommandBuffers(pApp->device, pApp->pCommandPools[2], 1, &commandBuffer);
-			/**/
+			sgTransferImage(pApp, &transferInfo);
 		}
 		SgData dataToCopyFrom = {
 			.bytes = pCreateInfo->bytes,
@@ -136,34 +102,12 @@ SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreate
 		sgUpdateResource(pApp, &dataToCopyFrom, &pResource);
 		/* Transition image */
 		{
-			/* Begin command buffer */
-			VkCommandBuffer commandBuffer;
-			VkCommandBufferAllocateInfo allocInfo = {
-				.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-    			.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-    			.commandPool = pApp->pCommandPools[2],
-    			.commandBufferCount = 1,
-			};
-
-    		
-    		vkAllocateCommandBuffers(pApp->device, &allocInfo, &commandBuffer);
-
-    		VkCommandBufferBeginInfo beginInfo = {
-				.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-				.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
-			};
-
-    		vkBeginCommandBuffer(commandBuffer, &beginInfo);
-			/**/
-
-
-			VkImageMemoryBarrier barrier = {
-				.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-				.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-				.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-				.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-				.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-				.image = pResource->image.image,
+			SgImageTransferInfo transferInfo = {
+				.image = pResource->image,
+				.srcImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+				.dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+				.srcQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
+				.dstQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
 				.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
 				.subresourceRange.baseMipLevel = 0,
 				.subresourceRange.layerCount = 1,
@@ -171,24 +115,10 @@ SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreate
 				.subresourceRange.baseArrayLayer = 0,
 				.srcAccessMask = 0,
 				.dstAccessMask = 0,
+				.srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+				.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 			};
-
-			vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, 0, 0, NULL, 0, NULL, 1, &barrier);
-			
-			/* End command buffer */
-			vkEndCommandBuffer(commandBuffer);
-
-    		VkSubmitInfo submitInfo = {
-				.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-    			.commandBufferCount = 1,
-    			.pCommandBuffers = &commandBuffer,
-			};
-
-    		vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    		vkQueueWaitIdle(pApp->graphicsQueue);
-
-    		vkFreeCommandBuffers(pApp->device, pApp->pCommandPools[2], 1, &commandBuffer);
-			/**/
+			sgTransferImage(pApp, &transferInfo);
 		}
 		/**/
 		//
@@ -262,7 +192,6 @@ SgResult sgCreateBuffer(const SgApp* pApp, SgBufferCreateInfo* pCreateInfo, SgBu
 }
 
 SgResult sgCreateImage(const SgApp* pApp, SgImageCreateInfo* pCreateInfo, SgImage* pImage) {
-
 	VkImageCreateInfo createinfo = {
 	    .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
 	    .usage = pCreateInfo->usage,
@@ -349,7 +278,7 @@ SgResult sgUpdateResource(const SgApp* pApp, const SgData* pData, SgResource** p
 
 	// TODO: Size safety
     if (pData->size > pResource->dataBuffer.size) {
-            log_warn("[Res]: Data size exceeds resource size. Possible memory corruption");
+        log_warn("[Res]: Data size exceeds resource size. Possible memory corruption");
     }
     if (SG_RESOURCE_TYPE_REQIRE_STAGING_MASK & pResource->type) {
 		memcpy(pResource->stagingBuffer.bytes, pData->bytes, pData->size);
@@ -376,7 +305,6 @@ SgResult sgUpdateResource(const SgApp* pApp, const SgData* pData, SgResource** p
 	
 	vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(pApp->graphicsQueue); // TMP
-//	vkFreeCommandBuffers(pApp->device, pResource->commandPool, 1, &pResource->commandBuffer);
 	vkResetCommandPool(pApp->device, pResource->commandPool, 0);
 	*ppResource = pResource;
 	return SG_SUCCESS;
