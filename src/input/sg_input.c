@@ -24,7 +24,7 @@
 //	}
 //
 
-int keyCompare(const void* a, const void* b, void* udata) {
+static int keyCompare(const void* a, const void* b, void* udata) {
 	const SgInputKey* keyA = a;
 	const SgInputKey* keyB = b;
 
@@ -37,18 +37,18 @@ int keyCompare(const void* a, const void* b, void* udata) {
 		+ (!keyTypeNeq) * (!keyNeq) * (keyModNeq) * (keyA->type - keyB->type);
 }
 
-uint64_t keyHash(const void *item, uint64_t seed0, uint64_t seed1) {
+static uint64_t keyHash(const void *item, uint64_t seed0, uint64_t seed1) {
 	struct tmpKey {
-	int32_t key;
-	int32_t mods;
-	SgInputType type;
+		int32_t key;
+		int32_t mods;
+		SgInputType type;
 	};
     const struct tmpKey* key = item;
     return hashmap_sip(key, sizeof(*key), seed0, seed1);
 }
 
 
-bool keyIter(const void *item, void *udata) {
+static bool keyIter(const void *item, void *udata) {
     const SgInputKey* key = item;
 	log_info("[JSON]: hashmap item is [key: %d, mods: %d, type: %d, id: %d]", key->key, key->mods, key->type, key->id);
     return true;
@@ -204,7 +204,6 @@ static void sgCallActions(SgActiveContexts* pActiveContexts, SgInputType inputTy
 				SgActor actor = pActiveContexts->pContexts[i].pActors[actorID];
 				SgInputAction action = activeMap.actionFuncs[inputKey->id];
 				action(actions, rangeX, rangeY, actor, pWindow);
-				action(actions, rangeX, rangeY, actor, pWindow);
 			}
 			// A botch
 			else if (actions == GLFW_RELEASE) {
@@ -213,7 +212,6 @@ static void sgCallActions(SgActiveContexts* pActiveContexts, SgInputType inputTy
 					uint32_t actorID = activeMap.actorIDs[inputKey->id];
 					SgActor actor = pActiveContexts->pContexts[i].pActors[actorID];
 					SgInputAction action = activeMap.actionFuncs[inputKey->id];
-					action(actions, rangeX, rangeY, actor, pWindow);
 					action(actions, rangeX, rangeY, actor, pWindow);
 				}
 			}

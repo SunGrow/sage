@@ -31,3 +31,6 @@
 [submodule "extern/cJSON"]
 	path = extern/cJSON
 	url = https://github.com/DaveGamble/cJSON
+[submodule "extern/stb"]
+	path = extern/stb
+	url = https://github.com/nothings/stb

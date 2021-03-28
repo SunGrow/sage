@@ -4,6 +4,7 @@
 #include "sage_base.h"
 #include "sg_math.h"
 #include "stb_image.h"
+#include "hashmap.h"
 
 // Mesh
 typedef struct SgVertex {

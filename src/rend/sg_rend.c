@@ -47,6 +47,7 @@ SgResult createGLFWwindow(const SgAppCreateInfo *pCreateInfo, SgApp *pApp) {
 	if (pCreateInfo->flags & SG_APP_CURSOR_HIDDEN) {
 		glfwSetInputMode(pApp->pWindow , GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
+	glfwSetInputMode(pApp->pWindow, GLFW_STICKY_KEYS, GLFW_TRUE);
 	return SG_SUCCESS;
 }
 

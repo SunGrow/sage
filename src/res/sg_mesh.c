@@ -7,6 +7,30 @@
 #include "fast_obj.h"
 #include "meshoptimizer.h"
 
+typedef struct SgMeshItem {
+	char*     pPath;
+	uint32_t  offset;
+} SgMeshItem;
+
+static int keyCompare(const void* a, const void* b, void* udata) {
+	const SgMeshItem* keyA = a;
+	const SgMeshItem* keyB = b;
+	return strcmp(keyA->pPath, keyB->pPath);
+}
+
+static uint64_t keyHash(const void *item, uint64_t seed0, uint64_t seed1) {
+    const SgMeshItem* key = item;
+    return hashmap_sip(key->pPath, strlen(key->pPath), seed0, seed1);
+}
+
+
+static bool keyIter(const void *item, void *udata) {
+	const SgMeshItem* key = item;
+	log_info("[MeshIter]: Path: %s, Offset: %d", key->pPath, key->offset);
+    return true;
+}
+
+
 uint32_t sgAddMesh(const char* pPath, SgMeshArray** ppMeshArray) {
 	return 0;
 }
