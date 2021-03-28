@@ -221,7 +221,7 @@ int main() {
 		.move = {2.5, 0.3, 1.1},
 		.scale = {1, 1, 1,},
 	};
-	sgTransformMesh(&kittenMeshTransformInfo, pMesh->vertexCount, pMesh->pVertices);
+	sgTransformMesh(&kittenMeshTransformInfo, 0, pMesh->vertexCount, pMesh->pVertices);
 
 	/**/
 
@@ -264,7 +264,7 @@ int main() {
 		.move = {.5, 0.1, 0.1},
 		.scale = {0.01, 0.01, 0.01,},
 	};
-	sgTransformMesh(&kittenMeshTransformInfo2, pMesh2->vertexCount, pMesh2->pVertices);
+	sgTransformMesh(&kittenMeshTransformInfo2, 0, pMesh2->vertexCount, pMesh2->pVertices);
 	/**/
 
 	/* Resource Init */

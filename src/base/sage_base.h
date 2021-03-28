@@ -70,6 +70,9 @@ typedef struct SgApp {
 	uint32_t                  frameImageIndex;
 	VkFence                   pFrameFences[SG_FRAME_QUEUE_LENGTH];
 	VkFence                   pFrameImageInFlightFences[SG_FRAME_QUEUE_LENGTH + 6];
+
+	VkRect2D                  scissor;
+	VkViewport                viewport;
 } SgApp;
 
 typedef enum SgResourceTypeFlagBits {

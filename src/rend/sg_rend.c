@@ -808,11 +808,11 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 
 		// TODO: RESIZE SHOULD BE DYNAMIC! YOU YOURSELF MADE IT THAT WAY!
 		// YET NOW YOU ARE TOO LAZY TO MAKE IT A THING. WORK!
-		VkRect2D scissor = (VkRect2D){
+		pInitInfo->pApp->scissor = (VkRect2D){
 		    { 0, 0, },
 			pInitInfo->pGraphicsInstance->swapchain.extent,
 		};
-		VkViewport viewport = (VkViewport)
+		pInitInfo->pApp->viewport = (VkViewport)
 		{ 0, 0, (float)pInitInfo->pGraphicsInstance->swapchain.extent.width, (float)pInitInfo->pGraphicsInstance->swapchain.extent.height, 0, 1};
 
 		VkCommandBufferBeginInfo commandBufferBeginInfo = {
@@ -821,8 +821,8 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 		vkBeginCommandBuffer(pUpdateCommands->pCommandBuffers[i], &commandBufferBeginInfo); 
 
 		/* */
-		vkCmdSetViewport(pUpdateCommands->pCommandBuffers[i], 0, 1, &viewport);
-		vkCmdSetScissor(pUpdateCommands->pCommandBuffers[i], 0, 1, &scissor);
+		vkCmdSetViewport(pUpdateCommands->pCommandBuffers[i], 0, 1, &pInitInfo->pApp->viewport);
+		vkCmdSetScissor(pUpdateCommands->pCommandBuffers[i], 0, 1, &pInitInfo->pApp->scissor);
 		vkCmdBindPipeline(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pInitInfo->pGraphicsInstance->graphicsPipeline);
 
 		vkCmdBeginRenderPass(pUpdateCommands->pCommandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -849,6 +849,21 @@ SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo) {
 	glfwPollEvents();
 	/* Retrieve Image */
     vkWaitForFences(pApp->device, 1, &pApp->pFrameFences[pApp->currentFrame], VK_TRUE, UINT64_MAX);
+	{
+		int width, height;
+		glfwGetWindowSize(pApp->pWindow, &width, &height);
+
+		pApp->scissor = (VkRect2D){
+		    { 0, 0, },
+			pGraphicsInstance->swapchain.extent,
+		};
+		pApp->viewport = (VkViewport)
+		{ 
+			0, 0,
+			(float)pGraphicsInstance->swapchain.extent.width, (float)pGraphicsInstance->swapchain.extent.height, 0, 1
+		};
+	}
+
 
 	VkResult res = vkAcquireNextImageKHR(pApp->device, pGraphicsInstance->swapchain.swapchain, UINT64_MAX, pApp->pFrameReadySemaphore[pApp->currentFrame], VK_NULL_HANDLE, &pApp->frameImageIndex);
 	if (res == VK_ERROR_OUT_OF_DATE_KHR) {

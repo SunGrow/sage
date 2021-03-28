@@ -204,6 +204,18 @@ static void sgCallActions(SgActiveContexts* pActiveContexts, SgInputType inputTy
 				SgActor actor = pActiveContexts->pContexts[i].pActors[actorID];
 				SgInputAction action = activeMap.actionFuncs[inputKey->id];
 				action(actions, rangeX, rangeY, actor, pWindow);
+				action(actions, rangeX, rangeY, actor, pWindow);
+			}
+			// A botch
+			else if (actions == GLFW_RELEASE) {
+				inputKey = hashmap_get(activeMap.actionMap, &(SgInputKey) {.key = key, .mods = 0, .type = inputType});
+				if (inputKey) {
+					uint32_t actorID = activeMap.actorIDs[inputKey->id];
+					SgActor actor = pActiveContexts->pContexts[i].pActors[actorID];
+					SgInputAction action = activeMap.actionFuncs[inputKey->id];
+					action(actions, rangeX, rangeY, actor, pWindow);
+					action(actions, rangeX, rangeY, actor, pWindow);
+				}
 			}
 		}
 	}

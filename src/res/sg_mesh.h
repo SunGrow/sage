@@ -20,17 +20,27 @@ typedef struct SgMesh {
 } SgMesh;
 //
 
+typedef struct SgMeshArray {
+	SgVertex*          pVertices;
+	uint32_t           vertexCount;
+	uint32_t*          pVertexOffsets;
+	uint32_t*          pIndices;
+	uint32_t           indexCount;
+	uint32_t*          pIndexOffsets;
+	struct hashmap*    meshMap;      // Return an offset if is in. Add new and return new offset if is new
+} SgMeshArray;
 
-// Mesh
-void sgLoadMesh(const char *pPath, SgMesh **ppMesh);
-void sgUnloadMesh(SgMesh **ppMesh);
+// Returns mesh offset to added mesh
+uint32_t sgAddMesh(const char* pPath, SgMeshArray** ppMeshArray);
+uint32_t sgLoadMesh(const char *pPath, SgMesh **ppMesh);
+void     sgUnloadMesh(SgMesh **ppMesh);
 
 typedef struct SgMeshTransformInfo {
 	v3 move;
 	v3 scale;
 } SgMeshTransformInfo;
 
-void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t vertCount, SgVertex *pVertices);
+void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t offset, uint32_t vertCount, SgVertex *pVertices);
 
 typedef struct SgTexture {
 	int32_t width, height, channels;

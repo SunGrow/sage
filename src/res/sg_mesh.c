@@ -7,7 +7,11 @@
 #include "fast_obj.h"
 #include "meshoptimizer.h"
 
-void sgLoadMesh(const char *pPath, SgMesh **ppMesh) {
+uint32_t sgAddMesh(const char* pPath, SgMeshArray** ppMeshArray) {
+	return 0;
+}
+
+uint32_t sgLoadMesh(const char *pPath, SgMesh **ppMesh) {
 	// obj mesh load
 	fastObjMesh *pObj = fast_obj_read(pPath);
 
@@ -65,7 +69,7 @@ void sgLoadMesh(const char *pPath, SgMesh **ppMesh) {
 		pMesh->indexCount = totalindices;
 		*ppMesh = pMesh;
 		log_info("[Res]: Mesh Read Successfull");
-		return;
+		return 0;
 	}
 	uint32_t *premap = malloc(totalindices * sizeof(uint32_t));
 
@@ -87,6 +91,7 @@ void sgLoadMesh(const char *pPath, SgMesh **ppMesh) {
 	log_info("[Res]: Mesh Read Successfull");
 
 	free(premap);
+	return 0;
 }
 
 void sgUnloadMesh(SgMesh **ppMesh) {
@@ -98,15 +103,15 @@ void sgUnloadMesh(SgMesh **ppMesh) {
 }
 
 
-void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t vertCount, SgVertex *pVertices) {
+void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t offset, uint32_t vertCount, SgVertex *pVertices) {
 	for (uint32_t i = 0; i < vertCount; ++i) {
-		pVertices[i].vert[0] *= pTransformInfo->scale[0];
-		pVertices[i].vert[1] *= pTransformInfo->scale[1];
-		pVertices[i].vert[2] *= pTransformInfo->scale[2];
+		pVertices[offset+i].vert[0] *= pTransformInfo->scale[0];
+		pVertices[offset+i].vert[1] *= pTransformInfo->scale[1];
+		pVertices[offset+i].vert[2] *= pTransformInfo->scale[2];
 
-		pVertices[i].vert[0] += pTransformInfo->move[0];
-		pVertices[i].vert[1] += pTransformInfo->move[1];
-		pVertices[i].vert[2] += pTransformInfo->move[2];
+		pVertices[offset+i].vert[0] += pTransformInfo->move[0];
+		pVertices[offset+i].vert[1] += pTransformInfo->move[1];
+		pVertices[offset+i].vert[2] += pTransformInfo->move[2];
 	}
 }
 
@@ -123,6 +128,7 @@ void sgLoadTexture(const char *pPath, SgTexture **ppTexture) {
 
 	*ppTexture = pTexture;
 }
+
 void sgUnloadTexture(SgTexture **ppTexture) {
 	stbi_image_free(ppTexture[0]->pixels);
 	ppTexture[0]->pixels = NULL;
