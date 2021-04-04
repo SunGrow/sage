@@ -20,20 +20,24 @@ typedef struct SgMesh {
 	uint32_t           indexCount;
 } SgMesh;
 
-typedef struct SgMeshArray {
+typedef struct SgMeshSet {
 	SgVertex*          pVertices;
 	uint32_t           vertexCount;
 	uint32_t*          pVertexOffsets;
+	uint32_t*          pIndexSizes;
+	uint32_t*          pVertexSizes;
 	uint32_t*          pIndices;
 	uint32_t           indexCount;
 	uint32_t*          pIndexOffsets;
-	struct hashmap*    meshMap;      // Return an offset if is in. Add new and return new offset if is new
-} SgMeshArray;
+	uint32_t           meshCount;
+	struct hashmap*    meshMap;      // Return an offset id
+} SgMeshSet;
 
+SgResult  sgCreateMeshSet(SgMeshSet** ppMeshArray);
+uint32_t  sgAddMesh(const char* pPath, SgMeshSet** ppMeshArray);
 
-uint32_t sgAddMesh(const char* pPath, SgMeshArray** ppMeshArray);
-uint32_t sgLoadMesh(const char *pPath, SgMesh **ppMesh);
-void     sgUnloadMesh(SgMesh **ppMesh);
+uint32_t* sgGetMeshID(const char* pPath, const SgMeshSet* pMeshArray);
+void      sgUnloadMesh(SgMesh **ppMesh);
 
 typedef struct SgMeshTransformInfo {
 	v3 move;

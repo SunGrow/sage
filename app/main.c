@@ -214,15 +214,36 @@ int main() {
 
 
 	/* Placeholder Mesh */
-	SgMesh *pMesh;
+	SgMeshSet *pMesh;
 	
-	sgLoadMesh("res/chalet.obj", &pMesh);
+	sgCreateMeshSet(&pMesh);
+	uint32_t mesh1ID = sgAddMesh("res/kitten.obj", &pMesh);
+	uint32_t mesh2ID = sgAddMesh("res/chalet.obj", &pMesh);
+	uint32_t mesh3ID = sgAddMesh("res/cube.obj", &pMesh);
+	uint32_t mesh4ID = sgAddMesh("res/myriam.obj", &pMesh);
 	SgMeshTransformInfo kittenMeshTransformInfo = {
 		.move = {2.5, 0.3, 1.1},
-		.scale = {1, 1, 1,},
+		.scale = {0.5, 0.5, 0.5,},
 	};
-	sgTransformMesh(&kittenMeshTransformInfo, 0, pMesh->vertexCount, pMesh->pVertices);
+	sgTransformMesh(&kittenMeshTransformInfo, pMesh->pVertexOffsets[mesh1ID], pMesh->pVertexSizes[mesh1ID], pMesh->pVertices);
 
+	SgMeshTransformInfo kittenMeshTransformInfo2 = {
+		.move = {.1, 0.1, 1.1},
+		.scale = {0.5, 0.5, -0.5,},
+	};
+	sgTransformMesh(&kittenMeshTransformInfo2, pMesh->pVertexOffsets[mesh2ID], pMesh->pVertexSizes[mesh2ID], pMesh->pVertices);
+
+	SgMeshTransformInfo kittenMeshTransformInfo3 = {
+		.move = {1.0, -0.1, -0.1},
+		.scale = {0.5, 0.5, 0.5,},
+	};
+	sgTransformMesh(&kittenMeshTransformInfo3, pMesh->pVertexOffsets[mesh3ID], pMesh->pVertexSizes[mesh3ID], pMesh->pVertices);
+
+	SgMeshTransformInfo kittenMeshTransformInfo4 = {
+		.move = {0.5, 0.3, -1.1},
+		.scale = {0.01, 0.01, 0.01,},
+	};
+	sgTransformMesh(&kittenMeshTransformInfo4, pMesh->pVertexOffsets[mesh4ID], pMesh->pVertexSizes[mesh4ID], pMesh->pVertices);
 	/**/
 
 	/* Resource Init */
@@ -243,7 +264,10 @@ int main() {
 		.type = SG_RESOURCE_TYPE_INDICES,
 	};
 	sgCreateResource(app, &meshIndicesResourceCreateInfo, &meshIndicesResource);
+	/* Placeholder Mesh2 */
+	/**/
 
+	/* Resource Init */
 	SgTexture *pTexture;
 	sgLoadTexture("res/chalet.jpg", &pTexture);
 	SgResource meshTextureResource;
@@ -256,35 +280,6 @@ int main() {
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
 	sgCreateResource(app, &meshTextureResourceCreateInfo, &meshTextureResource);
-	/* Placeholder Mesh2 */
-	SgMesh *pMesh2;
-	
-	sgLoadMesh("res/myriam.obj", &pMesh2);
-	SgMeshTransformInfo kittenMeshTransformInfo2 = {
-		.move = {.5, 0.1, 0.1},
-		.scale = {0.01, 0.01, 0.01,},
-	};
-	sgTransformMesh(&kittenMeshTransformInfo2, 0, pMesh2->vertexCount, pMesh2->pVertices);
-	/**/
-
-	/* Resource Init */
-	SgResource meshResource2;
-	SgResourceCreateInfo meshResourceCreateInfo2 = {
-		.binding = 0,
-		.bytes = pMesh2->pVertices,
-		.size = pMesh2->vertexCount * sizeof(pMesh2->pVertices[0]),
-		.stage = SG_SHADER_STAGE_VERTEX_BIT,
-		.type = SG_RESOURCE_TYPE_MESH,
-	};
-	sgCreateResource(app, &meshResourceCreateInfo2, &meshResource2);
-
-	SgResource meshIndicesResource2;
-	SgResourceCreateInfo meshIndicesResourceCreateInfo2 = {
-		.bytes = pMesh2->pIndices,
-		.size = pMesh2->indexCount * sizeof(pMesh2->pIndices[0]),
-		.type = SG_RESOURCE_TYPE_INDICES,
-	};
-	sgCreateResource(app, &meshIndicesResourceCreateInfo2, &meshIndicesResource2);
 	SgTexture *pTexture2;
 	sgLoadTexture("res/skin.jpg", &pTexture2);
 	SgResource meshTexture2Resource;
@@ -309,7 +304,7 @@ int main() {
 	sgCreateResourceSet(app, &meshResourceSetCreateInfo, &meshResourceSet);
 	//
 
-	SgResource pMeshSetResources2[] = {meshResource2, meshTexture2Resource};
+	SgResource pMeshSetResources2[] = {meshResource, meshTexture2Resource};
 	SgResourceSetCreateInfo meshResourceSetCreateInfo2 = {
 		.pResources = pMeshSetResources2,
 		.resourceCount = sizeof(pMeshSetResources) / sizeof(pMeshSetResources[0]),
@@ -372,13 +367,14 @@ int main() {
 	};
 	sgInitResourceSet(app, &meshSetInitInfo2, &meshResourceSet2);
 	
-	SgResource pIndexResources[] = {meshIndicesResource, meshIndicesResource2};
+	SgResource pIndexResources[] = {meshIndicesResource};
 
 	SgUpdateCommandsInitInfo updateInitInfo = {
 		.app = app,
 		.graphicsInstance = graphicsInstance,
 		.pIndexResouces = pIndexResources,
-		.indexResourceCount = 2,
+		.indexResourceCount = 1,
+		.pBotchArray = pMesh,
 	};
 	SgUpdateCommands updateCommands;
 	sgInitUpdateCommands(&updateInitInfo, &updateCommands);
@@ -408,8 +404,6 @@ int main() {
 	sgDestroyResource(app, &meshIndicesResource);
 	sgDestroyResource(app, &meshTextureResource);
 	sgDestroyResource(app, &meshTexture2Resource);
-	sgDestroyResource(app, &meshResource2);
-	sgDestroyResource(app, &meshIndicesResource2);
 	sgDestroyResource(app, &cameraResource);
 	sgDestroyResourceSet(app, &meshResourceSet);
 	sgDestroyResourceSet(app, &meshResourceSet2);
@@ -421,7 +415,6 @@ int main() {
 	sgUnloadContexts(app, &contexts); 
 	sgDestroyApp(&app);
 	sgUnloadMesh(&pMesh);
-	sgUnloadMesh(&pMesh2);
 	sgUnloadTexture(&pTexture);
 	sgUnloadTexture(&pTexture2);
 

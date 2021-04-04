@@ -12,6 +12,7 @@ extern "C" {
 #define GLFW_INCLUDE_VULKAN
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
+#include "sage_res.h"
 
 typedef enum SgAppCreateFlagBits {
 	SG_APP_CURSOR_HIDDEN         = 0x00000001,
@@ -112,6 +113,8 @@ typedef struct SgUpdateCommandsInitInfo {
 	SgGraphicsInstance     graphicsInstance;
 	SgResource*            pIndexResouces;
 	uint32_t               indexResourceCount;
+
+	SgMeshSet*           pBotchArray;
 } SgUpdateCommandsInitInfo;
 
 SG_DEFINE_HANDLE(SgUpdateCommands);

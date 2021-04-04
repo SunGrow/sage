@@ -1,4 +1,4 @@
-sgres_src = files(['sg_mesh.c'])
+sgres_src = files(['sg_mesh.c', 'sg_material.c'])
 sgres_inc = include_directories('.')
 sgres_lib = static_library('sg_res',
                           sources: [sgres_src],

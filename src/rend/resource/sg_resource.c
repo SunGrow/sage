@@ -8,9 +8,9 @@
 SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreateInfo, SgResource **ppResource) {
 	SgResource *pResource;
 	SG_CALLOC_NUM(pResource, 1);
-	pResource->stage = pCreateInfo->stage;
-	pResource->type = pCreateInfo->type;
-	pResource->binding = pCreateInfo->binding;
+	pResource->resourceBinding.stage = pCreateInfo->stage;
+	pResource->resourceBinding.type = pCreateInfo->type;
+	pResource->resourceBinding.binding = pCreateInfo->binding;
 	pResource->dataBuffer.size = pCreateInfo->size;
 	pResource->stagingBuffer.size = pCreateInfo->size;
 	// Allocate transfer command buffer
@@ -243,7 +243,7 @@ SgResult sgUpdateResource(const SgApp* pApp, const SgData* pData, SgResource** p
 
 	SgResource* pResource = *ppResource;
 	// TODO: Image Type
-	if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
+	if (pResource->resourceBinding.type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
 		memcpy(pResource->stagingBuffer.bytes, pData->bytes, pData->size);
 		// From staging buffer to data
 		vkBeginCommandBuffer(pResource->commandBuffer, &beginInfo);
@@ -280,7 +280,7 @@ SgResult sgUpdateResource(const SgApp* pApp, const SgData* pData, SgResource** p
     if (pData->size > pResource->dataBuffer.size) {
         log_warn("[Res]: Data size exceeds resource size. Possible memory corruption");
     }
-    if (SG_RESOURCE_TYPE_REQIRE_STAGING_MASK & pResource->type) {
+    if (SG_RESOURCE_TYPE_REQIRE_STAGING_MASK & pResource->resourceBinding.type) {
 		memcpy(pResource->stagingBuffer.bytes, pData->bytes, pData->size);
     } else {
         memcpy(pResource->dataBuffer.bytes, pData->bytes, pData->size);

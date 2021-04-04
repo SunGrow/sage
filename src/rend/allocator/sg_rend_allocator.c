@@ -1,6 +1,5 @@
 #include "sg_rend_allocator.h"
 #include "vk_mem_alloc.h"
-#include "log.h"
 
 
 SgResult createAllocator(SgApp *pApp) {
@@ -12,9 +11,9 @@ SgResult createAllocator(SgApp *pApp) {
 	};
 
 	if(vmaCreateAllocator(&allocatorInfo, &pApp->allocator)) {
-		log_error("[AppInit]: Allocator Creation failure");
+		sgLogError("[AppInit]: Allocator Creation failure");
 	} else {
-		log_info("[AppInit]: Allocator Creation successfull");
+		sgLogInfo_Debug("[AppInit]: Allocator Creation successfull");
 	}
 
 	return SG_SUCCESS;

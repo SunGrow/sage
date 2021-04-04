@@ -1,7 +1,6 @@
 #include "sg_rend_device.h"
 #include "sage_base.h"
 #include <stdlib.h>
-#include "log.h"
 
 // could replace with trying to get all of the families
 uint32_t getGraphicsFamilyIndex(VkPhysicalDevice pd) {
@@ -30,7 +29,7 @@ VkPhysicalDevice pickPhysicalDevice(VkSurfaceKHR surface, VkPhysicalDevice *pPhy
 	for (uint32_t i = 0; i < deviceCount; ++i) {
 		VkPhysicalDeviceProperties props;
 		vkGetPhysicalDeviceProperties(pPhysicalDevices[i], &props);
-		log_info("[AppInit]: GPU %s found", props.deviceName);
+		sgLogInfo_Debug("[AppInit]: GPU %s found", props.deviceName);
 		uint32_t familyIdx = getGraphicsFamilyIndex(pPhysicalDevices[i]);
 		if (familyIdx == VK_QUEUE_FAMILY_IGNORED) {
 			continue;
@@ -57,9 +56,9 @@ VkPhysicalDevice pickPhysicalDevice(VkSurfaceKHR surface, VkPhysicalDevice *pPhy
 	if (result) {
 		VkPhysicalDeviceProperties properties;
 		vkGetPhysicalDeviceProperties(result, &properties);
-		log_info("[AppInit]: Selected GPU %s", properties.deviceName);
+		sgLogInfo_Debug("[AppInit]: Selected GPU %s", properties.deviceName);
 	} else {
-		log_error("[AppInit]: No suitable GPUs found");
+		sgLogError("[AppInit]: No suitable GPUs found");
 	}
 	return result;
 }
@@ -72,9 +71,9 @@ SgResult getPhysicalDevice(SgApp *pApp) {
 	pApp->physicalDevice = pickPhysicalDevice(pApp->surface, pPhysicalDevices, deviceCount);
 	pApp->graphicsQueueFamilyIdx = getGraphicsFamilyIndex(pApp->physicalDevice);
 	if (pApp->physicalDevice) {
-		log_info("[AppInit]: Vulkan Physical Device found");
+		sgLogInfo_Debug("[AppInit]: Vulkan Physical Device found");
 	} else {
-		log_fatal("[AppInit]: Vulkan Physical Device not found");
+		sgLogFatal("[AppInit]: Vulkan Physical Device not found");
 	}
 	free(pPhysicalDevices);
 	return SG_SUCCESS;
@@ -106,9 +105,9 @@ SgResult getLogicalDevice(SgApp *pApp) {
 	};
 	vkCreateDevice(pApp->physicalDevice, &createInfo, VK_NULL_HANDLE, &pApp->device);
 	if (pApp->device) {
-		log_info("[AppInit]: Logical Device created successfully");
+		sgLogInfo_Debug("[AppInit]: Logical Device created successfully");
 	} else {
-		log_warn("[AppInit]: Logical Device creation failure");
+		sgLogWarn("[AppInit]: Logical Device creation failure");
 		return -1;
 	}
 	return SG_SUCCESS;

@@ -1,6 +1,6 @@
 #ifndef SAGE_BASE
 #define SAGE_BASE
-//#define _DEBUG
+#define _DEBUG
 
 #include <stddef.h>
 #include <stdint.h>
@@ -11,12 +11,26 @@
 #include "vk_mem_alloc.h"
 // TODO: Thread wrapper to easily change out apis when needed
 #include <pthread.h>
+#include "../log/sage_log.h"
 
 #define SG_DEFINE_HANDLE( object ) typedef struct object##_T *object;
 #define NUMOF(arr) (sizeof(arr) / sizeof((arr)[0]))
 #define BIT(n)     (1UL << (n))
 #define SG_CALLOC_NUM(object, num) (object) = (calloc((num), sizeof((*object))));
 #define SG_MALLOC_NUM(object, num) (object) = (malloc((num) * sizeof((*object))));
+#define SG_REALLOC_NUM(object, num, error)\
+	void* tmpptr = realloc((object), (sizeof(*object)) * (num));\
+	if (tmpptr == NULL) {\
+		sgLogError(error);\
+	} else {\
+		object = tmpptr;\
+	}
+#define SG_STRETCHALLOC(object, num, error)\
+	if ((object) == NULL) {\
+		SG_MALLOC_NUM(object, num);\
+	} else {\
+		SG_REALLOC_NUM(object, num, error);\
+	}\
 
 typedef enum {
 	SG_SUCCESS = 0,
@@ -113,9 +127,28 @@ typedef enum SgShaderStageFlagBits {
 } SgShaderStageFlagBits;
 typedef SgFlags SgShaderStageFlags;
 
-typedef struct SgResource {
+typedef struct SgShader {
+	VkShaderModule        shader;
+	SgShaderStageFlags    stage;
+} SgShader;
+
+typedef struct SgShaderPass {
+	VkPipeline       pipeline;
+	VkPipelineLayout pipelineLayout;
+} SgShaderPass;
+
+typedef struct SgResourceBinding {
 	SgResourceTypeFlags          type;
 	SgShaderStageFlags           stage;
+	uint32_t                     binding;
+} SgResourceBinding;
+
+typedef struct SgSetBindings {
+	SgResourceBinding* pBindings;
+	uint32_t           bindingCount;
+} SgSetBindings;
+
+typedef struct SgResource {
 	SgBuffer                     dataBuffer;
 	SgImage                      image;
 	VkImageView                  imageView;
@@ -123,7 +156,8 @@ typedef struct SgResource {
 	SgBuffer                     stagingBuffer;
 	VkCommandBuffer              commandBuffer;
 	VkCommandPool                commandPool;
-	uint32_t                     binding;
+
+	SgResourceBinding            resourceBinding;
 } SgResource;
 
 typedef struct SgResourceSet {
@@ -134,11 +168,6 @@ typedef struct SgResourceSet {
 	VkDescriptorSetLayout            setLayout;
 	VkWriteDescriptorSet*            pWriteDescriptorSets;
 } SgResourceSet;
-
-typedef struct SgShader {
-	VkShaderModule        shader;
-	SgShaderStageFlags    stage;
-} SgShader;
 
 typedef struct SgSwapchain {
 	VkSwapchainKHR            swapchain;
@@ -153,6 +182,26 @@ typedef struct SgSwapchain {
 	uint32_t                  imageCount;
 } SgSwapchain;
 
+typedef struct SgGraphicsPipelineBuilder {
+	VkPipelineShaderStageCreateInfo        pShaderStages[64];
+	uint32_t                               shaderStageCount;
+
+	VkPipelineVertexInputStateCreateInfo   vertexInputInfo;
+	VkPipelineInputAssemblyStateCreateInfo inputAssembly;
+	VkViewport                             viewport;
+	VkRect2D                               scissor;
+	VkPipelineRasterizationStateCreateInfo rasterizer;
+	VkPipelineColorBlendAttachmentState    colorBlendAttachment;
+	VkPipelineMultisampleStateCreateInfo   multisampling;
+	VkPipelineLayout                       pipelineLayout;
+	VkPipelineDepthStencilStateCreateInfo  depthStencil;
+} SgGraphicsPipelineBuilder;
+
+typedef struct SgComputePipelineBuilder {
+	VkPipelineShaderStageCreateInfo  shaderStage;
+	VkPipelineLayout                 pipelineLayout;
+} SgComputePipelineBuilder;
+
 typedef struct SgGraphicsInstance {
 	VkRenderPass                   renderPass;
 
@@ -163,9 +212,8 @@ typedef struct SgGraphicsInstance {
 	VkDescriptorSet**              ppDescriptorSets;
 	uint32_t                       descriptorSetsCount;
 
-	VkPipelineLayout               pipelineLayout;
+	SgShaderPass                   shaderPass;
 	SgSwapchain                    swapchain;
-	VkPipeline                     graphicsPipeline;
 } SgGraphicsInstance;
 
 typedef struct SgUpdateCommands {

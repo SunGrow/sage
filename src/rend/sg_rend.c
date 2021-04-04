@@ -39,9 +39,9 @@ SgResult createGLFWwindow(const SgAppCreateInfo *pCreateInfo, SgApp *pApp) {
 		pApp->pWindow = glfwCreateWindow(pCreateInfo->size[0], pCreateInfo->size[1], pCreateInfo->pName, NULL, NULL);
 	}
 	if(pApp->pWindow) {
-		log_info("[AppInit]: GLFW window created");
+		sgLogInfo_Debug("[AppInit]: GLFW window created");
 	} else {
-		log_fatal("[AppInit]: GLFW window creation error");
+		sgLogFatal("[AppInit]: GLFW window creation error");
 	}
 
 	if (pCreateInfo->flags & SG_APP_CURSOR_HIDDEN) {
@@ -55,9 +55,9 @@ SgResult createVkInstance(const SgAppCreateInfo *pCreateInfo, SgApp *pApp) {
 	/* Instance */
     uint32_t apiver = volkGetInstanceVersion();
     if (apiver >= VK_API_VERSION_1_2) {
-		log_info("[AppInit]: Vulkan API version 1.2 of newer found");
+		sgLogInfo_Debug("[AppInit]: Vulkan API version 1.2 of newer found");
 	} else {
-		log_error("[AppInit]: Vulkan API version is too old");
+		sgLogError("[AppInit]: Vulkan API version is too old");
 	}
     VkApplicationInfo appInfo = {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
@@ -97,9 +97,9 @@ SgResult createVkInstance(const SgAppCreateInfo *pCreateInfo, SgApp *pApp) {
 #endif
     VkResult vkRes = vkCreateInstance(&createInfo, VK_NULL_HANDLE, &pApp->instance);
 	if (vkRes == VK_SUCCESS) {
-		log_info("[AppInit]: Vulkan Instance created");
+		sgLogInfo_Debug("[AppInit]: Vulkan Instance created");
 	} else { 
-		log_fatal("[AppInit]: Vulkan Instance creation failure");
+		sgLogFatal("[AppInit]: Vulkan Instance creation failure");
 	}
 
 	volkLoadInstance(pApp->instance);
@@ -161,7 +161,7 @@ SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppSgApp) {
 		res |= vkCreateFence(pApp->device, &fenceCreateInfo, VK_NULL_HANDLE, &pApp->pFrameFences[i]);
 	}
 	if (res) {
-		log_error("[App Init]: Synchonization Primitive init failure");
+		sgLogError("[App Init]: Synchonization Primitive init failure");
 	}
 
 	/* End */
@@ -182,10 +182,10 @@ SgResult sgCreateResourceSet(const SgApp* pApp, const SgResourceSetCreateInfo *p
 	SG_CALLOC_NUM(pSetLayoutBindings, pCreateInfo->resourceCount);
 
 	for (uint32_t i = 0; i < pCreateInfo->resourceCount; ++i) {
-		pSetLayoutBindings[i].binding = pCreateInfo->ppResources[i][0].binding;
+		pSetLayoutBindings[i].binding = pCreateInfo->ppResources[i][0].resourceBinding.binding;
 		pSetLayoutBindings[i].descriptorCount = 1;
-		pSetLayoutBindings[i].stageFlags = pCreateInfo->ppResources[i][0].stage;
-		switch (pCreateInfo->ppResources[i][0].type) {
+		pSetLayoutBindings[i].stageFlags = pCreateInfo->ppResources[i][0].resourceBinding.stage;
+		switch (pCreateInfo->ppResources[i][0].resourceBinding.type) {
 			case (SG_RESOURCE_TYPE_INDICES):
 				break;
 			case (SG_RESOURCE_TYPE_MESH):
@@ -206,9 +206,9 @@ SgResult sgCreateResourceSet(const SgApp* pApp, const SgResourceSetCreateInfo *p
 		.bindingCount = pCreateInfo->resourceCount,
 	};
 	if(vkCreateDescriptorSetLayout(pApp->device, &setLayoutCreateInfo, VK_NULL_HANDLE, &pResourceSet->setLayout) == VK_SUCCESS) {
-		log_info("[Set]: Descriptor Set Layout Init Successfull");
+		sgLogInfo_Debug("[Set]: Descriptor Set Layout Init Successfull");
 	} else {
-		log_error("[Set]: Descriptor Set Layout Init Error");
+		sgLogError("[Set]: Descriptor Set Layout Init Error");
 	}
 	pResourceSet->setIndex = pCreateInfo->setIndex;
 	pResourceSet->resourceCount = pCreateInfo->resourceCount;
@@ -227,7 +227,7 @@ SgResult sgInitResourceSet(const SgApp *pApp, SgResourceSetInitInfo *pInitInfo, 
 	for (uint32_t i = 0; i < pInitInfo->pGraphicsInstance->descriptorSetsCount; ++i) {
 		for (uint32_t j = 0; j < pInitInfo->resourceCount; ++j) {
 			// Not sure if it works correctly. May cause issues
-			pResourceSet->ppResources[pInitInfo->ppResources[j]->binding] = pInitInfo->ppResources[j];
+			pResourceSet->ppResources[pInitInfo->ppResources[j]->resourceBinding.binding] = pInitInfo->ppResources[j];
 			//
 			
 			pResourceSet->pWriteDescriptorSets[j].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -236,12 +236,12 @@ SgResult sgInitResourceSet(const SgApp *pApp, SgResourceSetInitInfo *pInitInfo, 
 			} else {
 				pResourceSet->pWriteDescriptorSets[j].dstSet = pInitInfo->pGraphicsInstance->ppDescriptorSets[i][pResourceSet->setIndex];
 			}
-			pResourceSet->pWriteDescriptorSets[j].dstBinding = pInitInfo->ppResources[j]->binding;
+			pResourceSet->pWriteDescriptorSets[j].dstBinding = pInitInfo->ppResources[j]->resourceBinding.binding;
 			pResourceSet->pWriteDescriptorSets[j].descriptorCount = 1;
 
 			VkDescriptorImageInfo *pImageInfo = VK_NULL_HANDLE;
 			VkDescriptorBufferInfo *pBufferInfo = VK_NULL_HANDLE;
-			if (pInitInfo->ppResources[j]->type == SG_RESOURCE_TYPE_TEXTURE_2D) {
+			if (pInitInfo->ppResources[j]->resourceBinding.type == SG_RESOURCE_TYPE_TEXTURE_2D) {
 				/* Won't work unless image resource creation is completed */
 				pImageInfo = malloc(sizeof(pImageInfo[0]));
 				pImageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -256,7 +256,7 @@ SgResult sgInitResourceSet(const SgApp *pApp, SgResourceSetInitInfo *pInitInfo, 
 			pResourceSet->pWriteDescriptorSets[j].pImageInfo = pImageInfo;
 			pResourceSet->pWriteDescriptorSets[j].pBufferInfo = pBufferInfo;
 
-			switch (pInitInfo->ppResources[j]->type) {
+			switch (pInitInfo->ppResources[j]->resourceBinding.type) {
 				case (SG_RESOURCE_TYPE_UNIFORM):
 					pResourceSet->pWriteDescriptorSets[j].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 					break;
@@ -290,9 +290,9 @@ SgResult sgCreateShader(const SgApp *pApp, const SgShaderCreateInfo* pCreateInfo
 	VkResult res = vkCreateShaderModule(pApp->device, &createInfo, VK_NULL_HANDLE, &pShader->shader);
 
 	if(res == VK_SUCCESS) {
-		log_info("[Shader]: Shader Module created successfully");
+		sgLogInfo_Debug("[Shader]: Shader Module created successfully");
 	} else {
-		log_error("[Shader]: Shader Module creation failure");
+		sgLogError("[Shader]: Shader Module creation failure");
 	}
 	pShader->stage = pCreateInfo->stage;
 	*ppShader = pShader;
@@ -390,9 +390,9 @@ SgResult createRenderPass(const SgApp *pApp, VkRenderPass* pRenderPass) {
 
 
 	if(vkCreateRenderPass(device, &createInfo, 0, pRenderPass) == VK_SUCCESS) {
-		log_info("[Graphics Instance]: Render Pass Created");
+		sgLogInfo_Debug("[Graphics Instance]: Render Pass Created");
 	} else {
-		log_error("[Graphics Instance]: Render Pass Creation Failure");
+		sgLogError("[Graphics Instance]: Render Pass Creation Failure");
 	}
 
 	return SG_SUCCESS;
@@ -429,7 +429,7 @@ SgResult createVkSwapchain(const SgApp* pApp, VkSwapchainKHR oldswapchain, VkSwa
 	};
 	if (vkCreateSwapchainKHR(pApp->device, &createinfo, VK_NULL_HANDLE, pSwapchain) == VK_SUCCESS) {
 	} else {
-		log_warn("[Graphics Instance]: Swapchain Creation Failure");
+		sgLogError("[Graphics Instance]: Swapchain Creation Failure");
 		return 1;
 	}
 	return SG_SUCCESS;
@@ -442,10 +442,9 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 
 	/* Frame Image Creation */
 	vkGetSwapchainImagesKHR(pApp->device, pSwapchain->swapchain, &pSwapchain->imageCount, VK_NULL_HANDLE);
-	pSwapchain->pFrameImages = malloc(sizeof(VkImage) * pSwapchain->imageCount);
+	SG_MALLOC_NUM(pSwapchain->pFrameImages, pSwapchain->imageCount);
 	vkGetSwapchainImagesKHR(pApp->device, pSwapchain->swapchain, &pSwapchain->imageCount, pSwapchain->pFrameImages);
-
-	pSwapchain->pFrameImageViews = malloc(sizeof(pSwapchain->pFrameImageViews[0]) * pSwapchain->imageCount);
+	SG_MALLOC_NUM(pSwapchain->pFrameImageViews, pSwapchain->imageCount);
 
 	SgImageViewCreateInfo imageViewCreateInfo = {
 		.type = VK_IMAGE_VIEW_TYPE_2D,
@@ -496,6 +495,8 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 			.subresourceRange.baseArrayLayer = 0,
 			.srcAccessMask = 0,
 			.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+			.srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+			.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 		};
 		sgTransferImage(pApp, &transferInfo);
 	}
@@ -529,7 +530,7 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 	    .height = pSwapchain->extent.height,
 	    .layers = 1,
 	};
-	pSwapchain->pFrameBuffers = malloc(sizeof(pSwapchain->pFrameBuffers[0]) * pSwapchain->imageCount);
+	SG_MALLOC_NUM(pSwapchain->pFrameBuffers, pSwapchain->imageCount);
 
 
 	for (uint32_t i = 0; i < pSwapchain->imageCount; ++i) {
@@ -539,10 +540,10 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 
 		if (vkCreateFramebuffer(pApp->device, &framebufferCreateInfo, VK_NULL_HANDLE, &pSwapchain->pFrameBuffers[i]) == VK_SUCCESS) {
 		} else {
-			log_error("[Graphics Instance]: Framebuffer %d Creation Failure", i);
+			sgLogError("[Graphics Instance]: Framebuffer %d Creation Failure", i);
 		}
 	}
-	log_info("[Graphics Instance]: Framebuffer Creation Finished");
+	sgLogInfo_Debug("[Graphics Instance]: Framebuffer Creation Finished");
 	return SG_SUCCESS;
 }
 
@@ -557,7 +558,7 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	uint32_t hasMeshDescriptors = (pCreateInfo->meshSetCount > 0) ? 1: 0;
 	uint32_t baseSetCount = (hasMeshDescriptors) ? pCreateInfo->meshSetCount : 1;
 
-	pGraphicsInstance->pDescriptorSetLayouts = malloc(sizeof(pGraphicsInstance->pDescriptorSetLayouts[0]) * (pCreateInfo->setCount + hasMeshDescriptors));
+	SG_MALLOC_NUM(pGraphicsInstance->pDescriptorSetLayouts, pCreateInfo->setCount + hasMeshDescriptors);
 
 	for (uint32_t i = 0; i < pCreateInfo->setCount; ++i) {
 		pGraphicsInstance->pDescriptorSetLayouts[pCreateInfo->ppSets[i]->setIndex] = pCreateInfo->ppSets[i]->setLayout;
@@ -571,10 +572,10 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	    .setLayoutCount = pCreateInfo->setCount + hasMeshDescriptors,
 	    .pSetLayouts = pGraphicsInstance->pDescriptorSetLayouts,
 	};
-	if(vkCreatePipelineLayout(pApp->device, &pipelineLayoutCreateInfo, VK_NULL_HANDLE, &pGraphicsInstance->pipelineLayout) == VK_SUCCESS) {
-		log_info("[Graphics Instance]: Grapics Pipeline Layout Initialized");
+	if(vkCreatePipelineLayout(pApp->device, &pipelineLayoutCreateInfo, VK_NULL_HANDLE, &pGraphicsInstance->shaderPass.pipelineLayout) == VK_SUCCESS) {
+		sgLogInfo_Debug("[Graphics Instance]: Grapics Pipeline Layout Initialized");
 	} else {
-		log_error("[Graphics Instance]: Grapics Pipeline Layout Initialization Error");
+		sgLogError("[Graphics Instance]: Grapics Pipeline Layout Initialization Error");
 	}
 
 	pGraphicsInstance->setCount = pCreateInfo->setCount + hasMeshDescriptors;
@@ -595,7 +596,7 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	 * are some + count of the resources in mesh-specific descriptor sets
 	 * */
 	if (poolSizeCount == 0) {
-		log_warn("[Graphics Instance]: No descriptor pools");
+		sgLogWarn("[Graphics Instance]: No descriptor pools");
 	}
 	uint32_t offset = 0;
 	VkDescriptorPoolSize *pPoolSizes;
@@ -603,7 +604,7 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	for (uint32_t i = 0; i < baseSetCount; ++i) {
 		for (uint32_t j = 0; j < pCreateInfo->setCount; ++j) {
 			for (uint32_t k = 0; k < pCreateInfo->ppSets[j]->resourceCount; ++k) {
-				switch (pCreateInfo->ppSets[j]->ppResources[k]->type) {
+				switch (pCreateInfo->ppSets[j]->ppResources[k]->resourceBinding.type) {
 				case SG_RESOURCE_TYPE_TEXTURE_2D:
 					pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 					break;
@@ -621,7 +622,7 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 
 		if (hasMeshDescriptors) {
 			for (uint32_t j = 0; j < pCreateInfo->ppMeshSets[i]->resourceCount; ++j) {
-				switch (pCreateInfo->ppMeshSets[i]->ppResources[j]->type) {
+				switch (pCreateInfo->ppMeshSets[i]->ppResources[j]->resourceBinding.type) {
 					case SG_RESOURCE_TYPE_TEXTURE_2D:
 						pPoolSizes[offset].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 						break;
@@ -650,9 +651,10 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 	pGraphicsInstance->descriptorSetsCount = baseSetCount;
 	pGraphicsInstance->ppDescriptorSets = malloc(pGraphicsInstance->descriptorSetsCount * sizeof(pGraphicsInstance->ppDescriptorSets[0]));
 	for (uint32_t i = 0; i < pGraphicsInstance->descriptorSetsCount; ++i) {
-		pGraphicsInstance->ppDescriptorSets[i] = malloc((pCreateInfo->setCount + hasMeshDescriptors) * sizeof(pGraphicsInstance->ppDescriptorSets[0][0]));
+		SG_MALLOC_NUM(pGraphicsInstance->ppDescriptorSets[i], pCreateInfo->setCount + hasMeshDescriptors);
 	}
-	VkDescriptorSetLayout *pDescriptorSetLayouts = malloc(sizeof(pDescriptorSetLayouts[0]) * (pGraphicsInstance->setCount));
+	VkDescriptorSetLayout *pDescriptorSetLayouts;
+	SG_MALLOC_NUM(pDescriptorSetLayouts, pGraphicsInstance->setCount);
 	for (uint32_t i = 0; i < pCreateInfo->setCount; ++i) {
 		pDescriptorSetLayouts[pGraphicsInstance->ppSets[i]->setIndex] = pGraphicsInstance->ppSets[i]->setLayout;
 	}
@@ -766,11 +768,11 @@ SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCre
 		.pDepthStencilState = &depthstencilstate,
 		.pColorBlendState = &colorBlendState,
 		.pDynamicState = &dynamicstate,
-		.layout = pGraphicsInstance->pipelineLayout,
+		.layout = pGraphicsInstance->shaderPass.pipelineLayout,
 		.renderPass = pGraphicsInstance->renderPass,
 	};
 
-	vkCreateGraphicsPipelines(pApp->device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, 0, &pGraphicsInstance->graphicsPipeline);
+	vkCreateGraphicsPipelines(pApp->device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, 0, &pGraphicsInstance->shaderPass.pipeline);
 	free(pShaderStageCreateInfos);
 
 	*ppGraphicsInstance = pGraphicsInstance;
@@ -824,14 +826,16 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 		/* */
 		vkCmdSetViewport(pUpdateCommands->pCommandBuffers[i], 0, 1, &pInitInfo->pApp->viewport);
 		vkCmdSetScissor(pUpdateCommands->pCommandBuffers[i], 0, 1, &pInitInfo->pApp->scissor);
-		vkCmdBindPipeline(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pInitInfo->pGraphicsInstance->graphicsPipeline);
+		vkCmdBindPipeline(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pInitInfo->pGraphicsInstance->shaderPass.pipeline);
 
 		vkCmdBeginRenderPass(pUpdateCommands->pCommandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 		for (uint32_t j = 0; j < pInitInfo->indexResourceCount; ++j) {
 
-			vkCmdBindDescriptorSets(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pInitInfo->pGraphicsInstance->pipelineLayout, 0, pInitInfo->pGraphicsInstance->setCount, pInitInfo->pGraphicsInstance->ppDescriptorSets[j], 0, NULL);
+			vkCmdBindDescriptorSets(pUpdateCommands->pCommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pInitInfo->pGraphicsInstance->shaderPass.pipelineLayout, 0, pInitInfo->pGraphicsInstance->setCount, pInitInfo->pGraphicsInstance->ppDescriptorSets[j], 0, NULL);
 			vkCmdBindIndexBuffer(pUpdateCommands->pCommandBuffers[i], pInitInfo->ppIndexResources[j]->dataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
-			vkCmdDrawIndexed(pUpdateCommands->pCommandBuffers[i], pInitInfo->ppIndexResources[j]->dataBuffer.size/sizeof(uint32_t), 1, 0, 0, 0);
+			for (uint32_t k = 0; k < pInitInfo->pBotchArray->meshCount; ++k) {
+				vkCmdDrawIndexed(pUpdateCommands->pCommandBuffers[i], pInitInfo->pBotchArray->pIndexSizes[k], 1, 0, pInitInfo->pBotchArray->pVertexOffsets[k], 0);
+			}
 
 		}
 		vkCmdEndRenderPass(pUpdateCommands->pCommandBuffers[i]);
@@ -853,6 +857,8 @@ SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo) {
 	{
 		int width, height;
 		glfwGetWindowSize(pApp->pWindow, &width, &height);
+		pGraphicsInstance->swapchain.extent.height = height;
+		pGraphicsInstance->swapchain.extent.width = width;
 
 		pApp->scissor = (VkRect2D){
 		    { 0, 0, },
@@ -868,9 +874,9 @@ SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo) {
 
 	VkResult res = vkAcquireNextImageKHR(pApp->device, pGraphicsInstance->swapchain.swapchain, UINT64_MAX, pApp->pFrameReadySemaphore[pApp->currentFrame], VK_NULL_HANDLE, &pApp->frameImageIndex);
 	if (res == VK_ERROR_OUT_OF_DATE_KHR) {
-		log_warn("[TODO]: RESIZE");
+		sgLogWarn_Debug("[TODO]: RESIZE");
 	} else if (res != VK_SUCCESS && res != VK_SUBOPTIMAL_KHR) {
-		log_error("[App Update]: Frame Image acquisition failure");
+		sgLogError("[App Update]: Frame Image acquisition failure");
 	}
 
 	/* Draw to Frame Image */
@@ -896,7 +902,7 @@ SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo) {
     vkResetFences(pApp->device, 1, &pApp->pFrameFences[pApp->currentFrame]);
 
 	if (vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, pApp->pFrameFences[pApp->currentFrame])) {
-		log_warn("[Queue Submit]: Draw command error");
+		sgLogError("[Queue Submit]: Draw command error");
 	}
 
 	VkPresentInfoKHR presentInfo = {
@@ -924,7 +930,7 @@ void sgDestroyShader(const SgApp *pApp, SgShader **ppShader) {
 void sgDestroyResource(const SgApp *pApp, SgResource **ppResource) {
 	vkDeviceWaitIdle(pApp->device);
 	SgResource* pResource = *ppResource;
-	if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
+	if (pResource->resourceBinding.type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
 		vkDestroyImageView(pApp->device, pResource->imageView, VK_NULL_HANDLE);
 		vkDestroySampler(pApp->device, pResource->imageSampler, VK_NULL_HANDLE);
 		if (pResource->stagingBuffer.allocation) {
@@ -935,7 +941,7 @@ void sgDestroyResource(const SgApp *pApp, SgResource **ppResource) {
 		}
 		vmaDestroyImage(pApp->allocator, pResource->image.image, pResource->image.allocation);
 	} else {
-		if (pResource->type & SG_RESOURCE_TYPE_REQIRE_STAGING_MASK) {
+		if (pResource->resourceBinding.type & SG_RESOURCE_TYPE_REQIRE_STAGING_MASK) {
 			vmaUnmapMemory(pApp->allocator, pResource->stagingBuffer.allocation);
 			vmaDestroyBuffer(pApp->allocator, pResource->stagingBuffer.buffer, pResource->stagingBuffer.allocation);
 			vmaDestroyBuffer(pApp->allocator, pResource->dataBuffer.buffer, pResource->dataBuffer.allocation);
@@ -988,8 +994,8 @@ void sgDestroyGraphicsInstance(const SgApp *pApp, SgGraphicsInstance **ppGraphic
 	}
 	free(pGraphicsInstance->ppDescriptorSets);
 
-	vkDestroyPipelineLayout(pApp->device, pGraphicsInstance->pipelineLayout, VK_NULL_HANDLE);
-	vkDestroyPipeline(pApp->device, pGraphicsInstance->graphicsPipeline, VK_NULL_HANDLE);
+	vkDestroyPipelineLayout(pApp->device, pGraphicsInstance->shaderPass.pipelineLayout, VK_NULL_HANDLE);
+	vkDestroyPipeline(pApp->device, pGraphicsInstance->shaderPass.pipeline, VK_NULL_HANDLE);
 	vkDestroyRenderPass(pApp->device, pGraphicsInstance->renderPass, VK_NULL_HANDLE);
 
 	vmaDestroyImage(pApp->allocator, pGraphicsInstance->swapchain.depthImage.image, pGraphicsInstance->swapchain.depthImage.allocation);
@@ -1033,6 +1039,9 @@ void sgDestroyApp(SgApp **ppApp) {
 
 	vkDestroyDevice(pApp->device, VK_NULL_HANDLE);
 	vkDestroySurfaceKHR(pApp->instance, pApp->surface, VK_NULL_HANDLE);
+#ifdef _DEBUG
+	vkDestroyDebugUtilsMessengerEXT(pApp->instance, pApp->debugCallback, VK_NULL_HANDLE);
+#endif
 	vkDestroyInstance(pApp->instance, VK_NULL_HANDLE);
 	glfwDestroyWindow(pApp->pWindow);
 	glfwTerminate();

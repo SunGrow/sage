@@ -9,10 +9,10 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     const VkDebugUtilsMessengerCallbackDataEXT* pData,
     void* pUserData){
 	(flags & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-	                       ? log_error("[%s]: %s", pData->pMessageIdName, pData->pMessage)
+	                       ? sgLogError("[%s]: %s", pData->pMessageIdName, pData->pMessage)
 	                       : (flags & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-	                             ? log_warn("[%s]: %s", pData->pMessageIdName, pData->pMessage)
-	                             : log_info("[%s]: %s", pData->pMessageIdName, pData->pMessage);
+	                             ? sgLogWarn("[%s]: %s", pData->pMessageIdName, pData->pMessage)
+	                             : sgLogInfo("[%s]: %s", pData->pMessageIdName, pData->pMessage);
 	return VK_FALSE;
 }
 
@@ -27,9 +27,9 @@ SgResult registerDebugCallback(SgApp *pApp) {
 	VkResult res = vkCreateDebugUtilsMessengerEXT(pApp->instance, &createInfo, 0, &pApp->debugCallback);
 
 	if (!res) {
-		log_info("[AppInit]: Vulkan debug report callback is setup");
+		sgLogInfo_Debug("[AppInit]: Vulkan debug report callback is setup");
 	} else {
-		log_warn("[AppInit]: Vulkan debug report callback setup failure");
+		sgLogWarn("[AppInit]: Vulkan debug report callback setup failure");
 	}
 
 	return SG_SUCCESS;

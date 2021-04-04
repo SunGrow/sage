@@ -1,5 +1,4 @@
 #include "sg_rend_command.h"
-#include "log.h"
 
 typedef struct ThreadCommandPoolCreateInfo {
 	SgApp *pApp;
@@ -22,7 +21,7 @@ static void* createCommandPool(void* threadCommandPoolInfo) {
 	for (uint32_t i = 0; i < SG_FRAME_QUEUE_LENGTH; ++i) {
 		vulkRes = vkCreateCommandPool(pTmpApp->device, &createInfo, VK_NULL_HANDLE, &commandpool);
 		if (vulkRes) {
-			log_warn("[AppInit]: Command Pool creation failure %d", index);
+			sgLogWarn("[AppInit]: Command Pool creation failure %d", index);
 			return (void*) -1;
 		}
 		pTmpApp->pCommandPools[index*SG_FRAME_QUEUE_LENGTH + i] = commandpool;
@@ -44,17 +43,17 @@ SgResult initCommandPools(SgApp *pApp) {
 		pthread_create(&pApp->threads[i], &attr, createCommandPool, &info);
 		int rc = pthread_join(pApp->threads[i], NULL);
 		if(rc) {
-              log_error("[AppInit]: Return code from pthread_join() is %d\n", rc);
+              sgLogError("[AppInit]: Return code from pthread_join() is %d\n", rc);
         }
 	}
 	for (uint32_t i = 0; i < SG_THREADS_COUNT; ++i) {
 		for (uint32_t j = 0; j < SG_FRAME_QUEUE_LENGTH; ++j) {
 			if(pApp->pCommandPools[i*SG_FRAME_QUEUE_LENGTH + j] == VK_NULL_HANDLE) {
-				log_warn("[AppInit]: CommandPool %d not initialized", i*SG_FRAME_QUEUE_LENGTH + j);
+				sgLogWarn("[AppInit]: CommandPool %d not initialized", i*SG_FRAME_QUEUE_LENGTH + j);
 			}
 		}
 	}
-	log_info("[AppInit]: Command Pools initialization completed");
+	sgLogInfo_Debug("[AppInit]: Command Pools initialization completed");
 	return SG_SUCCESS;
 }
 

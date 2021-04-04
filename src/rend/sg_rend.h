@@ -7,6 +7,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
 #include "sg_math.h"
+#include "../res/sg_mesh.h"
 
 typedef enum SgAppCreateFlagBits {
 	SG_APP_CURSOR_HIDDEN         = 0x00000001,
@@ -75,6 +76,8 @@ typedef struct SgUpdateCommandsInitInfo {
 	SgGraphicsInstance*    pGraphicsInstance;
 	SgResource**           ppIndexResources;
 	uint32_t               indexResourceCount;
+
+	SgMeshSet*           pBotchArray;
 } SgUpdateCommandsInitInfo;
 
 SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdateCommands** ppUpdateCommands);

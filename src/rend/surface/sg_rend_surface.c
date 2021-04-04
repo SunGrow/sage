@@ -6,9 +6,9 @@
 SgResult createWindowSurface(SgApp *pApp) {
 	glfwCreateWindowSurface(pApp->instance, pApp->pWindow, VK_NULL_HANDLE, &pApp->surface);
 	if (pApp->surface) {
-		log_info("[AppInit]: Vulkan Surface created");
+		sgLogInfo_Debug("[AppInit]: Vulkan Surface created");
 	} else {
-		log_fatal("[AppInit]: Vulkan Surface creation failure");
+		sgLogFatal("[AppInit]: Vulkan Surface creation failure");
 		return -1;
 	}
 
@@ -23,7 +23,7 @@ VkSurfaceFormatKHR getSurfaceFormat(VkPhysicalDevice physicalDevice, VkSurfaceKH
 	vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, pFormats);
 	if (formatCount == 1 && pFormats[0].format == VK_FORMAT_UNDEFINED) {
 		free(pFormats);
-		log_info("[AppInit]: Surface Format not specified");
+		sgLogInfo("[AppInit]: Surface Format not specified");
 		return (VkSurfaceFormatKHR){
 		    .format = VK_FORMAT_B8G8R8A8_UNORM,
 		    .colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
@@ -34,13 +34,13 @@ VkSurfaceFormatKHR getSurfaceFormat(VkPhysicalDevice physicalDevice, VkSurfaceKH
 		    pFormats[i].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
 			format = pFormats[i];
 			free(pFormats);
-			log_info("[AppInit]: Surface Format found");
+			sgLogInfo_Debug("[AppInit]: Surface Format found");
 			return format;
 		}
 	}
 	format = pFormats[0];
 	free(pFormats);
-	log_warn("[AppInit]: Surface Format not found");
+	sgLogWarn("[AppInit]: Surface Format not found");
 	return format;
 }
 
@@ -54,13 +54,13 @@ VkPresentModeKHR getSurfacePresentMode(VkPhysicalDevice physicalDevice, VkSurfac
 		if (pPresentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR) {
 			result = pPresentModes[i];
 			free(pPresentModes);
-			log_info("[AppInit]: Surface Present Mode found");
+			sgLogInfo_Debug("[AppInit]: Surface Present Mode found");
 			return result;
 		}
 	}
 	result = pPresentModes[0];
 	free(pPresentModes);
-	log_warn("[AppInit]: Surface Present Mode not found");
+	sgLogWarn("[AppInit]: Surface Present Mode not found");
 	return result;
 }
 
@@ -68,10 +68,10 @@ SgResult getSurfaceAttributes(SgApp *pApp) {
 	pApp->surfaceAttributes.format = getSurfaceFormat(pApp->physicalDevice, pApp->surface);
 	pApp->surfaceAttributes.presentMode = getSurfacePresentMode(pApp->physicalDevice, pApp->surface);
 	if (vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pApp->physicalDevice, pApp->surface, &pApp->surfaceAttributes.surfaceCapabilities) == VK_SUCCESS) {
-		log_info("[AppInit]: Surface Capabilities acquired successfully");
+		sgLogInfo_Debug("[AppInit]: Surface Capabilities acquired successfully");
 	} else {
-		log_warn("[AppInit]: Surface Capabilities request error");
+		sgLogWarn("[AppInit]: Surface Capabilities request error");
 	}
-	log_info("[AppInit]: Surface Attributes are initialized");
+	sgLogInfo_Debug("[AppInit]: Surface Attributes are initialized");
 	return SG_SUCCESS;
 }
