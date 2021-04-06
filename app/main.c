@@ -178,24 +178,44 @@ int main() {
 	sgSceneInit(&scene);
 
 	// Shaders
-	SgFile vertShaderFile;
-	SgFile fragShaderFile;
-	sgOpenFile("shaders/mesh3.vert.spv", &vertShaderFile);
-	sgOpenFile("shaders/mesh3.frag.spv", &fragShaderFile);
-	SgShaderCreateInfo vertShaderCreateInfo = {
-		.file = vertShaderFile,
+	SgFile chaletVertShaderFile;
+	SgFile chaletFragShaderFile;
+	sgOpenFile("shaders/chaletShader.vert.spv", &chaletVertShaderFile);
+	sgOpenFile("shaders/chaletShader.frag.spv", &chaletFragShaderFile);
+	SgShaderCreateInfo chaletVertShaderCreateInfo = {
+		.file = chaletVertShaderFile,
 		.stage = SG_SHADER_STAGE_VERTEX_BIT,
 	};
-	SgShaderCreateInfo fragShaderCreateInfo = {
-		.file = fragShaderFile,
+	SgShaderCreateInfo chaletFragShaderCreateInfo = {
+		.file = chaletFragShaderFile,
 		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 	};
-	SgShader vertShader;
-	sgCreateShader(app, &vertShaderCreateInfo, &vertShader);
-	SgShader fragShader;
-	sgCreateShader(app, &fragShaderCreateInfo, &fragShader);
-	sgCloseFile(&vertShaderFile);
-	sgCloseFile(&fragShaderFile);
+	SgShader chaletVertShader;
+	sgCreateShader(app, &chaletVertShaderCreateInfo, &chaletVertShader);
+	SgShader chaletFragShader;
+	sgCreateShader(app, &chaletFragShaderCreateInfo, &chaletFragShader);
+	sgCloseFile(&chaletVertShaderFile);
+	sgCloseFile(&chaletFragShaderFile);
+
+	// Shaders
+	SgFile myriamVertShaderFile;
+	SgFile myriamFragShaderFile;
+	sgOpenFile("shaders/myriamShader.vert.spv", &myriamVertShaderFile);
+	sgOpenFile("shaders/myriamShader.frag.spv", &myriamFragShaderFile);
+	SgShaderCreateInfo myriamVertShaderCreateInfo = {
+		.file = myriamVertShaderFile,
+		.stage = SG_SHADER_STAGE_VERTEX_BIT,
+	};
+	SgShaderCreateInfo myriamFragShaderCreateInfo = {
+		.file = myriamFragShaderFile,
+		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
+	};
+	SgShader myriamVertShader;
+	sgCreateShader(app, &myriamVertShaderCreateInfo, &myriamVertShader);
+	SgShader myriamFragShader;
+	sgCreateShader(app, &myriamFragShaderCreateInfo, &myriamFragShader);
+	sgCloseFile(&myriamVertShaderFile);
+	sgCloseFile(&myriamFragShaderFile);
 
 	/* Should be inside of an API */
 	SgTransformUniform transformuniform = {0};
@@ -219,8 +239,8 @@ int main() {
 	sgCreateMeshSet(&pMesh);
 	uint32_t kittenMeshID = sgAddMesh("res/kitten.obj", &pMesh);
 	uint32_t chaletMeshID = sgAddMesh("res/chalet.obj", &pMesh);
-	uint32_t mesh3ID = sgAddMesh("res/cube.obj", &pMesh);
-	uint32_t mesh4ID = sgAddMesh("res/myriam.obj", &pMesh);
+	uint32_t cubeMeshID   = sgAddMesh("res/cube.obj", &pMesh);
+	uint32_t mytiamMeshID = sgAddMesh("res/myriam.obj", &pMesh);
 	SgMeshTransformInfo kittenMeshTransformInfo = {
 		.move = {2.5, 0.3, 1.1},
 		.scale = {0.5, 0.5, 0.5,},
@@ -237,13 +257,13 @@ int main() {
 		.move = {1.0, -0.1, -0.1},
 		.scale = {0.5, 0.5, 0.5,},
 	};
-	sgTransformMesh(&kittenMeshTransformInfo3, pMesh->pVertexOffsets[mesh3ID], pMesh->pVertexSizes[mesh3ID], pMesh->pVertices);
+	sgTransformMesh(&kittenMeshTransformInfo3, pMesh->pVertexOffsets[cubeMeshID], pMesh->pVertexSizes[cubeMeshID], pMesh->pVertices);
 
 	SgMeshTransformInfo kittenMeshTransformInfo4 = {
 		.move = {0.5, 0.3, -1.1},
 		.scale = {0.01, 0.01, 0.01,},
 	};
-	sgTransformMesh(&kittenMeshTransformInfo4, pMesh->pVertexOffsets[mesh4ID], pMesh->pVertexSizes[mesh4ID], pMesh->pVertices);
+	sgTransformMesh(&kittenMeshTransformInfo4, pMesh->pVertexOffsets[mytiamMeshID], pMesh->pVertexSizes[mytiamMeshID], pMesh->pVertices);
 	/**/
 
 	/* Resource Init */
@@ -270,35 +290,64 @@ int main() {
 	/**/
 
 	/* Resource Init */
-	SgTexture *pTexture;
-	sgLoadTexture("res/chalet.jpg", &pTexture);
+	SgTexture *pChaletTexture;
+	sgLoadTexture("res/chalet.jpg", &pChaletTexture);
 	SgResource meshTextureResource;
 	SgResourceCreateInfo meshTextureResourceCreateInfo = {
 		.binding = 1,
-		.bytes = pTexture->pixels,
-		.size = pTexture->size,
-		.extent = (VkExtent3D) {.height = pTexture->height, .width = pTexture->width, .depth = 1.0},
+		.bytes = pChaletTexture->pixels,
+		.size = pChaletTexture->size,
+		.extent = (VkExtent3D) {.height = pChaletTexture->height, .width = pChaletTexture->width, .depth = 1.0},
 		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
 	sgCreateResource(app, &meshTextureResourceCreateInfo, &meshTextureResource);
-	SgTexture *pTexture2;
-	sgLoadTexture("res/skin.jpg", &pTexture2);
-	SgResource meshTexture2Resource;
-	SgResourceCreateInfo meshTexture2ResourceCreateInfo = {
+
+	///
+	SgTexture *pSkinTexture;
+	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_01Skin.jpg", &pSkinTexture);
+	SgResource skinTextureResource;
+	SgResourceCreateInfo skinTextureResourceCreateInfo = {
 		.binding = 1,
-		.bytes = pTexture2->pixels,
-		.size = pTexture2->size,
-		.extent = (VkExtent3D) {.height = pTexture2->height, .width = pTexture2->width, .depth = 1.0},
+		.bytes = pSkinTexture->pixels,
+		.size = pSkinTexture->size,
+		.extent = (VkExtent3D) {.height = pSkinTexture->height, .width = pSkinTexture->width, .depth = 1.0},
 		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
-	sgCreateResource(app, &meshTexture2ResourceCreateInfo, &meshTexture2Resource);
+	sgCreateResource(app, &skinTextureResourceCreateInfo, &skinTextureResource);
+
+	SgTexture *pHairTexture;
+	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_02Hair.jpg", &pHairTexture);
+	SgResource hairTextureResource;
+	SgResourceCreateInfo hairTextureResourceCreateInfo = {
+		.binding = 2,
+		.bytes = pHairTexture->pixels,
+		.size = pHairTexture->size,
+		.extent = (VkExtent3D) {.height = pHairTexture->height, .width = pHairTexture->width, .depth = 1.0},
+		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
+		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
+	};
+	sgCreateResource(app, &hairTextureResourceCreateInfo, &hairTextureResource);
+
+	SgTexture *pClothTexture;
+	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_03Cloth.jpg", &pClothTexture);
+	SgResource clothTextureResource;
+	SgResourceCreateInfo clothTextureResourceCreateInfo = {
+		.binding = 3,
+		.bytes = pClothTexture->pixels,
+		.size = pClothTexture->size,
+		.extent = (VkExtent3D) {.height = pClothTexture->height, .width = pClothTexture->width, .depth = 1.0},
+		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
+		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
+	};
+	sgCreateResource(app, &clothTextureResourceCreateInfo, &clothTextureResource);
+	///
 
 	SgMaterialMap materialMap;
 	sgCreateMaterialMap(app, 1, &materialMap);
 
-	SgShader pShadersChalet[] = {vertShader, fragShader};
+	SgShader pShadersChalet[] = {chaletVertShader, chaletFragShader};
 	SgResourceBinding* materialChaletResourceBindings[] = {
 		(SgResourceBinding[])
 		{
@@ -322,14 +371,74 @@ int main() {
 		.ppResourceBindings = (SgResourceBinding**) materialChaletResourceBindings,
 	};
 	sgAddMaterial(&materialChaletCreateInfo, &materialMap);
+
+	SgShader pShadersMyriam[] = {myriamVertShader, myriamFragShader};
+	SgResourceBinding materialMyriamSet1ResourceBinding[] = {
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_MESH, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0},
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 1},
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 2},
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 3},
+	};
+	SgResourceBinding materialMyriamSet2ResourceBinding[] = {
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_UNIFORM, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0},
+	};
+	SgResourceBinding* materialMyriamResourceBindings[] = {
+		materialMyriamSet1ResourceBinding,
+		materialMyriamSet2ResourceBinding,
+	};
+	SgMaterialCreateInfo materialMyriamCreateInfo = {
+		.pMaterialName = "materialMyriam",
+		.pShaders = pShadersMyriam,
+		.shaderCount = NUMOF(pShadersMyriam),
+		.resourceSetBindingCount = NUMOF(materialMyriamResourceBindings),
+		.pResourceBindingCount = (uint32_t[]) {
+			NUMOF(materialMyriamSet1ResourceBinding),
+			NUMOF(materialMyriamSet2ResourceBinding),
+		},
+		.ppResourceBindings = (SgResourceBinding**) materialMyriamResourceBindings,
+	};
+	sgAddMaterial(&materialMyriamCreateInfo, &materialMap);
+
+
+	SgRenderObject myriamRenderObjects[] = {
+		{
+			.meshID = mytiamMeshID,
+		},
+		{
+			.meshID = cubeMeshID,
+		},
+	};
+	SgResource myriamRenderObjectResources[] = {
+		meshResource,
+		/*TODO: texture arrays */
+		skinTextureResource,
+		hairTextureResource,
+		clothTextureResource,
+		/**/
+		cameraResource,
+	};
+	// TODO: move set bindings into a resource layout
+	SgRenderObjectCreateInfo myriamRenderObject = {
+		.materialName = "materialMyriam",
+		.materialObjectsName = "myriamMesh",
+		.pRenderObjects = myriamRenderObjects,
+		.renderObjectCount = NUMOF(myriamRenderObjects),
+		.pResourceSetBindings = (uint32_t[]) {0, 0, 0, 0, 1},
+		.pResources = myriamRenderObjectResources,
+		.resourceCount = NUMOF(myriamRenderObjectResources),
+		.resourceSetCount = NUMOF(materialMyriamResourceBindings),
+	};
+	sgAddMaterialRenderObjects(&myriamRenderObject, &materialMap);
+
 	SgRenderObject chaletRenderObjects[] = {
 		{
 			.meshID = chaletMeshID,
 		},
 		{
 			.meshID = kittenMeshID,
-		}
+		},
 	};
+	// TODO: render object to have descriptor sets instead of materials
 	SgRenderObjectCreateInfo chaletRenderObject = {
 		.materialName = "materialChalet",
 		.materialObjectsName = "chaletMesh",
@@ -375,19 +484,21 @@ int main() {
 		sgUpdateResource(app, &cameraData, &cameraResource);
 	}
 
+	// TODO: Proper cleanup
+
 	sgDestroyResource(app, &meshResource);
 	sgDestroyResource(app, &meshIndicesResource);
 	sgDestroyResource(app, &meshTextureResource);
-	sgDestroyResource(app, &meshTexture2Resource);
+	sgDestroyResource(app, &skinTextureResource);
 	sgDestroyResource(app, &cameraResource);
 	sgDeinitUpdateCommands(app, &updateCommands);
-	sgDestroyShader(app, &vertShader);
-	sgDestroyShader(app, &fragShader);
+	sgDestroyShader(app, &chaletVertShader);
+	sgDestroyShader(app, &chaletFragShader);
 	sgUnloadContexts(app, &contexts); 
 	sgDestroyApp(&app);
 	sgUnloadMesh(&pMesh);
-	sgUnloadTexture(&pTexture);
-	sgUnloadTexture(&pTexture2);
+	sgUnloadTexture(&pChaletTexture);
+	sgUnloadTexture(&pSkinTexture);
 
 	return 0;
 }

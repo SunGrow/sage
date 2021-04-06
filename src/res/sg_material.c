@@ -655,7 +655,7 @@ SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pCreateInfo,
 		.resourceCount = pCreateInfo->resourceCount,
 		.resourceSetCount = pCreateInfo->resourceSetCount,
 	};
-	SG_CALLOC_NUM(renderObject.pWriteDescriptorSets, renderObject.resourceSetCount);
+	SG_CALLOC_NUM(renderObject.pWriteDescriptorSets, renderObject.resourceCount);
 	SgMaterialRenderObjects* pMaterialRenderObject = hashmap_get(pMaterialMap->pMaterialRenderObjectMap, &renderObject);
 	if (pMaterialRenderObject) {
 		return SG_SUCCESS;
@@ -676,6 +676,10 @@ _Bool materialRenderObjectWrite(const void *item, void *udata) {
 		sgLogDebug("Material not found");
 	}
 
+	VkDescriptorImageInfo** ppImageInfo;
+	SG_CALLOC_NUM(ppImageInfo, pRenderObject->resourceCount);
+	VkDescriptorBufferInfo** ppBufferInfo;
+	SG_CALLOC_NUM(ppBufferInfo, pRenderObject->resourceCount);
 	for (uint32_t i = 0; i < pRenderObject->resourceSetCount; ++i) {
 		uint32_t resCount = 0;
 		for (uint32_t j = 0; j < pRenderObject->resourceCount; ++j) {
@@ -689,19 +693,23 @@ _Bool materialRenderObjectWrite(const void *item, void *udata) {
 			pRenderObject->pWriteDescriptorSets[resCount].dstBinding = pRenderObject->ppResources[j]->resourceBinding.binding;
 			pRenderObject->pWriteDescriptorSets[resCount].descriptorCount = 1;
 
-			VkDescriptorImageInfo imageInfo;
-			VkDescriptorBufferInfo bufferInfo;
+			VkDescriptorImageInfo* pImageInfo;
+			VkDescriptorBufferInfo* pBufferInfo;
+			SG_CALLOC_NUM(pImageInfo, 1);
+			SG_CALLOC_NUM(pBufferInfo, 1);
+			ppImageInfo[i] = pImageInfo;
+			ppBufferInfo[i] = pBufferInfo;
 			if (pRenderObject->ppResources[j]->resourceBinding.type == SG_RESOURCE_TYPE_TEXTURE_2D) {
-				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				imageInfo.imageView = pRenderObject->ppResources[j]->imageView;
-				imageInfo.sampler   = pRenderObject->ppResources[j]->imageSampler;
+				pImageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				pImageInfo->imageView = pRenderObject->ppResources[j]->imageView;
+				pImageInfo->sampler   = pRenderObject->ppResources[j]->imageSampler;
 			} else {
-				bufferInfo.buffer = pRenderObject->ppResources[j]->dataBuffer.buffer;
-				bufferInfo.offset = 0;
-				bufferInfo.range = pRenderObject->ppResources[j]->dataBuffer.size;
+				pBufferInfo->buffer = pRenderObject->ppResources[j]->dataBuffer.buffer;
+				pBufferInfo->offset = 0;
+				pBufferInfo->range = pRenderObject->ppResources[j]->dataBuffer.size;
 			}
-			pRenderObject->pWriteDescriptorSets[resCount].pImageInfo = &imageInfo;
-			pRenderObject->pWriteDescriptorSets[resCount].pBufferInfo = &bufferInfo;
+			pRenderObject->pWriteDescriptorSets[resCount].pImageInfo = pImageInfo;
+			pRenderObject->pWriteDescriptorSets[resCount].pBufferInfo = pBufferInfo;
 
 			switch (pRenderObject->ppResources[j]->resourceBinding.type) {
 				case (SG_RESOURCE_TYPE_UNIFORM):
@@ -718,6 +726,16 @@ _Bool materialRenderObjectWrite(const void *item, void *udata) {
 		}
 		vkUpdateDescriptorSets(pMMap->pApp->device, resCount, pRenderObject->pWriteDescriptorSets, 0, VK_NULL_HANDLE);
 	}
+	for (uint32_t i = 0; i < pRenderObject->resourceCount; ++i) {
+		if (ppBufferInfo[i]) {
+			free(ppBufferInfo[i]);
+		}
+		if (ppImageInfo[i]) {
+			free(ppImageInfo[i]);
+		}
+	}
+	free(ppImageInfo);
+	free(ppBufferInfo);
 	return 1;
 }
 
