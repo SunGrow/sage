@@ -304,44 +304,57 @@ int main() {
 	sgCreateResource(app, &meshTextureResourceCreateInfo, &meshTextureResource);
 
 	///
-	SgTexture *pSkinTexture;
-	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_01Skin.jpg", &pSkinTexture);
-	SgResource skinTextureResource;
+	SgTexture *pSkinAlphaTexture;
+	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_01Skin.jpg", &pSkinAlphaTexture);
+	SgResource skinAlphaTextureResource;
 	SgResourceCreateInfo skinTextureResourceCreateInfo = {
 		.binding = 1,
-		.bytes = pSkinTexture->pixels,
-		.size = pSkinTexture->size,
-		.extent = (VkExtent3D) {.height = pSkinTexture->height, .width = pSkinTexture->width, .depth = 1.0},
+		.bytes = pSkinAlphaTexture->pixels,
+		.size = pSkinAlphaTexture->size,
+		.extent = (VkExtent3D) {.height = pSkinAlphaTexture->height, .width = pSkinAlphaTexture->width, .depth = 1.0},
 		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
-	sgCreateResource(app, &skinTextureResourceCreateInfo, &skinTextureResource);
+	sgCreateResource(app, &skinTextureResourceCreateInfo, &skinAlphaTextureResource);
 
-	SgTexture *pHairTexture;
-	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_02Hair.jpg", &pHairTexture);
-	SgResource hairTextureResource;
+	SgTexture *pHairAlphaTexture;
+	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_02Hair.jpg", &pHairAlphaTexture);
+	SgResource hairAlphaTextureResource;
 	SgResourceCreateInfo hairTextureResourceCreateInfo = {
 		.binding = 2,
-		.bytes = pHairTexture->pixels,
-		.size = pHairTexture->size,
-		.extent = (VkExtent3D) {.height = pHairTexture->height, .width = pHairTexture->width, .depth = 1.0},
+		.bytes = pHairAlphaTexture->pixels,
+		.size = pHairAlphaTexture->size,
+		.extent = (VkExtent3D) {.height = pHairAlphaTexture->height, .width = pHairAlphaTexture->width, .depth = 1.0},
 		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
-	sgCreateResource(app, &hairTextureResourceCreateInfo, &hairTextureResource);
+	sgCreateResource(app, &hairTextureResourceCreateInfo, &hairAlphaTextureResource);
 
-	SgTexture *pClothTexture;
-	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_03Cloth.jpg", &pClothTexture);
-	SgResource clothTextureResource;
+	SgTexture *pClothAlphaTexture;
+	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_03Cloth.jpg", &pClothAlphaTexture);
+	SgResource clothAlphaTextureResource;
 	SgResourceCreateInfo clothTextureResourceCreateInfo = {
 		.binding = 3,
-		.bytes = pClothTexture->pixels,
-		.size = pClothTexture->size,
-		.extent = (VkExtent3D) {.height = pClothTexture->height, .width = pClothTexture->width, .depth = 1.0},
+		.bytes = pClothAlphaTexture->pixels,
+		.size = pClothAlphaTexture->size,
+		.extent = (VkExtent3D) {.height = pClothAlphaTexture->height, .width = pClothAlphaTexture->width, .depth = 1.0},
 		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
-	sgCreateResource(app, &clothTextureResourceCreateInfo, &clothTextureResource);
+	sgCreateResource(app, &clothTextureResourceCreateInfo, &clothAlphaTextureResource);
+
+	SgTexture *pBodyDTexture;
+	sgLoadTexture("res/tex/10016_w_Myriam_Body_D_2k.jpg", &pBodyDTexture);
+	SgResource bodyDTextureResource;
+	SgResourceCreateInfo bodyDTextureResourceCreateInfo = {
+		.binding = 4,
+		.bytes = pBodyDTexture->pixels,
+		.size = pBodyDTexture->size,
+		.extent = (VkExtent3D) {.height = pBodyDTexture->height, .width = pBodyDTexture->width, .depth = 1.0},
+		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
+		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
+	};
+	sgCreateResource(app, &bodyDTextureResourceCreateInfo, &bodyDTextureResource);
 	///
 
 	SgMaterialMap materialMap;
@@ -378,6 +391,7 @@ int main() {
 		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 1},
 		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 2},
 		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 3},
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 4},
 	};
 	SgResourceBinding materialMyriamSet2ResourceBinding[] = {
 		(SgResourceBinding){.type = SG_RESOURCE_TYPE_UNIFORM, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0},
@@ -411,9 +425,10 @@ int main() {
 	SgResource myriamRenderObjectResources[] = {
 		meshResource,
 		/*TODO: texture arrays */
-		skinTextureResource,
-		hairTextureResource,
-		clothTextureResource,
+		skinAlphaTextureResource,
+		hairAlphaTextureResource,
+		clothAlphaTextureResource,
+		bodyDTextureResource,
 		/**/
 		cameraResource,
 	};
@@ -423,7 +438,7 @@ int main() {
 		.materialObjectsName = "myriamMesh",
 		.pRenderObjects = myriamRenderObjects,
 		.renderObjectCount = NUMOF(myriamRenderObjects),
-		.pResourceSetBindings = (uint32_t[]) {0, 0, 0, 0, 1},
+		.pResourceSetBindings = (uint32_t[]) {0, 0, 0, 0, 0, 1},
 		.pResources = myriamRenderObjectResources,
 		.resourceCount = NUMOF(myriamRenderObjectResources),
 		.resourceSetCount = NUMOF(materialMyriamResourceBindings),
@@ -489,7 +504,7 @@ int main() {
 	sgDestroyResource(app, &meshResource);
 	sgDestroyResource(app, &meshIndicesResource);
 	sgDestroyResource(app, &meshTextureResource);
-	sgDestroyResource(app, &skinTextureResource);
+	sgDestroyResource(app, &skinAlphaTextureResource);
 	sgDestroyResource(app, &cameraResource);
 	sgDeinitUpdateCommands(app, &updateCommands);
 	sgDestroyShader(app, &chaletVertShader);
@@ -498,7 +513,7 @@ int main() {
 	sgDestroyApp(&app);
 	sgUnloadMesh(&pMesh);
 	sgUnloadTexture(&pChaletTexture);
-	sgUnloadTexture(&pSkinTexture);
+	sgUnloadTexture(&pSkinAlphaTexture);
 
 	return 0;
 }
