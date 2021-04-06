@@ -160,15 +160,6 @@ typedef struct SgResource {
 	SgResourceBinding            resourceBinding;
 } SgResource;
 
-typedef struct SgResourceSet {
-	SgResource**                     ppResources;
-	uint32_t                         resourceCount;
-	uint32_t                         setIndex;
-	VkDescriptorSetLayoutBinding*    pSetLayoutBindings;
-	VkDescriptorSetLayout            setLayout;
-	VkWriteDescriptorSet*            pWriteDescriptorSets;
-} SgResourceSet;
-
 typedef struct SgSwapchain {
 	VkSwapchainKHR            swapchain;
 	VkImage*                  pFrameImages;
@@ -183,7 +174,7 @@ typedef struct SgSwapchain {
 } SgSwapchain;
 
 typedef struct SgGraphicsPipelineBuilder {
-	VkPipelineShaderStageCreateInfo        pShaderStages[64];
+	VkPipelineShaderStageCreateInfo*       pShaderStages;
 	uint32_t                               shaderStageCount;
 
 	VkPipelineVertexInputStateCreateInfo   vertexInputInfo;
@@ -201,20 +192,6 @@ typedef struct SgComputePipelineBuilder {
 	VkPipelineShaderStageCreateInfo  shaderStage;
 	VkPipelineLayout                 pipelineLayout;
 } SgComputePipelineBuilder;
-
-typedef struct SgGraphicsInstance {
-	VkRenderPass                   renderPass;
-
-	SgResourceSet**                ppSets;
-	uint32_t                       setCount;
-	VkDescriptorSetLayout*         pDescriptorSetLayouts;
-	VkDescriptorPool               descriptorPool;
-	VkDescriptorSet**              ppDescriptorSets;
-	uint32_t                       descriptorSetsCount;
-
-	SgShaderPass                   shaderPass;
-	SgSwapchain                    swapchain;
-} SgGraphicsInstance;
 
 typedef struct SgUpdateCommands {
 	VkCommandBuffer*             pCommandBuffers;

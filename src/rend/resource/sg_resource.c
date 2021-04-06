@@ -242,7 +242,6 @@ SgResult sgUpdateResource(const SgApp* pApp, const SgData* pData, SgResource** p
 	};
 
 	SgResource* pResource = *ppResource;
-	// TODO: Image Type
 	if (pResource->resourceBinding.type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
 		memcpy(pResource->stagingBuffer.bytes, pData->bytes, pData->size);
 		// From staging buffer to data

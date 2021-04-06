@@ -32,6 +32,8 @@ typedef struct SgMeshSet {
 	uint32_t*          pIndexOffsets;
 	uint32_t           meshCount;
 	struct hashmap*    meshMap;      // Return an offset id
+
+	SgResource*        indicesResource;
 } SgMeshSet;
 
 
@@ -41,6 +43,7 @@ uint32_t  sgAddMesh(const char* pPath, SgMeshSet** ppMeshArray);
 uint32_t* sgGetMeshID(const char* pPath, const SgMeshSet* pMeshArray);
 uint32_t  sgLoadMesh(const char *pPath, SgMeshSet **ppMesh);
 void      sgUnloadMesh(SgMesh **ppMesh);
+
 
 ///
 

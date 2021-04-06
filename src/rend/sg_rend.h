@@ -8,6 +8,8 @@
 #include "GLFW/glfw3.h"
 #include "sg_math.h"
 #include "../res/sg_mesh.h"
+#include "../res/sg_material.h"
+#include "hashmap.h"
 
 typedef enum SgAppCreateFlagBits {
 	SG_APP_CURSOR_HIDDEN         = 0x00000001,
@@ -25,25 +27,6 @@ typedef struct SgAppCreateInfo {
 SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppApp);
 SgWindow* sgGetWindow(SgApp* pApp);
 
-typedef struct SgResourceSetCreateInfo {
-	SgResource**         ppResources;
-	uint32_t             resourceCount;
-	uint32_t             setIndex;
-} SgResourceSetCreateInfo;
-
-SgResult sgCreateResourceSet(const SgApp* pApp, const SgResourceSetCreateInfo *pCreateInfo, SgResourceSet **ppSgResourceSet);
-
-typedef struct SgResourceSetInitInfo {
-	SgResource**                  ppResources;
-	uint32_t                      resourceCount;
-	SgGraphicsInstance*           pGraphicsInstance; 
-
-	SgBool                        isMeshResourceSet;
-	uint32_t                      meshResourceSetID;
-} SgResourceSetInitInfo;
-
-SgResult sgInitResourceSet(const SgApp *pApp, SgResourceSetInitInfo *pInitInfo, SgResourceSet** ppResourceSet);
-
 typedef struct SgShaderCreateInfo {
 	SgFile*               pFile;
 	SgShaderStageFlags    stage;
@@ -51,49 +34,24 @@ typedef struct SgShaderCreateInfo {
 
 SgResult sgCreateShader(const SgApp *pApp, const SgShaderCreateInfo *pCreateInfo, SgShader **ppShader);
 
-typedef struct SgSwapchainCreateInfo {
-	VkSwapchainKHR oldSwapchain;
-	VkRenderPass   renderPass;
-} SgSwapchainCreateInfo;
-
-SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo, SgSwapchain *pSwapchain);
-
-typedef struct SgGraphicsInstanceCreateInfo {
-	SgShader**            ppShaders;
-	uint32_t              shaderCount;
-
-	SgResourceSet**       ppSets;
-	uint32_t              setCount;
-
-	SgResourceSet**       ppMeshSets;
-	uint32_t              meshSetCount;
-} SgGraphicsInstanceCreateInfo;
-
-SgResult sgCreateGraphicsInstance(const SgApp *pApp, const SgGraphicsInstanceCreateInfo *pCreateInfo, SgGraphicsInstance **ppGraphicsInstance);
-
 typedef struct SgUpdateCommandsInitInfo {
-	SgApp*                 pApp;
-	SgGraphicsInstance*    pGraphicsInstance;
-	SgResource**           ppIndexResources;
-	uint32_t               indexResourceCount;
-
-	SgMeshSet*           pBotchArray;
+	SgMaterialMap*         pMaterialMap;
+	SgMeshSet*             pMeshSet;
 } SgUpdateCommandsInitInfo;
 
 SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdateCommands** ppUpdateCommands);
 
 typedef struct SgAppUpdateInfo {
 	SgApp*                 pApp;
-	SgGraphicsInstance*    pGraphicsInstance;
+	SgMaterialMap*         pMaterialMap;
+	SgMeshSet*             pMeshSet;
 	SgUpdateCommands*      pUpdateCommands;
 } SgAppUpdateInfo;
-SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo);
+SgBool sgAppUpdate(SgAppUpdateInfo* pUpdateInfo);
 
 void sgDestroyShader(const SgApp *pApp, SgShader **ppShader);
 void sgDestroyResource(const SgApp *pApp, SgResource **ppResource);
-void sgDestroyResourceSet(const SgApp *pApp, SgResourceSet** ppResourceSet);
 void sgDeinitUpdateCommands(const SgApp *pApp, SgUpdateCommands** ppUpdateCommands);
-void sgDestroyGraphicsInstance(const SgApp *pApp, SgGraphicsInstance **ppGraphicsInstance);
 void sgDestroyApp(SgApp **ppApp);
 
 #endif

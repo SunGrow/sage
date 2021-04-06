@@ -10,7 +10,7 @@ static int materialRenderObjectsKeyCompare(const void* a, const void* b, void* u
 
 static uint64_t materialRenderObjectsKeyHash(const void *item, uint64_t seed0, uint64_t seed1) {
     const SgMaterialRenderObjects* key = item;
-    return hashmap_sip(&key->materialObjectsName, sizeof(key->materialObjectsName), seed0, seed1);
+    return hashmap_sip(key->materialObjectsName, strlen(key->materialObjectsName), seed0, seed1);
 }
 
 static int materialKeyCompare(const void* a, const void* b, void* udata) {
@@ -21,22 +21,280 @@ static int materialKeyCompare(const void* a, const void* b, void* udata) {
 
 static uint64_t materialKeyHash(const void *item, uint64_t seed0, uint64_t seed1) {
     const SgMaterial* key = item;
-    return hashmap_sip(key, sizeof(*key), seed0, seed1);
+    return hashmap_sip(key->pName, strlen(key->pName), seed0, seed1);
 }
 
+static SgResult sgFillDefaultRenderpass(const SgApp* pApp, VkRenderPass* pRenderPass) {
+	VkDevice device = pApp->device;
+	VkFormat format = pApp->surfaceAttributes.format.format;
 
-SgResult sgCreateMaterialMap(const SgApp* pApp, uint32_t materialCount, SgMaterialMap** ppMaterialMap) {
+	VkAttachmentDescription attachments[] = {
+	    {
+	        .format = format,
+	        .samples = pApp->msaaSampleCount,
+			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+    		.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+    		.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+    		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+    		.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+	    },
+	    {
+			.format = VK_FORMAT_D32_SFLOAT_S8_UINT,
+			.samples = pApp->msaaSampleCount,
+			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+			.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+			.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+			.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+			.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+	    },
+		{
+			.format = format,
+			.samples = VK_SAMPLE_COUNT_1_BIT,
+			.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+			.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+			.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+			.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+		},
+	};
+
+	VkAttachmentReference colorAttachmentRef = {
+	    .attachment = 0,
+	    .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+	};
+	VkAttachmentReference depthAttachmentRef = {
+	    .attachment = 1,
+	    .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+	};
+	VkAttachmentReference resolveAttachmentRef = {
+	    .attachment = 2,
+	    .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+	};
+
+	VkSubpassDescription subpass = {
+	    .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+	    .colorAttachmentCount = 1,
+	    .pColorAttachments = &colorAttachmentRef,
+	    .pDepthStencilAttachment = &depthAttachmentRef,
+		.pResolveAttachments = &resolveAttachmentRef,
+	};
+
+	VkSubpassDependency pDependencies[] = {
+		{
+			.srcSubpass = VK_SUBPASS_EXTERNAL,
+			.dstSubpass = 0,
+
+			.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+
+			.srcAccessMask = 0,
+			.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+		},
+	};
+
+	VkRenderPassCreateInfo createInfo = {
+	    .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+
+		.pAttachments = attachments,
+		.attachmentCount = NUMOF(attachments),
+
+		.pSubpasses = &subpass,
+		.subpassCount = 1,
+
+		.pDependencies = pDependencies,
+		.dependencyCount = NUMOF(pDependencies),
+	};
+
+	if(vkCreateRenderPass(device, &createInfo, 0, pRenderPass) == VK_SUCCESS) {
+		sgLogInfo_Debug("[Graphics Instance]: Render Pass Created");
+	} else {
+		sgLogError("[Graphics Instance]: Render Pass Creation Failure");
+	}
+
+	return SG_SUCCESS;
+}
+
+SgResult createVkSwapchain(const SgApp* pApp, VkSwapchainKHR oldswapchain, VkSwapchainKHR* pSwapchain) {
+	VkSurfaceCapabilitiesKHR surfcap = pApp->surfaceAttributes.surfaceCapabilities;
+	VkCompositeAlphaFlagBitsKHR surfaceComposite =
+	    (surfcap.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
+	        ? VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR
+	        : (surfcap.supportedCompositeAlpha &
+	           VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR)
+	              ? VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR
+	              : (surfcap.supportedCompositeAlpha &
+	                 VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR)
+	                    ? VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR
+	                    : VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
+	VkSwapchainCreateInfoKHR createinfo = {
+	    .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+	    .surface = pApp->surface,
+	    .minImageCount = SG_FRAME_QUEUE_LENGTH,
+	    .imageFormat = pApp->surfaceAttributes.format.format,
+	    .imageColorSpace = pApp->surfaceAttributes.format.colorSpace,
+	    .imageExtent = pApp->surfaceAttributes.surfaceCapabilities.currentExtent,
+	    .imageArrayLayers = 1,
+	    .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+	    .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
+	    .queueFamilyIndexCount = 1,
+	    .pQueueFamilyIndices = &pApp->graphicsQueueFamilyIdx,
+	    .preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
+	    .compositeAlpha = surfaceComposite,
+	    .presentMode = pApp->surfaceAttributes.presentMode,
+	    .oldSwapchain = oldswapchain,
+	};
+	if (vkCreateSwapchainKHR(pApp->device, &createinfo, VK_NULL_HANDLE, pSwapchain) == VK_SUCCESS) {
+	} else {
+		sgLogError("[Graphics Instance]: Swapchain Creation Failure");
+		return 1;
+	}
+	return SG_SUCCESS;
+}
+
+typedef struct SgSwapchainCreateInfo {
+	VkSwapchainKHR oldSwapchain;
+	VkRenderPass   renderPass;
+} SgSwapchainCreateInfo;
+
+SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo, SgSwapchain *pSwapchain) {
+
+	createVkSwapchain(pApp, pCreateInfo->oldSwapchain, &pSwapchain->swapchain);
+	pSwapchain->extent = pApp->surfaceAttributes.surfaceCapabilities.currentExtent;
+
+	/* Frame Image Creation */
+	vkGetSwapchainImagesKHR(pApp->device, pSwapchain->swapchain, &pSwapchain->imageCount, VK_NULL_HANDLE);
+	SG_MALLOC_NUM(pSwapchain->pFrameImages, pSwapchain->imageCount);
+	vkGetSwapchainImagesKHR(pApp->device, pSwapchain->swapchain, &pSwapchain->imageCount, pSwapchain->pFrameImages);
+	SG_MALLOC_NUM(pSwapchain->pFrameImageViews, pSwapchain->imageCount);
+
+	SgImageViewCreateInfo imageViewCreateInfo = {
+		.type = VK_IMAGE_VIEW_TYPE_2D,
+		.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
+	};
+	for (uint32_t i = 0; i < pSwapchain->imageCount; ++i) {
+		SgImage image = {
+			.image = pSwapchain->pFrameImages[i],
+			.format = pApp->surfaceAttributes.format.format,
+		};
+		SgImageView imageView;
+		imageViewCreateInfo.pImage = &image;
+		sgCreateImageView(pApp, &imageViewCreateInfo, &imageView);
+		pSwapchain->pFrameImageViews[i] = imageView.imageView;
+	}
+
+	/* Depth Image Creation */
+	SgImageCreateInfo depthImageCreateInfo = {
+		.extent = (VkExtent3D) {pSwapchain->extent.width, pSwapchain->extent.height, 1},
+		.memoryUsage = VMA_MEMORY_USAGE_GPU_ONLY,
+		.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+		.type = VK_IMAGE_TYPE_2D,
+		.format = VK_FORMAT_D32_SFLOAT_S8_UINT,
+		.tiling = VK_IMAGE_TILING_OPTIMAL,
+		.layout = VK_IMAGE_LAYOUT_UNDEFINED,
+		.samples = pApp->msaaSampleCount,
+	};
+	sgCreateImage(pApp, &depthImageCreateInfo, &pSwapchain->depthImage);
+
+	SgImageViewCreateInfo depthImageViewCreateInfo = {
+		.aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT,
+		.pImage = &pSwapchain->depthImage,
+		.type = VK_IMAGE_VIEW_TYPE_2D,
+	};
+	sgCreateImageView(pApp, &depthImageViewCreateInfo, &pSwapchain->depthImageView);
+	/* Transition depth image */
+	{
+		SgImageTransferInfo transferInfo = {
+			.image = pSwapchain->depthImage,
+			.srcImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.dstImageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+			.srcQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
+			.dstQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
+			.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT,
+			.subresourceRange.baseMipLevel = 0,
+			.subresourceRange.layerCount = 1,
+			.subresourceRange.levelCount = 1,
+			.subresourceRange.baseArrayLayer = 0,
+			.srcAccessMask = 0,
+			.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+			.srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+			.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+		};
+		sgTransferImage(pApp, &transferInfo);
+	}
+
+	/**/
+
+	/* Blend Image to Creation */
+	SgImageCreateInfo blendImageCreateInfo = {
+		.extent = (VkExtent3D) {pSwapchain->extent.width, pSwapchain->extent.height, 1},
+		.memoryUsage = VMA_MEMORY_USAGE_GPU_ONLY,
+		.usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		.type = VK_IMAGE_TYPE_2D,
+		.format = pApp->surfaceAttributes.format.format,
+		.tiling = VK_IMAGE_TILING_OPTIMAL,
+		.layout = VK_IMAGE_LAYOUT_UNDEFINED,
+		.samples = pApp->msaaSampleCount,
+	};
+	sgCreateImage(pApp, &blendImageCreateInfo, &pSwapchain->blendImage);
+	SgImageViewCreateInfo blendImageViewCreateInfo = {
+		.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
+		.pImage = &pSwapchain->blendImage,
+		.type = VK_IMAGE_VIEW_TYPE_2D,
+	};
+	sgCreateImageView(pApp, &blendImageViewCreateInfo, &pSwapchain->blendImageView);
+
+	/* FrameBuffer */
+	VkFramebufferCreateInfo framebufferCreateInfo = {
+	    .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+	    .renderPass = pCreateInfo->renderPass,
+	    .width = pSwapchain->extent.width,
+	    .height = pSwapchain->extent.height,
+	    .layers = 1,
+	};
+	SG_MALLOC_NUM(pSwapchain->pFrameBuffers, pSwapchain->imageCount);
+
+
+	for (uint32_t i = 0; i < pSwapchain->imageCount; ++i) {
+		VkImageView pAttachments[] = {pSwapchain->blendImageView.imageView, pSwapchain->depthImageView.imageView, pSwapchain->pFrameImageViews[i]};
+		framebufferCreateInfo.attachmentCount = NUMOF(pAttachments);
+		framebufferCreateInfo.pAttachments = pAttachments;
+
+		if (vkCreateFramebuffer(pApp->device, &framebufferCreateInfo, VK_NULL_HANDLE, &pSwapchain->pFrameBuffers[i]) == VK_SUCCESS) {
+		} else {
+			sgLogError("[Graphics Instance]: Framebuffer %d Creation Failure", i);
+		}
+	}
+	sgLogInfo_Debug("[Graphics Instance]: Framebuffer Creation Finished");
+	return SG_SUCCESS;
+}
+
+SgResult sgCreateMaterialMap(SgApp* pApp, uint32_t materialCount, SgMaterialMap** ppMaterialMap) {
 	SgMaterialMap* pMaterialMap = *ppMaterialMap;
 	SG_CALLOC_NUM(pMaterialMap, 1);
 	pMaterialMap->pMaterialRenderObjectMap = hashmap_new(sizeof(SgMaterialRenderObjects), materialCount, 0, 0, materialRenderObjectsKeyHash, materialRenderObjectsKeyCompare, NULL);
 	pMaterialMap->pMaterialMap = hashmap_new(sizeof(SgMaterial), materialCount, 0, 0, materialKeyHash, materialKeyCompare, NULL);
 
+	sgFillDefaultRenderpass(pApp, &pMaterialMap->renderPass);
+	/* Create Swapchain */
+	SgSwapchainCreateInfo swapchainCreateInfo = {
+		.renderPass = pMaterialMap->renderPass,
+	};
+	sgCreateSwapchain(pApp, &swapchainCreateInfo, &pMaterialMap->swapchain);
 	pMaterialMap->pApp = pApp;
 	*ppMaterialMap = pMaterialMap;
 	return SG_SUCCESS;
 }
 
 SgResult sgFillGraphicsPipelineBuilder(const SgApp* pApp, SgGraphicsPipelineBuilder* pPipelineBuilder) {
+	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {
+	    .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+	    .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+	};
+	pPipelineBuilder->inputAssembly = inputAssembly;
+
 	VkPipelineVertexInputStateCreateInfo vertexInput = {
 	    .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 	};
@@ -80,11 +338,12 @@ SgResult sgFillGraphicsPipelineBuilder(const SgApp* pApp, SgGraphicsPipelineBuil
 }
 
 static SgResult sgSetGraphicsPipelineBuilderStages(const SgMaterialCreateInfo* pCreateInfo, SgGraphicsPipelineBuilder* pPipelineBuilder) {
+	SG_CALLOC_NUM(pPipelineBuilder->pShaderStages, pCreateInfo->shaderCount);
 	pPipelineBuilder->shaderStageCount = pCreateInfo->shaderCount;
 	for (uint32_t i = 0; i < pPipelineBuilder->shaderStageCount; ++i) {
 		pPipelineBuilder->pShaderStages[i].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		pPipelineBuilder->pShaderStages[i].module = pCreateInfo->pShaders[i].shader;
-		pPipelineBuilder->pShaderStages[i].stage = pCreateInfo->pShaders[i].stage;
+		pPipelineBuilder->pShaderStages[i].module = pCreateInfo->ppShaders[i]->shader;
+		pPipelineBuilder->pShaderStages[i].stage = pCreateInfo->ppShaders[i]->stage;
 		pPipelineBuilder->pShaderStages[i].pName = "main";
 	}
 	return SG_SUCCESS;
@@ -186,17 +445,17 @@ static SgResult sgCreateDescriptorSetLayout(const SgApp* pApp, const SgMaterialC
 					pSetLayoutBindings[i][j].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 					break;
 			}
-			VkDescriptorSetLayoutCreateInfo setLayoutCreateInfo = {
-				.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-				.pBindings = pSetLayoutBindings[i],
-				.bindingCount = pCreateInfo->pResourceBindingCount[i],
-			};
-			VkResult result = vkCreateDescriptorSetLayout(pApp->device, &setLayoutCreateInfo, VK_NULL_HANDLE, &pSetLayouts->setLayouts[i]);
-			if(result == VK_SUCCESS) {
-				sgLogInfo_Debug("[Set]: Descriptor Set Layout Init Successfull");
-			} else {
-				sgLogError("[Set]: Descriptor Set Layout Init Error");
-			}
+		}
+		VkDescriptorSetLayoutCreateInfo setLayoutCreateInfo = {
+			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+			.pBindings = pSetLayoutBindings[i],
+			.bindingCount = pCreateInfo->pResourceBindingCount[i],
+		};
+		VkResult result = vkCreateDescriptorSetLayout(pApp->device, &setLayoutCreateInfo, VK_NULL_HANDLE, &pSetLayouts->setLayouts[i]);
+		if(result == VK_SUCCESS) {
+			sgLogInfo_Debug("[Set]: Descriptor Set Layout Init Successfull");
+		} else {
+			sgLogError("[Set]: Descriptor Set Layout Init Error");
 		}
 	}
 	return SG_SUCCESS;
@@ -220,110 +479,17 @@ static SgResult sgCreatePipelineLayout(const SgApp* pApp, const SgSetLayouts* pS
 	return SG_SUCCESS;
 }
 
-static SgResult sgFillDefaultRenderpass(const SgApp* pApp, VkRenderPass* pRenderPass) {
-	VkDevice device = pApp->device;
-	VkFormat format = pApp->surfaceAttributes.format.format;
 
-	VkAttachmentDescription attachments[] = {
-	    {
-	        .format = format,
-	        .samples = pApp->msaaSampleCount,
-			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-    		.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-    		.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-    		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-    		.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-	    },
-	    {
-			.format = VK_FORMAT_D32_SFLOAT_S8_UINT,
-			.samples = pApp->msaaSampleCount,
-			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-			.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-			.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-			.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-			.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-	    },
-		{
-			.format = format,
-			.samples = VK_SAMPLE_COUNT_1_BIT,
-			.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-			.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-			.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-			.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-			.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-		},
-	};
-
-	VkAttachmentReference colorAttachmentRef = {
-	    .attachment = 0,
-	    .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-	};
-	VkAttachmentReference depthAttachmentRef = {
-	    .attachment = 1,
-	    .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-	};
-	VkAttachmentReference resolveAttachmentRef = {
-	    .attachment = 2,
-	    .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-	};
-
-	VkSubpassDescription subpass = {
-	    .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-	    .colorAttachmentCount = 1,
-	    .pColorAttachments = &colorAttachmentRef,
-	    .pDepthStencilAttachment = &depthAttachmentRef,
-		.pResolveAttachments = &resolveAttachmentRef,
-	};
-
-	VkSubpassDependency pDependencies[] = {
-		{
-			.srcSubpass = VK_SUBPASS_EXTERNAL,
-			.dstSubpass = 0,
-
-			.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-			.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-
-			.srcAccessMask = 0,
-			.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-		},
-	};
-
-	VkRenderPassCreateInfo createInfo = {
-	    .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-
-		.pAttachments = attachments,
-		.attachmentCount = NUMOF(attachments),
-
-		.pSubpasses = &subpass,
-		.subpassCount = 1,
-
-		.pDependencies = pDependencies,
-		.dependencyCount = NUMOF(pDependencies),
-	};
-
-
-	if(vkCreateRenderPass(device, &createInfo, 0, pRenderPass) == VK_SUCCESS) {
-		sgLogInfo_Debug("[Graphics Instance]: Render Pass Created");
-	} else {
-		sgLogError("[Graphics Instance]: Render Pass Creation Failure");
-	}
-
-	return SG_SUCCESS;
-}
-
-SgResult sgCreateMaterial(const SgApp* pApp, const SgMaterialCreateInfo* pCreateInfo, SgMaterial* pMaterial) {
+SgResult sgCreateMaterial(const SgMaterialMap* pMaterialMap, const SgMaterialCreateInfo* pCreateInfo, SgMaterial* pMaterial) {
 	SgGraphicsPipelineBuilder graphicsPipelineBuilder;
-	sgFillGraphicsPipelineBuilder(pApp, &graphicsPipelineBuilder);
+	sgFillGraphicsPipelineBuilder(pMaterialMap->pApp, &graphicsPipelineBuilder);
 	sgSetGraphicsPipelineBuilderStages(pCreateInfo, &graphicsPipelineBuilder);
-	sgCreateDescriptorSetLayout(pApp, pCreateInfo, &pMaterial->setLayouts);
-	sgCreatePipelineLayout(pApp, &pMaterial->setLayouts, &graphicsPipelineBuilder.pipelineLayout);
-	sgFillDefaultRenderpass(pApp, &pMaterial->todoRenderPass);
-	sgBuildGraphicsPipeline(pApp, &graphicsPipelineBuilder, pMaterial->todoRenderPass, &pMaterial->pipeline);
+	sgCreateDescriptorSetLayout(pMaterialMap->pApp, pCreateInfo, &pMaterial->setLayouts);
+	sgCreatePipelineLayout(pMaterialMap->pApp, &pMaterial->setLayouts, &graphicsPipelineBuilder.pipelineLayout);
+	sgBuildGraphicsPipeline(pMaterialMap->pApp, &graphicsPipelineBuilder, pMaterialMap->renderPass, &pMaterial->pipeline);
+	free(graphicsPipelineBuilder.pShaderStages);
 	pMaterial->pName = pCreateInfo->pMaterialName;
-	pMaterial->pShaders = pCreateInfo->pShaders;
+	pMaterial->ppShaders = pCreateInfo->ppShaders;
 	pMaterial->shaderCount = pCreateInfo->shaderCount;
 	pMaterial->pipelineLayout = graphicsPipelineBuilder.pipelineLayout;
 
@@ -331,7 +497,7 @@ SgResult sgCreateMaterial(const SgApp* pApp, const SgMaterialCreateInfo* pCreate
 	pMaterial->pResourceBindingCount = pCreateInfo->pResourceBindingCount;
 	pMaterial->ppResourceBindings = pCreateInfo->ppResourceBindings;
 	pMaterial->descriptorSetCount = pCreateInfo->resourceSetBindingCount;
-	SG_MALLOC_NUM(pMaterial->pDescriptorSets, pMaterial->descriptorSetCount);
+	SG_CALLOC_NUM(pMaterial->pDescriptorSets, pMaterial->descriptorSetCount);
 
 	return SG_SUCCESS;
 }
@@ -347,8 +513,8 @@ SgMaterial* sgAddMaterial(const SgMaterialCreateInfo* pCreateInfo, SgMaterialMap
 	if (pMaterial) {
 		return pMaterial;
 	} else {
-		sgCreateMaterial(pMaterialMap->pApp, pCreateInfo, pMaterial);
-		hashmap_set(pMaterialMap->pMaterialMap, pMaterial);
+		sgCreateMaterial(pMaterialMap, pCreateInfo, &material);
+		hashmap_set(pMaterialMap->pMaterialMap, &material);
 	}
 	*ppMaterialMap = pMaterialMap;
 	return pMaterial;
@@ -357,6 +523,9 @@ SgMaterial* sgAddMaterial(const SgMaterialCreateInfo* pCreateInfo, SgMaterialMap
 
 static _Bool materialDescriptorPoolCountGetIter(const void *item, void *udata) {
     const SgMaterial *pMaterial = item;
+	if (strlen(pMaterial->pName) == 0) {
+		return 0;
+	}
 	uint32_t* poolSizeCount = udata;
 	for(uint32_t i = 0; i < pMaterial->resourceSetBindingCount; ++i) {
 		*poolSizeCount += pMaterial->pResourceBindingCount[i];
@@ -372,6 +541,9 @@ struct SgFillerDescriptorPoolSizes {
 
 static _Bool materialDescriptorPoolFillIter(const void *item, void *udata) {
     const SgMaterial *pMaterial = item;
+	if (strlen(pMaterial->pName) == 0) {
+		return 0;
+	}
 	struct SgFillerDescriptorPoolSizes* pPoolSizes = udata;
 
 	for (uint32_t i = 0; i < pMaterial->resourceSetBindingCount; ++i) {
@@ -397,8 +569,11 @@ static _Bool materialDescriptorPoolFillIter(const void *item, void *udata) {
 
 static _Bool materialDescriptorSetCountGetIter(const void *item, void *udata) {
     const SgMaterial *pMaterial = item;
+	if (strlen(pMaterial->pName) == 0) {
+		return 0;
+	}
 	uint32_t* setCount = udata;
-	setCount += pMaterial->resourceSetBindingCount;
+	*setCount += pMaterial->resourceSetBindingCount;
 
     return 1;
 }
@@ -410,6 +585,9 @@ struct SgDescriptorAllocInfo {
 
 static _Bool materialDescriptorSetAllocateIter(const void *item, void *udata) {
     const SgMaterial *pMaterial = item;
+	if (strlen(pMaterial->pName) == 0) {
+		return 0;
+	}
 	struct SgDescriptorAllocInfo* pPool = udata;
 	VkDescriptorSetAllocateInfo descriptorSetAllocInfo = {
 	    .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
@@ -418,9 +596,7 @@ static _Bool materialDescriptorSetAllocateIter(const void *item, void *udata) {
 		.pSetLayouts = pMaterial->setLayouts.setLayouts,
 	};
 
-	for (uint32_t i = 0; i < pMaterial->descriptorSetCount; ++i) {
-		vkAllocateDescriptorSets(pPool->pApp->device, &descriptorSetAllocInfo, &pMaterial->pDescriptorSets[i]);
-	}
+	vkAllocateDescriptorSets(pPool->pApp->device, &descriptorSetAllocInfo, pMaterial->pDescriptorSets);
 
     return 1;
 }
@@ -431,11 +607,15 @@ SgResult sgInitMaterialMap(SgApp* pApp, SgMaterialMap** ppMaterialMap) {
 	uint32_t poolSizeCount = 0;
 	hashmap_scan(pMaterialMap->pMaterialMap, materialDescriptorPoolCountGetIter, &poolSizeCount);
 	VkDescriptorPoolSize* pPoolSizes;
-	struct SgFillerDescriptorPoolSizes poolSizes;
 	SG_CALLOC_NUM(pPoolSizes, poolSizeCount);
-	hashmap_scan(pMaterialMap->pMaterialMap, materialDescriptorPoolFillIter, &poolSizes);
+	struct SgFillerDescriptorPoolSizes poolSizes = {
+		.pPoolSizes = pPoolSizes,
+		.offset = 0,
+	};
+
 	uint32_t setCount = 0;
 	hashmap_scan(pMaterialMap->pMaterialMap, materialDescriptorSetCountGetIter, &setCount);
+	hashmap_scan(pMaterialMap->pMaterialMap, materialDescriptorPoolFillIter, &poolSizes);
 
 	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {
 	    .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
@@ -449,6 +629,7 @@ SgResult sgInitMaterialMap(SgApp* pApp, SgMaterialMap** ppMaterialMap) {
 		.pApp = pApp,
 		.pDescriptorPool = &pMaterialMap->descriptorPool,
 	};
+	// Allocate Descriptor Sets
 	hashmap_scan(pMaterialMap->pMaterialMap, materialDescriptorSetAllocateIter, &info);
 	*ppMaterialMap=pMaterialMap;
 	return SG_SUCCESS;
@@ -462,18 +643,87 @@ SgMaterial* sgGetMaterial(const char* pMaterialName, const SgMaterialMap* pMater
 	return pMaterial;
 }
 
-SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pRenderObjectsCreateInfo, SgMaterialMap** ppMaterialMap) {
+SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pCreateInfo, SgMaterialMap** ppMaterialMap) {
 	SgMaterialMap* pMaterialMap = *ppMaterialMap;
 	SgMaterialRenderObjects renderObject = {
-		.pRenderObjects = pRenderObjectsCreateInfo->pRenderObjects,
-		.renderObjectCount = pRenderObjectsCreateInfo->renderObjectCount,
-		.materialObjectsName = pRenderObjectsCreateInfo->materialObjectsName,
-		.materialName = pRenderObjectsCreateInfo->materialName,
+		.pRenderObjects = pCreateInfo->pRenderObjects,
+		.renderObjectCount = pCreateInfo->renderObjectCount,
+		.materialObjectsName = pCreateInfo->materialObjectsName,
+		.materialName = pCreateInfo->materialName,
+		.ppResources = pCreateInfo->ppResources,
+		.pResourceSetBindings = pCreateInfo->pResourceSetBindings,
+		.resourceCount = pCreateInfo->resourceCount,
+		.resourceSetCount = pCreateInfo->resourceSetCount,
 	};
-	SgMaterialRenderObjects* pMaterialRenderObject = hashmap_get(pMaterialMap->pMaterialMap, &renderObject);
+	SG_CALLOC_NUM(renderObject.pWriteDescriptorSets, renderObject.resourceSetCount);
+	SgMaterialRenderObjects* pMaterialRenderObject = hashmap_get(pMaterialMap->pMaterialRenderObjectMap, &renderObject);
 	if (pMaterialRenderObject) {
 		return SG_SUCCESS;
 	}
-	hashmap_set(pMaterialMap->pMaterialMap, &renderObject);
+	hashmap_set(pMaterialMap->pMaterialRenderObjectMap, &renderObject);
+	return SG_SUCCESS;
+}
+
+_Bool materialRenderObjectWrite(const void *item, void *udata) {
+	const SgMaterialRenderObjects* pRenderObject = item;
+	SgMaterialMap* pMMap = udata;
+	struct hashmap* pMaterialMap = pMMap->pMaterialMap;
+	SgMaterial findMaterial = {
+		.pName = pRenderObject->materialName,
+	};
+	SgMaterial* pMaterial = hashmap_get(pMaterialMap, &findMaterial);
+	if (pMaterial == NULL) {
+		sgLogDebug("Material not found");
+	}
+
+	for (uint32_t i = 0; i < pRenderObject->resourceSetCount; ++i) {
+		uint32_t resCount = 0;
+		for (uint32_t j = 0; j < pRenderObject->resourceCount; ++j) {
+			if (i != pRenderObject->pResourceSetBindings[j]) {
+				continue;
+			}
+
+			pRenderObject->pWriteDescriptorSets[resCount].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+
+			pRenderObject->pWriteDescriptorSets[resCount].dstSet = pMaterial->pDescriptorSets[i];
+			pRenderObject->pWriteDescriptorSets[resCount].dstBinding = pRenderObject->ppResources[j]->resourceBinding.binding;
+			pRenderObject->pWriteDescriptorSets[resCount].descriptorCount = 1;
+
+			VkDescriptorImageInfo imageInfo;
+			VkDescriptorBufferInfo bufferInfo;
+			if (pRenderObject->ppResources[j]->resourceBinding.type == SG_RESOURCE_TYPE_TEXTURE_2D) {
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = pRenderObject->ppResources[j]->imageView;
+				imageInfo.sampler   = pRenderObject->ppResources[j]->imageSampler;
+			} else {
+				bufferInfo.buffer = pRenderObject->ppResources[j]->dataBuffer.buffer;
+				bufferInfo.offset = 0;
+				bufferInfo.range = pRenderObject->ppResources[j]->dataBuffer.size;
+			}
+			pRenderObject->pWriteDescriptorSets[resCount].pImageInfo = &imageInfo;
+			pRenderObject->pWriteDescriptorSets[resCount].pBufferInfo = &bufferInfo;
+
+			switch (pRenderObject->ppResources[j]->resourceBinding.type) {
+				case (SG_RESOURCE_TYPE_UNIFORM):
+					pRenderObject->pWriteDescriptorSets[resCount].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+					break;
+				case (SG_RESOURCE_TYPE_MESH):
+					pRenderObject->pWriteDescriptorSets[resCount].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+					break;
+				case (SG_RESOURCE_TYPE_TEXTURE_2D):
+					pRenderObject->pWriteDescriptorSets[resCount].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+					break;
+			}
+			++resCount;
+		}
+		vkUpdateDescriptorSets(pMMap->pApp->device, resCount, pRenderObject->pWriteDescriptorSets, 0, VK_NULL_HANDLE);
+	}
+	return 1;
+}
+
+SgResult sgWriteMaterialRenderObjects(SgMaterialMap** ppMaterialMap) {
+	SgMaterialMap* pMaterialMap = *ppMaterialMap;
+	hashmap_scan(pMaterialMap->pMaterialRenderObjectMap, materialRenderObjectWrite, pMaterialMap);
+
 	return SG_SUCCESS;
 }

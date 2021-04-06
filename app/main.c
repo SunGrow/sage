@@ -1,7 +1,6 @@
 #include "sage.h"
 #include "sage_math.h"
 #include "sage_rend.h"
-#include "sage_res.h"
 #include "sage_scene.h"
 #include "sage_input.h"
 #include "log.h"
@@ -9,6 +8,7 @@
 #include "inputKeys.h"
 #include "inputFuncs.h"
 
+#define NUMOF(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 int main() {
 	// Testing
@@ -217,21 +217,21 @@ int main() {
 	SgMeshSet *pMesh;
 	
 	sgCreateMeshSet(&pMesh);
-	uint32_t mesh1ID = sgAddMesh("res/kitten.obj", &pMesh);
-	uint32_t mesh2ID = sgAddMesh("res/chalet.obj", &pMesh);
+	uint32_t kittenMeshID = sgAddMesh("res/kitten.obj", &pMesh);
+	uint32_t chaletMeshID = sgAddMesh("res/chalet.obj", &pMesh);
 	uint32_t mesh3ID = sgAddMesh("res/cube.obj", &pMesh);
 	uint32_t mesh4ID = sgAddMesh("res/myriam.obj", &pMesh);
 	SgMeshTransformInfo kittenMeshTransformInfo = {
 		.move = {2.5, 0.3, 1.1},
 		.scale = {0.5, 0.5, 0.5,},
 	};
-	sgTransformMesh(&kittenMeshTransformInfo, pMesh->pVertexOffsets[mesh1ID], pMesh->pVertexSizes[mesh1ID], pMesh->pVertices);
+	sgTransformMesh(&kittenMeshTransformInfo, pMesh->pVertexOffsets[kittenMeshID], pMesh->pVertexSizes[kittenMeshID], pMesh->pVertices);
 
 	SgMeshTransformInfo kittenMeshTransformInfo2 = {
 		.move = {.1, 0.1, 1.1},
 		.scale = {0.5, 0.5, -0.5,},
 	};
-	sgTransformMesh(&kittenMeshTransformInfo2, pMesh->pVertexOffsets[mesh2ID], pMesh->pVertexSizes[mesh2ID], pMesh->pVertices);
+	sgTransformMesh(&kittenMeshTransformInfo2, pMesh->pVertexOffsets[chaletMeshID], pMesh->pVertexSizes[chaletMeshID], pMesh->pVertices);
 
 	SgMeshTransformInfo kittenMeshTransformInfo3 = {
 		.move = {1.0, -0.1, -0.1},
@@ -264,6 +264,8 @@ int main() {
 		.type = SG_RESOURCE_TYPE_INDICES,
 	};
 	sgCreateResource(app, &meshIndicesResourceCreateInfo, &meshIndicesResource);
+	// TODO: Wrap into a creation inside of an api, ffs
+	pMesh->indicesResource = meshIndicesResource;
 	/* Placeholder Mesh2 */
 	/**/
 
@@ -293,95 +295,68 @@ int main() {
 	};
 	sgCreateResource(app, &meshTexture2ResourceCreateInfo, &meshTexture2Resource);
 
-	/* Resource Set Init */
-	SgResource pMeshSetResources[] = {meshResource, meshTextureResource};
-	SgResourceSetCreateInfo meshResourceSetCreateInfo = {
-		.pResources = pMeshSetResources,
-		.resourceCount = sizeof(pMeshSetResources) / sizeof(pMeshSetResources[0]),
-		.setIndex = 0,
-	};
-	SgResourceSet meshResourceSet;
-	sgCreateResourceSet(app, &meshResourceSetCreateInfo, &meshResourceSet);
-	//
+	SgMaterialMap materialMap;
+	sgCreateMaterialMap(app, 1, &materialMap);
 
-	SgResource pMeshSetResources2[] = {meshResource, meshTexture2Resource};
-	SgResourceSetCreateInfo meshResourceSetCreateInfo2 = {
-		.pResources = pMeshSetResources2,
-		.resourceCount = sizeof(pMeshSetResources) / sizeof(pMeshSetResources[0]),
-		.setIndex = 0,
+	SgShader pShadersChalet[] = {vertShader, fragShader};
+	SgResourceBinding* materialChaletResourceBindings[] = {
+		(SgResourceBinding[])
+		{
+			(SgResourceBinding) {.type = SG_RESOURCE_TYPE_MESH, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0},
+			(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 1},
+		},
+		(SgResourceBinding[])
+		{
+			(SgResourceBinding){.type = SG_RESOURCE_TYPE_UNIFORM, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0},
+		},
 	};
-	SgResourceSet meshResourceSet2;
-
-	sgCreateResourceSet(app, &meshResourceSetCreateInfo2, &meshResourceSet2);
-	//
-
-	SgResource pUniformSetResources[] = {cameraResource};
-	SgResourceSetCreateInfo uniformResourceSetCreateInfo = {
-		.pResources = pUniformSetResources,
-		.resourceCount = sizeof(pUniformSetResources) / sizeof(pUniformSetResources[0]),
-		.setIndex = 1,
+	SgMaterialCreateInfo materialChaletCreateInfo = {
+		.pMaterialName = "materialChalet",
+		.pShaders = pShadersChalet,
+		.shaderCount = NUMOF(pShadersChalet),
+		.resourceSetBindingCount = NUMOF(materialChaletResourceBindings),
+		.pResourceBindingCount = (uint32_t[]) {
+			2,
+			1,
+		},
+		.ppResourceBindings = (SgResourceBinding**) materialChaletResourceBindings,
 	};
-	SgResourceSet uniformResourceSet;
-	sgCreateResourceSet(app, &uniformResourceSetCreateInfo, &uniformResourceSet);
+	sgAddMaterial(&materialChaletCreateInfo, &materialMap);
+	SgRenderObject chaletRenderObjects[] = {
+		{
+			.meshID = chaletMeshID,
+		},
+		{
+			.meshID = kittenMeshID,
+		}
+	};
+	SgRenderObjectCreateInfo chaletRenderObject = {
+		.materialName = "materialChalet",
+		.materialObjectsName = "chaletMesh",
+		.pRenderObjects = chaletRenderObjects,
+		.renderObjectCount = NUMOF(chaletRenderObjects),
+		.pResourceSetBindings = (uint32_t[]) {0, 0, 1},
+		.pResources = (SgResource[]) {meshResource,  meshTextureResource, cameraResource},
+		.resourceCount = 3,
+		.resourceSetCount = NUMOF(materialChaletResourceBindings),
+	};
+	sgAddMaterialRenderObjects(&chaletRenderObject, &materialMap);
+	sgInitMaterialMap(app, &materialMap);
+	sgWriteMaterialRenderObjects(&materialMap);
 
 	/* Graphics Instance Init */
-	SgShader pShaders[] = {vertShader, fragShader};
-	SgResourceSet pResourceSets[] = {uniformResourceSet};
-	SgResourceSet pMeshResourceSets[] = {meshResourceSet, meshResourceSet2};
-	SgGraphicsInstanceCreateInfo graphicsInstanceCreateInfo = {
-		.pShaders = pShaders,
-		.shaderCount = sizeof(pShaders) / sizeof(pShaders[0]),
-
-		.pSets = pResourceSets,
-		.setCount = sizeof(pResourceSets) / sizeof(pResourceSets[0]),
-
-		.pMeshSets = pMeshResourceSets,
-		.meshSetCount = sizeof(pMeshResourceSets) / sizeof(pMeshResourceSets[0]),
-	};
-	SgGraphicsInstance graphicsInstance;
-	sgCreateGraphicsInstance(app, &graphicsInstanceCreateInfo, &graphicsInstance);
-
-	SgResourceSetInitInfo uniformSetInitInfo = {
-		.graphicsInstance = graphicsInstance,
-		.pResources = pUniformSetResources,
-		.resourceCount = sizeof(pUniformSetResources)/sizeof(pUniformSetResources[0]),
-	};
-	sgInitResourceSet(app, &uniformSetInitInfo, &uniformResourceSet);
-	SgResourceSetInitInfo meshSetInitInfo = {
-		.graphicsInstance = graphicsInstance,
-		.pResources = pMeshSetResources,
-		.resourceCount = sizeof(pMeshSetResources)/sizeof(pMeshSetResources[0]),
-
-		.isMeshResourceSet = 1,
-		.meshResourceSetID = 0,
-	};
-	sgInitResourceSet(app, &meshSetInitInfo, &meshResourceSet);
-
-	SgResourceSetInitInfo meshSetInitInfo2 = {
-		.graphicsInstance = graphicsInstance,
-		.pResources = pMeshSetResources2,
-		.resourceCount = sizeof(pMeshSetResources2)/sizeof(pMeshSetResources2[0]),
-
-		.isMeshResourceSet = 1,
-		.meshResourceSetID = 1,
-	};
-	sgInitResourceSet(app, &meshSetInitInfo2, &meshResourceSet2);
-	
-	SgResource pIndexResources[] = {meshIndicesResource};
 
 	SgUpdateCommandsInitInfo updateInitInfo = {
-		.app = app,
-		.graphicsInstance = graphicsInstance,
-		.pIndexResouces = pIndexResources,
-		.indexResourceCount = 1,
-		.pBotchArray = pMesh,
+		.materialMap = materialMap,
+		.pMeshSet = pMesh,
 	};
 	SgUpdateCommands updateCommands;
 	sgInitUpdateCommands(&updateInitInfo, &updateCommands);
 
 	SgAppUpdateInfo updateInfo = {
 		.app = app,
-		.graphicsInstance = graphicsInstance,
+		.materialMap = materialMap,
+		.pMeshSet = pMesh,
 		.updateCommands = updateCommands,
 	};
 	sgSetActiveContexts(contexts, &app);
@@ -405,11 +380,7 @@ int main() {
 	sgDestroyResource(app, &meshTextureResource);
 	sgDestroyResource(app, &meshTexture2Resource);
 	sgDestroyResource(app, &cameraResource);
-	sgDestroyResourceSet(app, &meshResourceSet);
-	sgDestroyResourceSet(app, &meshResourceSet2);
-	sgDestroyResourceSet(app, &uniformResourceSet);
 	sgDeinitUpdateCommands(app, &updateCommands);
-	sgDestroyGraphicsInstance(app, &graphicsInstance);
 	sgDestroyShader(app, &vertShader);
 	sgDestroyShader(app, &fragShader);
 	sgUnloadContexts(app, &contexts); 
