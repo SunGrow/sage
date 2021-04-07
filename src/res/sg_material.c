@@ -515,17 +515,15 @@ SgResult sgCreateMaterial(const SgMaterialMap* pMaterialMap, const SgMaterialCre
 
 	pMaterial->resourceBindingCount = pCreateInfo->resourceBindingCount;
 	pMaterial->pResourceBindings = pCreateInfo->pResourceBindings;
-	/// TODO: TMP
 	// max binding+1
-	uint32_t descriptorSetCount = 0;
+	uint32_t descriptorSetLayoutCount = 0;
 	for (uint32_t i = 0; i < pCreateInfo->resourceBindingCount; ++i) {
-		if (descriptorSetCount < pCreateInfo->pResourceBindings[i].setBinding) {
-			descriptorSetCount = pCreateInfo->pResourceBindings[i].setBinding;
+		if (descriptorSetLayoutCount < pCreateInfo->pResourceBindings[i].setBinding) {
+			descriptorSetLayoutCount = pCreateInfo->pResourceBindings[i].setBinding;
 		}
 	}
-	++descriptorSetCount;
-	pMaterial->descriptorSetCount = descriptorSetCount;
-	SG_CALLOC_NUM(pMaterial->pDescriptorSets, pMaterial->descriptorSetCount);
+	++descriptorSetLayoutCount;
+	pMaterial->descriptorSetCount = descriptorSetLayoutCount;
 	///
 
 	return SG_SUCCESS;
@@ -602,28 +600,6 @@ static _Bool materialDescriptorSetCountGetIter(const void *item, void *udata) {
     return 1;
 }
 
-struct SgDescriptorAllocInfo {
-	SgApp*            pApp;
-	VkDescriptorPool* pDescriptorPool;
-};
-
-static _Bool materialDescriptorSetAllocateIter(const void *item, void *udata) {
-    const SgMaterial *pMaterial = item;
-	if (strlen(pMaterial->pName) == 0) {
-		return 0;
-	}
-	struct SgDescriptorAllocInfo* pPool = udata;
-	VkDescriptorSetAllocateInfo descriptorSetAllocInfo = {
-	    .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-	    .descriptorPool = *pPool->pDescriptorPool,
-	    .descriptorSetCount = pMaterial->descriptorSetCount,
-		.pSetLayouts = pMaterial->setLayouts.pSetLayouts,
-	};
-
-	vkAllocateDescriptorSets(pPool->pApp->device, &descriptorSetAllocInfo, pMaterial->pDescriptorSets);
-
-    return 1;
-}
 
 
 SgResult sgInitMaterialMap(SgApp* pApp, SgMaterialMap** ppMaterialMap) {
@@ -649,12 +625,6 @@ SgResult sgInitMaterialMap(SgApp* pApp, SgMaterialMap** ppMaterialMap) {
 	};
 
 	vkCreateDescriptorPool(pApp->device, &descriptorPoolCreateInfo, VK_NULL_HANDLE, &pMaterialMap->descriptorPool);
-	struct SgDescriptorAllocInfo info = {
-		.pApp = pApp,
-		.pDescriptorPool = &pMaterialMap->descriptorPool,
-	};
-	// Allocate Descriptor Sets
-	hashmap_scan(pMaterialMap->pMaterialMap, materialDescriptorSetAllocateIter, &info);
 	*ppMaterialMap=pMaterialMap;
 	return SG_SUCCESS;
 }
@@ -678,12 +648,41 @@ SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pCreateInfo,
 		.materialObjectsName = pCreateInfo->materialObjectsName,
 		.materialName = pCreateInfo->materialName,
 	};
+	//
+	SgMaterial findMaterial = {
+		.pName = pCreateInfo->materialName,
+	};
+	SgMaterial* pMaterial = hashmap_get(pMaterialMap->pMaterialMap, &findMaterial);
+	// max binding+1
+	uint32_t descriptorSetCount = 0;
+	for (uint32_t i = 0; i < pMaterial->resourceBindingCount; ++i) {
+		if (descriptorSetCount < pMaterial->pResourceBindings[i].setBinding) {
+			descriptorSetCount = pMaterial->pResourceBindings[i].setBinding;
+		}
+	}
+	//
+	++descriptorSetCount;
+	//
+	renderObject.descriptorSetCount = descriptorSetCount;
+
 	SG_CALLOC_NUM(renderObject.pWriteDescriptorSets, renderObject.resourceCount);
+	SG_CALLOC_NUM(renderObject.pDescriptorSets, renderObject.descriptorSetCount);
 	SgMaterialRenderObjects* pMaterialRenderObject = hashmap_get(pMaterialMap->pMaterialRenderObjectMap, &renderObject);
 	if (pMaterialRenderObject) {
 		return SG_SUCCESS;
 	}
 	hashmap_set(pMaterialMap->pMaterialRenderObjectMap, &renderObject);
+
+	// Allocate Descriptor Sets
+	VkDescriptorSetAllocateInfo descriptorSetAllocInfo = {
+	    .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+	    .descriptorPool = pMaterialMap->descriptorPool,
+	    .descriptorSetCount = renderObject.descriptorSetCount,
+		.pSetLayouts = pMaterial->setLayouts.pSetLayouts,
+	};
+
+	vkAllocateDescriptorSets(pMaterialMap->pApp->device, &descriptorSetAllocInfo, renderObject.pDescriptorSets);
+	//
 	return SG_SUCCESS;
 }
 
@@ -721,7 +720,7 @@ _Bool materialRenderObjectWrite(const void *item, void *udata) {
 
 			pRenderObject->pWriteDescriptorSets[resCount].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 
-			pRenderObject->pWriteDescriptorSets[resCount].dstSet = pMaterial->pDescriptorSets[i];
+			pRenderObject->pWriteDescriptorSets[resCount].dstSet = pRenderObject->pDescriptorSets[i];
 			pRenderObject->pWriteDescriptorSets[resCount].dstBinding = pMaterial->pResourceBindings[j].binding;
 			pRenderObject->pWriteDescriptorSets[resCount].descriptorCount = 1;
 

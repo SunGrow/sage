@@ -28,6 +28,9 @@ typedef struct SgMaterialRenderObjects {
 	SgResource**           ppResources;
 	uint32_t               resourceCount;
 
+	VkDescriptorSet*       pDescriptorSets;
+	uint32_t               descriptorSetCount;
+
 	VkWriteDescriptorSet*  pWriteDescriptorSets;
 	const char*            materialObjectsName;
 	const char*            materialName; 
@@ -50,7 +53,6 @@ typedef struct SgMaterial {
 	VkPipeline             pipeline;
 	VkPipelineLayout       pipelineLayout;
 	SgSetLayouts           setLayouts;
-	VkDescriptorSet*       pDescriptorSets;
 	uint32_t               descriptorSetCount;
 
 	SgShader**             ppShaders;

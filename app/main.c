@@ -378,6 +378,7 @@ int main() {
 		.pResourceBindings = materialMyriamSetResourceBinding,
 	};
 	sgAddMaterial(&materialMyriamCreateInfo, &materialMap);
+	sgInitMaterialMap(app, &materialMap);
 
 
 	SgRenderObject myriamRenderObjects[] = {
@@ -430,7 +431,6 @@ int main() {
 		.resourceCount = NUMOF(materialChaletResources),
 	};
 	sgAddMaterialRenderObjects(&chaletRenderObject, &materialMap);
-	sgInitMaterialMap(app, &materialMap);
 	sgWriteMaterialRenderObjects(&materialMap);
 
 	/* Graphics Instance Init */
