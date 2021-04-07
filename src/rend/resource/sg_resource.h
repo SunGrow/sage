@@ -4,11 +4,9 @@
 
 typedef struct SgResourceCreateInfo {
 	SgResourceTypeFlags type;
-	SgShaderStageFlags  stage;
 	void*               bytes;
 	uint32_t            size;
 	VkExtent3D          extent;
-	uint32_t            binding;
 } SgResourceCreateInfo;
 
 SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreateInfo, SgResource **ppResource);
@@ -21,6 +19,8 @@ typedef struct SgBufferCreateInfo {
 	uint32_t            size;
 	SgResourceTypeFlags type;
 } SgBufferCreateInfo;
+
+void sgDestroyResource(const SgApp *pApp, SgResource **ppResource);
 
 SgResult sgCreateBuffer(const SgApp* pApp, SgBufferCreateInfo* pCreateInfo, SgBuffer* ppBuffer);
 

@@ -141,6 +141,7 @@ typedef struct SgResourceBinding {
 	SgResourceTypeFlags          type;
 	SgShaderStageFlags           stage;
 	uint32_t                     binding;
+	uint32_t                     setBinding;
 } SgResourceBinding;
 
 typedef struct SgSetBindings {
@@ -157,7 +158,7 @@ typedef struct SgResource {
 	VkCommandBuffer              commandBuffer;
 	VkCommandPool                commandPool;
 
-	SgResourceBinding            resourceBinding;
+	SgResourceTypeFlags          type;
 } SgResource;
 
 typedef struct SgSwapchain {

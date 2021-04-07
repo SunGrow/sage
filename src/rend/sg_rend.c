@@ -469,7 +469,7 @@ void sgDestroyShader(const SgApp *pApp, SgShader **ppShader) {
 void sgDestroyResource(const SgApp *pApp, SgResource **ppResource) {
 	vkDeviceWaitIdle(pApp->device);
 	SgResource* pResource = *ppResource;
-	if (pResource->resourceBinding.type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
+	if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
 		vkDestroyImageView(pApp->device, pResource->imageView, VK_NULL_HANDLE);
 		vkDestroySampler(pApp->device, pResource->imageSampler, VK_NULL_HANDLE);
 		if (pResource->stagingBuffer.allocation) {
@@ -480,7 +480,7 @@ void sgDestroyResource(const SgApp *pApp, SgResource **ppResource) {
 		}
 		vmaDestroyImage(pApp->allocator, pResource->image.image, pResource->image.allocation);
 	} else {
-		if (pResource->resourceBinding.type & SG_RESOURCE_TYPE_REQIRE_STAGING_MASK) {
+		if (pResource->type & SG_RESOURCE_TYPE_REQIRE_STAGING_MASK) {
 			vmaUnmapMemory(pApp->allocator, pResource->stagingBuffer.allocation);
 			vmaDestroyBuffer(pApp->allocator, pResource->stagingBuffer.buffer, pResource->stagingBuffer.allocation);
 			vmaDestroyBuffer(pApp->allocator, pResource->dataBuffer.buffer, pResource->dataBuffer.allocation);

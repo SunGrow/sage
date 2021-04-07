@@ -224,10 +224,8 @@ int main() {
 	/**/
 	SgResource cameraResource;
 	SgResourceCreateInfo cameraResourceCreateInfo = {
-		.binding = 0,
 		.bytes = &transformuniform,
 		.size = sizeof(SgTransformUniform),
-		.stage = SG_SHADER_STAGE_VERTEX_BIT,
 		.type = SG_RESOURCE_TYPE_UNIFORM,
 	};
 	sgCreateResource(app, &cameraResourceCreateInfo, &cameraResource);
@@ -269,10 +267,8 @@ int main() {
 	/* Resource Init */
 	SgResource meshResource;
 	SgResourceCreateInfo meshResourceCreateInfo = {
-		.binding = 0,
 		.bytes = pMesh->pVertices,
 		.size = pMesh->vertexCount * sizeof(pMesh->pVertices[0]),
-		.stage = SG_SHADER_STAGE_VERTEX_BIT,
 		.type = SG_RESOURCE_TYPE_MESH,
 	};
 	sgCreateResource(app, &meshResourceCreateInfo, &meshResource);
@@ -294,11 +290,9 @@ int main() {
 	sgLoadTexture("res/chalet.jpg", &pChaletTexture);
 	SgResource meshTextureResource;
 	SgResourceCreateInfo meshTextureResourceCreateInfo = {
-		.binding = 1,
 		.bytes = pChaletTexture->pixels,
 		.size = pChaletTexture->size,
 		.extent = (VkExtent3D) {.height = pChaletTexture->height, .width = pChaletTexture->width, .depth = 1.0},
-		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
 	sgCreateResource(app, &meshTextureResourceCreateInfo, &meshTextureResource);
@@ -308,11 +302,9 @@ int main() {
 	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_01Skin.jpg", &pSkinAlphaTexture);
 	SgResource skinAlphaTextureResource;
 	SgResourceCreateInfo skinTextureResourceCreateInfo = {
-		.binding = 1,
 		.bytes = pSkinAlphaTexture->pixels,
 		.size = pSkinAlphaTexture->size,
 		.extent = (VkExtent3D) {.height = pSkinAlphaTexture->height, .width = pSkinAlphaTexture->width, .depth = 1.0},
-		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
 	sgCreateResource(app, &skinTextureResourceCreateInfo, &skinAlphaTextureResource);
@@ -321,11 +313,9 @@ int main() {
 	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_02Hair.jpg", &pHairAlphaTexture);
 	SgResource hairAlphaTextureResource;
 	SgResourceCreateInfo hairTextureResourceCreateInfo = {
-		.binding = 2,
 		.bytes = pHairAlphaTexture->pixels,
 		.size = pHairAlphaTexture->size,
 		.extent = (VkExtent3D) {.height = pHairAlphaTexture->height, .width = pHairAlphaTexture->width, .depth = 1.0},
-		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
 	sgCreateResource(app, &hairTextureResourceCreateInfo, &hairAlphaTextureResource);
@@ -334,11 +324,9 @@ int main() {
 	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_03Cloth.jpg", &pClothAlphaTexture);
 	SgResource clothAlphaTextureResource;
 	SgResourceCreateInfo clothTextureResourceCreateInfo = {
-		.binding = 3,
 		.bytes = pClothAlphaTexture->pixels,
 		.size = pClothAlphaTexture->size,
 		.extent = (VkExtent3D) {.height = pClothAlphaTexture->height, .width = pClothAlphaTexture->width, .depth = 1.0},
-		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
 	sgCreateResource(app, &clothTextureResourceCreateInfo, &clothAlphaTextureResource);
@@ -347,11 +335,9 @@ int main() {
 	sgLoadTexture("res/tex/10016_w_Myriam_Body_D_2k.jpg", &pBodyDTexture);
 	SgResource bodyDTextureResource;
 	SgResourceCreateInfo bodyDTextureResourceCreateInfo = {
-		.binding = 4,
 		.bytes = pBodyDTexture->pixels,
 		.size = pBodyDTexture->size,
 		.extent = (VkExtent3D) {.height = pBodyDTexture->height, .width = pBodyDTexture->width, .depth = 1.0},
-		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
 	sgCreateResource(app, &bodyDTextureResourceCreateInfo, &bodyDTextureResource);
@@ -361,55 +347,35 @@ int main() {
 	sgCreateMaterialMap(app, 1, &materialMap);
 
 	SgShader pShadersChalet[] = {chaletVertShader, chaletFragShader};
-	SgResourceBinding* materialChaletResourceBindings[] = {
-		(SgResourceBinding[])
-		{
-			(SgResourceBinding) {.type = SG_RESOURCE_TYPE_MESH, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0},
-			(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 1},
-		},
-		(SgResourceBinding[])
-		{
-			(SgResourceBinding){.type = SG_RESOURCE_TYPE_UNIFORM, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0},
-		},
+	SgResourceBinding materialChaletResourceBindings[] = {
+		(SgResourceBinding) {.type = SG_RESOURCE_TYPE_MESH, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0, .setBinding = 0},
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 1, .setBinding = 0},
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_UNIFORM, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0, .setBinding = 1},
 	};
 	SgMaterialCreateInfo materialChaletCreateInfo = {
 		.pMaterialName = "materialChalet",
 		.pShaders = pShadersChalet,
 		.shaderCount = NUMOF(pShadersChalet),
-		.resourceSetBindingCount = NUMOF(materialChaletResourceBindings),
-		.pResourceBindingCount = (uint32_t[]) {
-			2,
-			1,
-		},
-		.ppResourceBindings = (SgResourceBinding**) materialChaletResourceBindings,
+		.resourceBindingCount = NUMOF(materialChaletResourceBindings),
+		.pResourceBindings = materialChaletResourceBindings,
 	};
 	sgAddMaterial(&materialChaletCreateInfo, &materialMap);
 
 	SgShader pShadersMyriam[] = {myriamVertShader, myriamFragShader};
-	SgResourceBinding materialMyriamSet1ResourceBinding[] = {
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_MESH, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0},
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 1},
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 2},
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 3},
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 4},
-	};
-	SgResourceBinding materialMyriamSet2ResourceBinding[] = {
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_UNIFORM, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0},
-	};
-	SgResourceBinding* materialMyriamResourceBindings[] = {
-		materialMyriamSet1ResourceBinding,
-		materialMyriamSet2ResourceBinding,
+	SgResourceBinding materialMyriamSetResourceBinding[] = {
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_MESH, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0, .setBinding = 0},
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 1, .setBinding = 0},
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 2, .setBinding = 0},
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 3, .setBinding = 0},
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 4, .setBinding = 0},
+		(SgResourceBinding){.type = SG_RESOURCE_TYPE_UNIFORM, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0, .setBinding = 1},
 	};
 	SgMaterialCreateInfo materialMyriamCreateInfo = {
 		.pMaterialName = "materialMyriam",
 		.pShaders = pShadersMyriam,
 		.shaderCount = NUMOF(pShadersMyriam),
-		.resourceSetBindingCount = NUMOF(materialMyriamResourceBindings),
-		.pResourceBindingCount = (uint32_t[]) {
-			NUMOF(materialMyriamSet1ResourceBinding),
-			NUMOF(materialMyriamSet2ResourceBinding),
-		},
-		.ppResourceBindings = (SgResourceBinding**) materialMyriamResourceBindings,
+		.resourceBindingCount = NUMOF(materialMyriamSetResourceBinding),
+		.pResourceBindings = materialMyriamSetResourceBinding,
 	};
 	sgAddMaterial(&materialMyriamCreateInfo, &materialMap);
 
@@ -438,10 +404,8 @@ int main() {
 		.materialObjectsName = "myriamMesh",
 		.pRenderObjects = myriamRenderObjects,
 		.renderObjectCount = NUMOF(myriamRenderObjects),
-		.pResourceSetBindings = (uint32_t[]) {0, 0, 0, 0, 0, 1},
 		.pResources = myriamRenderObjectResources,
 		.resourceCount = NUMOF(myriamRenderObjectResources),
-		.resourceSetCount = NUMOF(materialMyriamResourceBindings),
 	};
 	sgAddMaterialRenderObjects(&myriamRenderObject, &materialMap);
 
@@ -454,15 +418,16 @@ int main() {
 		},
 	};
 	// TODO: render object to have descriptor sets instead of materials
+	SgResource materialChaletResources[] = {
+		meshResource, meshTextureResource, cameraResource
+	};
 	SgRenderObjectCreateInfo chaletRenderObject = {
 		.materialName = "materialChalet",
 		.materialObjectsName = "chaletMesh",
 		.pRenderObjects = chaletRenderObjects,
 		.renderObjectCount = NUMOF(chaletRenderObjects),
-		.pResourceSetBindings = (uint32_t[]) {0, 0, 1},
-		.pResources = (SgResource[]) {meshResource,  meshTextureResource, cameraResource},
-		.resourceCount = 3,
-		.resourceSetCount = NUMOF(materialChaletResourceBindings),
+		.pResources = materialChaletResources,
+		.resourceCount = NUMOF(materialChaletResources),
 	};
 	sgAddMaterialRenderObjects(&chaletRenderObject, &materialMap);
 	sgInitMaterialMap(app, &materialMap);
@@ -505,6 +470,9 @@ int main() {
 	sgDestroyResource(app, &meshIndicesResource);
 	sgDestroyResource(app, &meshTextureResource);
 	sgDestroyResource(app, &skinAlphaTextureResource);
+	sgDestroyResource(app, &hairAlphaTextureResource);
+	sgDestroyResource(app, &clothAlphaTextureResource);
+	sgDestroyResource(app, &bodyDTextureResource);
 	sgDestroyResource(app, &cameraResource);
 	sgDeinitUpdateCommands(app, &updateCommands);
 	sgDestroyShader(app, &chaletVertShader);

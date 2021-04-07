@@ -59,21 +59,13 @@ typedef SgFlags SgResourceTypeFlags;
 
 typedef struct SgResourceCreateInfo {
 	SgResourceTypeFlags type;
-	SgShaderStageFlags  stage;
 	void*               bytes;
 	uint32_t            size;
 	VkExtent3D          extent;
-	uint32_t            binding;
 } SgResourceCreateInfo;
 
 SG_DEFINE_HANDLE(SgResource);
 SgResult sgCreateResource(const SgApp app, const SgResourceCreateInfo *pCreateInfo, SgResource *pResource);
-
-typedef struct SgResourceSetCreateInfo {
-	SgResource*          pResources;
-	uint32_t             resourceCount;
-	uint32_t             setIndex;
-} SgResourceSetCreateInfo;
 
 /* Make mesh load fit with the engine theme */
 typedef struct SgVertex {
@@ -108,7 +100,7 @@ SgResult  sgCreateMeshSet(SgMeshSet** ppMeshArray);
 uint32_t  sgAddMesh(const char* pPath, SgMeshSet** ppMeshArray);
 
 uint32_t* sgGetMeshID(const char* pPath, const SgMeshSet* pMeshArray);
-void      sgUnloadMesh(SgMesh **ppMesh);
+void      sgUnloadMesh(SgMeshSet **ppMesh);
 
 typedef struct SgMeshTransformInfo {
 	v3 move;
@@ -128,45 +120,42 @@ void sgUnloadTexture(SgTexture **ppTexture);
 //////
 
 typedef struct SgRenderObject {
-	uint32_t meshID; // ID to get a mesh from set
+	uint32_t meshID;
 	m4       transformMatrix;
 } SgRenderObject;
-
-typedef struct SgRenderObjectCreateInfo {
-	SgRenderObject* pRenderObjects;
-	uint32_t        renderObjectCount;
-	const char*     materialObjectsName;
-	SgResource*     pResources;
-	uint32_t*       pResourceSetBindings;
-	uint32_t        resourceCount;
-	uint32_t        resourceSetCount;
-
-	const char*     materialName; // ID to be addressed in a map
-} SgRenderObjectCreateInfo;
-
-typedef struct SgMaterialRenderObjects {
-	SgRenderObject*        pRenderObjects;
-	uint32_t               renderObjectCount;
-	const char*            materialObjectsName;
-	SgResource*            pResources;
-	uint32_t*              pResourceSetBindings;
-	uint32_t               resourceCount;
-	uint32_t               resourceSetCount;
-	VkWriteDescriptorSet*  pWriteDescriptorSets;
-	const char*            materialName; // ID to be addressed in a map
-} SgMaterialRenderObjects;
 
 typedef struct SgResourceBinding {
 	SgResourceTypeFlags          type;
 	SgShaderStageFlags           stage;
 	uint32_t                     binding;
+	uint32_t                     setBinding;
 } SgResourceBinding;
+
+typedef struct SgRenderObjectCreateInfo {
+	SgRenderObject*          pRenderObjects;
+	uint32_t                 renderObjectCount;
+	SgResource*              pResources;
+	uint32_t                 resourceCount;
+
+	const char*              materialObjectsName;
+	const char*              materialName;
+} SgRenderObjectCreateInfo;
+
+typedef struct SgMaterialRenderObjects {
+	SgRenderObject*        pRenderObjects;
+	uint32_t               renderObjectCount;
+	SgResource*            pResources;
+	uint32_t               resourceCount;
+
+	VkWriteDescriptorSet*  pWriteDescriptorSets;
+	const char*            materialObjectsName;
+	const char*            materialName; 
+} SgMaterialRenderObjects;
 
 typedef struct SgMaterialCreateInfo {
 	const char*            pMaterialName;
-	SgResourceBinding**    ppResourceBindings;
-	uint32_t*              pResourceBindingCount;
-	uint32_t               resourceSetBindingCount;
+	SgResourceBinding*     pResourceBindings;
+	uint32_t               resourceBindingCount;
 	SgShader*              pShaders;
 	uint32_t               shaderCount;
 } SgMaterialCreateInfo;

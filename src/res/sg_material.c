@@ -421,43 +421,62 @@ SgResult sgBuildComputePipeline(const SgApp* pApp, SgComputePipelineBuilder* pPi
 }
 
 static SgResult sgCreateDescriptorSetLayout(const SgApp* pApp, const SgMaterialCreateInfo* pCreateInfo, SgSetLayouts* pSetLayouts) {
-	VkDescriptorSetLayoutBinding** pSetLayoutBindings;
-	SG_CALLOC_NUM(pSetLayoutBindings, pCreateInfo->resourceSetBindingCount);
-	pSetLayouts->setLayoutCount = pCreateInfo->resourceSetBindingCount;
-	SG_CALLOC_NUM(pSetLayouts->setLayouts, pSetLayouts->setLayoutCount);
-	for (uint32_t i = 0; i < pSetLayouts->setLayoutCount; ++i) {
-		SG_CALLOC_NUM(pSetLayoutBindings[i], pCreateInfo->pResourceBindingCount[i]);
-		for (uint32_t j = 0; j < pCreateInfo->pResourceBindingCount[i]; ++j) {
-			// Binding inside of a set
-			pSetLayoutBindings[i][j].binding = pCreateInfo->ppResourceBindings[i][j].binding;
-			pSetLayoutBindings[i][j].stageFlags = pCreateInfo->ppResourceBindings[i][j].stage;
-			pSetLayoutBindings[i][j].descriptorCount = 1;
-			switch (pCreateInfo->ppResourceBindings[i][j].type) {
+	// max binding+1
+	uint32_t descriptorSetCount = 0;
+	for (uint32_t i = 0; i < pCreateInfo->resourceBindingCount; ++i) {
+		if (descriptorSetCount < pCreateInfo->pResourceBindings[i].setBinding) {
+			descriptorSetCount = pCreateInfo->pResourceBindings[i].setBinding;
+		}
+	}
+	++descriptorSetCount;
+	//
+	uint32_t* pSetResourceCount; // count of resouces on each set
+	SG_CALLOC_NUM(pSetResourceCount, descriptorSetCount);
+	for (uint32_t i = 0; i < pCreateInfo->resourceBindingCount; ++i) {
+		++pSetResourceCount[pCreateInfo->pResourceBindings[i].setBinding];
+	}
+	VkDescriptorSetLayoutBinding** ppSetLayoutBindings;
+	SG_CALLOC_NUM(ppSetLayoutBindings, descriptorSetCount);
+	SG_CALLOC_NUM(pSetLayouts->pSetLayouts, descriptorSetCount);
+	pSetLayouts->setLayoutCount = descriptorSetCount;
+
+	uint32_t resourceCount = 0;
+	for (uint32_t i = 0; i < descriptorSetCount; ++i) {
+		SG_CALLOC_NUM(ppSetLayoutBindings[i], pSetResourceCount[i]);
+		for (uint32_t j = 0; j < pSetResourceCount[i]; ++j) {
+			ppSetLayoutBindings[i][j].binding    = pCreateInfo->pResourceBindings[resourceCount].binding;
+			ppSetLayoutBindings[i][j].stageFlags = pCreateInfo->pResourceBindings[resourceCount].stage;
+			ppSetLayoutBindings[i][j].descriptorCount = 1;
+			switch (pCreateInfo->pResourceBindings[resourceCount].type) {
 				case (SG_RESOURCE_TYPE_INDICES):
 					break;
 				case (SG_RESOURCE_TYPE_MESH):
-					pSetLayoutBindings[i][j].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+					ppSetLayoutBindings[i][j].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 					break;
 				case (SG_RESOURCE_TYPE_UNIFORM):
-					pSetLayoutBindings[i][j].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+					ppSetLayoutBindings[i][j].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 					break;
 				case (SG_RESOURCE_TYPE_TEXTURE_2D):
-					pSetLayoutBindings[i][j].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+					ppSetLayoutBindings[i][j].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 					break;
 			}
+			++resourceCount;
 		}
 		VkDescriptorSetLayoutCreateInfo setLayoutCreateInfo = {
 			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-			.pBindings = pSetLayoutBindings[i],
-			.bindingCount = pCreateInfo->pResourceBindingCount[i],
+			.pBindings = ppSetLayoutBindings[i],
+			.bindingCount = pSetResourceCount[i],
 		};
-		VkResult result = vkCreateDescriptorSetLayout(pApp->device, &setLayoutCreateInfo, VK_NULL_HANDLE, &pSetLayouts->setLayouts[i]);
+		VkResult result = vkCreateDescriptorSetLayout(pApp->device, &setLayoutCreateInfo, VK_NULL_HANDLE, &pSetLayouts->pSetLayouts[i]);
 		if(result == VK_SUCCESS) {
 			sgLogInfo_Debug("[Set]: Descriptor Set Layout Init Successfull");
 		} else {
 			sgLogError("[Set]: Descriptor Set Layout Init Error");
 		}
+		free(ppSetLayoutBindings[i]);
 	}
+	free(ppSetLayoutBindings);
+	free(pSetResourceCount);
 	return SG_SUCCESS;
 }
 
@@ -465,7 +484,7 @@ static SgResult sgCreatePipelineLayout(const SgApp* pApp, const SgSetLayouts* pS
 
 	VkPipelineLayoutCreateInfo createInfo = {
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-		.pSetLayouts = pSetLayouts->setLayouts,
+		.pSetLayouts = pSetLayouts->pSetLayouts,
 		.setLayoutCount = pSetLayouts->setLayoutCount,
 	};
 
@@ -484,6 +503,7 @@ SgResult sgCreateMaterial(const SgMaterialMap* pMaterialMap, const SgMaterialCre
 	SgGraphicsPipelineBuilder graphicsPipelineBuilder;
 	sgFillGraphicsPipelineBuilder(pMaterialMap->pApp, &graphicsPipelineBuilder);
 	sgSetGraphicsPipelineBuilderStages(pCreateInfo, &graphicsPipelineBuilder);
+
 	sgCreateDescriptorSetLayout(pMaterialMap->pApp, pCreateInfo, &pMaterial->setLayouts);
 	sgCreatePipelineLayout(pMaterialMap->pApp, &pMaterial->setLayouts, &graphicsPipelineBuilder.pipelineLayout);
 	sgBuildGraphicsPipeline(pMaterialMap->pApp, &graphicsPipelineBuilder, pMaterialMap->renderPass, &pMaterial->pipeline);
@@ -493,11 +513,20 @@ SgResult sgCreateMaterial(const SgMaterialMap* pMaterialMap, const SgMaterialCre
 	pMaterial->shaderCount = pCreateInfo->shaderCount;
 	pMaterial->pipelineLayout = graphicsPipelineBuilder.pipelineLayout;
 
-	pMaterial->resourceSetBindingCount = pCreateInfo->resourceSetBindingCount;
-	pMaterial->pResourceBindingCount = pCreateInfo->pResourceBindingCount;
-	pMaterial->ppResourceBindings = pCreateInfo->ppResourceBindings;
-	pMaterial->descriptorSetCount = pCreateInfo->resourceSetBindingCount;
+	pMaterial->resourceBindingCount = pCreateInfo->resourceBindingCount;
+	pMaterial->pResourceBindings = pCreateInfo->pResourceBindings;
+	/// TODO: TMP
+	// max binding+1
+	uint32_t descriptorSetCount = 0;
+	for (uint32_t i = 0; i < pCreateInfo->resourceBindingCount; ++i) {
+		if (descriptorSetCount < pCreateInfo->pResourceBindings[i].setBinding) {
+			descriptorSetCount = pCreateInfo->pResourceBindings[i].setBinding;
+		}
+	}
+	++descriptorSetCount;
+	pMaterial->descriptorSetCount = descriptorSetCount;
 	SG_CALLOC_NUM(pMaterial->pDescriptorSets, pMaterial->descriptorSetCount);
+	///
 
 	return SG_SUCCESS;
 }
@@ -527,9 +556,7 @@ static _Bool materialDescriptorPoolCountGetIter(const void *item, void *udata) {
 		return 0;
 	}
 	uint32_t* poolSizeCount = udata;
-	for(uint32_t i = 0; i < pMaterial->resourceSetBindingCount; ++i) {
-		*poolSizeCount += pMaterial->pResourceBindingCount[i];
-	}
+	*poolSizeCount+= pMaterial->resourceBindingCount;
 
     return 1;
 }
@@ -546,23 +573,20 @@ static _Bool materialDescriptorPoolFillIter(const void *item, void *udata) {
 	}
 	struct SgFillerDescriptorPoolSizes* pPoolSizes = udata;
 
-	for (uint32_t i = 0; i < pMaterial->resourceSetBindingCount; ++i) {
-		for (uint32_t j = 0; j < pMaterial->pResourceBindingCount[i]; ++j) {
-
-			switch (pMaterial->ppResourceBindings[i][j].type) {
-			case SG_RESOURCE_TYPE_TEXTURE_2D:
-				pPoolSizes->pPoolSizes[pPoolSizes->offset].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				break;
-			case SG_RESOURCE_TYPE_MESH:
-				pPoolSizes->pPoolSizes[pPoolSizes->offset].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-				break;
-			case SG_RESOURCE_TYPE_UNIFORM:
-				pPoolSizes->pPoolSizes[pPoolSizes->offset].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				break;
-			}
-			pPoolSizes->pPoolSizes[pPoolSizes->offset].descriptorCount = 1;
-			++pPoolSizes->offset;
+	for (uint32_t i = 0; i < pMaterial->resourceBindingCount; ++i) {
+		switch (pMaterial->pResourceBindings[i].type) {
+		case SG_RESOURCE_TYPE_TEXTURE_2D:
+			pPoolSizes->pPoolSizes[pPoolSizes->offset].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			break;
+		case SG_RESOURCE_TYPE_MESH:
+			pPoolSizes->pPoolSizes[pPoolSizes->offset].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			break;
+		case SG_RESOURCE_TYPE_UNIFORM:
+			pPoolSizes->pPoolSizes[pPoolSizes->offset].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			break;
 		}
+		pPoolSizes->pPoolSizes[pPoolSizes->offset].descriptorCount = 1;
+		++pPoolSizes->offset;
 	}
     return 1;
 }
@@ -573,7 +597,7 @@ static _Bool materialDescriptorSetCountGetIter(const void *item, void *udata) {
 		return 0;
 	}
 	uint32_t* setCount = udata;
-	*setCount += pMaterial->resourceSetBindingCount;
+	*setCount += pMaterial->resourceBindingCount;
 
     return 1;
 }
@@ -593,7 +617,7 @@ static _Bool materialDescriptorSetAllocateIter(const void *item, void *udata) {
 	    .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
 	    .descriptorPool = *pPool->pDescriptorPool,
 	    .descriptorSetCount = pMaterial->descriptorSetCount,
-		.pSetLayouts = pMaterial->setLayouts.setLayouts,
+		.pSetLayouts = pMaterial->setLayouts.pSetLayouts,
 	};
 
 	vkAllocateDescriptorSets(pPool->pApp->device, &descriptorSetAllocInfo, pMaterial->pDescriptorSets);
@@ -648,12 +672,11 @@ SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pCreateInfo,
 	SgMaterialRenderObjects renderObject = {
 		.pRenderObjects = pCreateInfo->pRenderObjects,
 		.renderObjectCount = pCreateInfo->renderObjectCount,
+		.ppResources = pCreateInfo->ppResources,
+		.resourceCount = pCreateInfo->resourceCount,
+
 		.materialObjectsName = pCreateInfo->materialObjectsName,
 		.materialName = pCreateInfo->materialName,
-		.ppResources = pCreateInfo->ppResources,
-		.pResourceSetBindings = pCreateInfo->pResourceSetBindings,
-		.resourceCount = pCreateInfo->resourceCount,
-		.resourceSetCount = pCreateInfo->resourceSetCount,
 	};
 	SG_CALLOC_NUM(renderObject.pWriteDescriptorSets, renderObject.resourceCount);
 	SgMaterialRenderObjects* pMaterialRenderObject = hashmap_get(pMaterialMap->pMaterialRenderObjectMap, &renderObject);
@@ -675,22 +698,31 @@ _Bool materialRenderObjectWrite(const void *item, void *udata) {
 	if (pMaterial == NULL) {
 		sgLogDebug("Material not found");
 	}
+	// max binding+1
+	uint32_t descriptorSetCount = 0;
+	for (uint32_t i = 0; i < pMaterial->resourceBindingCount; ++i) {
+		if (descriptorSetCount < pMaterial->pResourceBindings[i].setBinding) {
+			descriptorSetCount = pMaterial->pResourceBindings[i].setBinding;
+		}
+	}
+	++descriptorSetCount;
+	//
 
 	VkDescriptorImageInfo** ppImageInfo;
 	SG_CALLOC_NUM(ppImageInfo, pRenderObject->resourceCount);
 	VkDescriptorBufferInfo** ppBufferInfo;
 	SG_CALLOC_NUM(ppBufferInfo, pRenderObject->resourceCount);
-	for (uint32_t i = 0; i < pRenderObject->resourceSetCount; ++i) {
+	for (uint32_t i = 0; i < descriptorSetCount; ++i) {
 		uint32_t resCount = 0;
 		for (uint32_t j = 0; j < pRenderObject->resourceCount; ++j) {
-			if (i != pRenderObject->pResourceSetBindings[j]) {
+			if (i != pMaterial->pResourceBindings[j].setBinding) {
 				continue;
 			}
 
 			pRenderObject->pWriteDescriptorSets[resCount].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 
 			pRenderObject->pWriteDescriptorSets[resCount].dstSet = pMaterial->pDescriptorSets[i];
-			pRenderObject->pWriteDescriptorSets[resCount].dstBinding = pRenderObject->ppResources[j]->resourceBinding.binding;
+			pRenderObject->pWriteDescriptorSets[resCount].dstBinding = pMaterial->pResourceBindings[j].binding;
 			pRenderObject->pWriteDescriptorSets[resCount].descriptorCount = 1;
 
 			VkDescriptorImageInfo* pImageInfo;
@@ -699,7 +731,11 @@ _Bool materialRenderObjectWrite(const void *item, void *udata) {
 			SG_CALLOC_NUM(pBufferInfo, 1);
 			ppImageInfo[i] = pImageInfo;
 			ppBufferInfo[i] = pBufferInfo;
-			if (pRenderObject->ppResources[j]->resourceBinding.type == SG_RESOURCE_TYPE_TEXTURE_2D) {
+			if (pMaterial->pResourceBindings[j].type != pRenderObject->ppResources[j]->type) {
+				sgLogDebug("id: %d type: %d does not match %d", j, pMaterial->pResourceBindings[j].type, pRenderObject->ppResources[j]->type);
+			}
+
+			if (pMaterial->pResourceBindings[j].type == SG_RESOURCE_TYPE_TEXTURE_2D) {
 				pImageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 				pImageInfo->imageView = pRenderObject->ppResources[j]->imageView;
 				pImageInfo->sampler   = pRenderObject->ppResources[j]->imageSampler;
@@ -711,7 +747,7 @@ _Bool materialRenderObjectWrite(const void *item, void *udata) {
 			pRenderObject->pWriteDescriptorSets[resCount].pImageInfo = pImageInfo;
 			pRenderObject->pWriteDescriptorSets[resCount].pBufferInfo = pBufferInfo;
 
-			switch (pRenderObject->ppResources[j]->resourceBinding.type) {
+			switch (pMaterial->pResourceBindings[j].type) {
 				case (SG_RESOURCE_TYPE_UNIFORM):
 					pRenderObject->pWriteDescriptorSets[resCount].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 					break;

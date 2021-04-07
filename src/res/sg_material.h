@@ -13,40 +13,36 @@ typedef struct SgRenderObject {
 } SgRenderObject;
 
 typedef struct SgRenderObjectCreateInfo {
-	SgRenderObject* pRenderObjects;
-	uint32_t        renderObjectCount;
-	const char*     materialObjectsName;
-	SgResource**    ppResources;
-	uint32_t*       pResourceSetBindings;
-	uint32_t        resourceCount;
-	uint32_t        resourceSetCount;
+	SgRenderObject*          pRenderObjects;
+	uint32_t                 renderObjectCount;
+	SgResource**             ppResources;
+	uint32_t                 resourceCount;
 
-	const char*     materialName; // ID to be addressed in a map
+	const char*              materialObjectsName;
+	const char*              materialName; // ID to be addressed in a map
 } SgRenderObjectCreateInfo;
 
 typedef struct SgMaterialRenderObjects {
 	SgRenderObject*        pRenderObjects;
 	uint32_t               renderObjectCount;
-	const char*            materialObjectsName;
 	SgResource**           ppResources;
-	uint32_t*              pResourceSetBindings;
 	uint32_t               resourceCount;
-	uint32_t               resourceSetCount;
+
 	VkWriteDescriptorSet*  pWriteDescriptorSets;
-	const char*            materialName; // ID to be addressed in a map
+	const char*            materialObjectsName;
+	const char*            materialName; 
 } SgMaterialRenderObjects;
 
 typedef struct SgMaterialCreateInfo {
 	const char*            pMaterialName;
-	SgResourceBinding**    ppResourceBindings;
-	uint32_t*              pResourceBindingCount;
-	uint32_t               resourceSetBindingCount;
+	SgResourceBinding*     pResourceBindings;
+	uint32_t               resourceBindingCount;
 	SgShader**             ppShaders;
 	uint32_t               shaderCount;
 } SgMaterialCreateInfo;
 
 typedef struct SgSetLayouts {
-	VkDescriptorSetLayout* setLayouts;
+	VkDescriptorSetLayout* pSetLayouts;
 	uint32_t               setLayoutCount;
 } SgSetLayouts;
 
@@ -61,9 +57,8 @@ typedef struct SgMaterial {
 	uint32_t               shaderCount;
 	const char*            pName;
 
-	uint32_t*              pResourceBindingCount;
-	uint32_t               resourceSetBindingCount;
-	SgResourceBinding**    ppResourceBindings;
+	uint32_t               resourceBindingCount;
+	SgResourceBinding*     pResourceBindings;
 } SgMaterial;
 
 typedef struct SgMaterialMap {

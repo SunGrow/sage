@@ -50,7 +50,6 @@ typedef struct SgAppUpdateInfo {
 SgBool sgAppUpdate(SgAppUpdateInfo* pUpdateInfo);
 
 void sgDestroyShader(const SgApp *pApp, SgShader **ppShader);
-void sgDestroyResource(const SgApp *pApp, SgResource **ppResource);
 void sgDeinitUpdateCommands(const SgApp *pApp, SgUpdateCommands** ppUpdateCommands);
 void sgDestroyApp(SgApp **ppApp);
 
