@@ -42,6 +42,8 @@ typedef struct SgMaterialCreateInfo {
 	uint32_t               resourceBindingCount;
 	SgShader**             ppShaders;
 	uint32_t               shaderCount;
+
+	uint32_t               renderObjectCount;
 } SgMaterialCreateInfo;
 
 typedef struct SgSetLayouts {
@@ -54,6 +56,8 @@ typedef struct SgMaterial {
 	VkPipelineLayout       pipelineLayout;
 	SgSetLayouts           setLayouts;
 	uint32_t               descriptorSetCount;
+
+	uint32_t               renderObjectCount;
 
 	SgShader**             ppShaders;
 	uint32_t               shaderCount;

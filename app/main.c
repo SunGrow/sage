@@ -296,6 +296,7 @@ int main() {
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
 	sgCreateResource(app, &meshTextureResourceCreateInfo, &meshTextureResource);
+	sgUnloadTexture(&pChaletTexture);
 
 	///
 	SgTexture *pSkinAlphaTexture;
@@ -308,6 +309,7 @@ int main() {
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
 	sgCreateResource(app, &skinTextureResourceCreateInfo, &skinAlphaTextureResource);
+	sgUnloadTexture(&pSkinAlphaTexture);
 
 	SgTexture *pHairAlphaTexture;
 	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_02Hair.jpg", &pHairAlphaTexture);
@@ -319,6 +321,7 @@ int main() {
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
 	sgCreateResource(app, &hairTextureResourceCreateInfo, &hairAlphaTextureResource);
+	sgUnloadTexture(&pHairAlphaTexture);
 
 	SgTexture *pClothAlphaTexture;
 	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_03Cloth.jpg", &pClothAlphaTexture);
@@ -330,6 +333,7 @@ int main() {
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
 	sgCreateResource(app, &clothTextureResourceCreateInfo, &clothAlphaTextureResource);
+	sgUnloadTexture(&pClothAlphaTexture);
 
 	SgTexture *pBodyDTexture;
 	sgLoadTexture("res/tex/10016_w_Myriam_Body_D_2k.jpg", &pBodyDTexture);
@@ -341,6 +345,7 @@ int main() {
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
 	};
 	sgCreateResource(app, &bodyDTextureResourceCreateInfo, &bodyDTextureResource);
+	sgUnloadTexture(&pBodyDTexture);
 	///
 
 	SgMaterialMap materialMap;
@@ -358,6 +363,7 @@ int main() {
 		.shaderCount = NUMOF(pShadersChalet),
 		.resourceBindingCount = NUMOF(materialChaletResourceBindings),
 		.pResourceBindings = materialChaletResourceBindings,
+		.renderObjectCount = 2,
 	};
 	sgAddMaterial(&materialChaletCreateInfo, &materialMap);
 
@@ -376,6 +382,7 @@ int main() {
 		.shaderCount = NUMOF(pShadersMyriam),
 		.resourceBindingCount = NUMOF(materialMyriamSetResourceBinding),
 		.pResourceBindings = materialMyriamSetResourceBinding,
+		.renderObjectCount = 1,
 	};
 	sgAddMaterial(&materialMyriamCreateInfo, &materialMap);
 	sgInitMaterialMap(app, &materialMap);
@@ -399,7 +406,6 @@ int main() {
 		/**/
 		cameraResource,
 	};
-	// TODO: move set bindings into a resource layout
 	SgRenderObjectCreateInfo myriamRenderObject = {
 		.materialName = "materialMyriam",
 		.materialObjectsName = "myriamMesh",
@@ -414,11 +420,7 @@ int main() {
 		{
 			.meshID = chaletMeshID,
 		},
-		{
-			.meshID = kittenMeshID,
-		},
 	};
-	// TODO: render object to have descriptor sets instead of materials
 	SgResource materialChaletResources[] = {
 		meshResource, meshTextureResource, cameraResource
 	};
@@ -431,6 +433,25 @@ int main() {
 		.resourceCount = NUMOF(materialChaletResources),
 	};
 	sgAddMaterialRenderObjects(&chaletRenderObject, &materialMap);
+
+	SgRenderObject kittenRenderObjects[] = {
+		{
+			.meshID = kittenMeshID,
+		},
+	};
+	SgResource materialKittenResources[] = {
+		meshResource, meshTextureResource, cameraResource
+	};
+	SgRenderObjectCreateInfo kittenRenderObject = {
+		.materialName = "materialChalet",
+		.materialObjectsName = "kittenMesh",
+		.pRenderObjects = kittenRenderObjects,
+		.renderObjectCount = NUMOF(kittenRenderObjects),
+		.pResources = materialKittenResources,
+		.resourceCount = NUMOF(materialKittenResources),
+	};
+	sgAddMaterialRenderObjects(&kittenRenderObject, &materialMap);
+
 	sgWriteMaterialRenderObjects(&materialMap);
 
 	/* Graphics Instance Init */
@@ -466,6 +487,7 @@ int main() {
 
 	// TODO: Proper cleanup
 
+	sgDestroyResource(app, &cameraResource);
 	sgDestroyResource(app, &meshResource);
 	sgDestroyResource(app, &meshIndicesResource);
 	sgDestroyResource(app, &meshTextureResource);
@@ -473,8 +495,9 @@ int main() {
 	sgDestroyResource(app, &hairAlphaTextureResource);
 	sgDestroyResource(app, &clothAlphaTextureResource);
 	sgDestroyResource(app, &bodyDTextureResource);
-	sgDestroyResource(app, &cameraResource);
+
 	sgDeinitUpdateCommands(app, &updateCommands);
+
 	sgDestroyShader(app, &chaletVertShader);
 	sgDestroyShader(app, &chaletFragShader);
 	sgUnloadContexts(app, &contexts); 

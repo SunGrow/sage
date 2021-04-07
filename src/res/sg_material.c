@@ -512,6 +512,7 @@ SgResult sgCreateMaterial(const SgMaterialMap* pMaterialMap, const SgMaterialCre
 	pMaterial->ppShaders = pCreateInfo->ppShaders;
 	pMaterial->shaderCount = pCreateInfo->shaderCount;
 	pMaterial->pipelineLayout = graphicsPipelineBuilder.pipelineLayout;
+	pMaterial->renderObjectCount = pCreateInfo->renderObjectCount;
 
 	pMaterial->resourceBindingCount = pCreateInfo->resourceBindingCount;
 	pMaterial->pResourceBindings = pCreateInfo->pResourceBindings;
@@ -583,7 +584,7 @@ static _Bool materialDescriptorPoolFillIter(const void *item, void *udata) {
 			pPoolSizes->pPoolSizes[pPoolSizes->offset].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			break;
 		}
-		pPoolSizes->pPoolSizes[pPoolSizes->offset].descriptorCount = 1;
+		pPoolSizes->pPoolSizes[pPoolSizes->offset].descriptorCount = pMaterial->renderObjectCount;
 		++pPoolSizes->offset;
 	}
     return 1;
