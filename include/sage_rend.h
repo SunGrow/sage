@@ -74,13 +74,6 @@ typedef struct SgVertex {
 	v2 tex;
 } SgVertex;
 
-typedef struct SgMesh {
-	SgVertex*          pVertices;
-	uint32_t           vertexCount;
-	uint32_t*          pIndices;
-	uint32_t           indexCount;
-} SgMesh;
-
 typedef struct SgMeshSet {
 	SgVertex*          pVertices;
 	uint32_t           vertexCount;
@@ -141,16 +134,7 @@ typedef struct SgRenderObjectCreateInfo {
 	const char*              materialName;
 } SgRenderObjectCreateInfo;
 
-typedef struct SgMaterialRenderObjects {
-	SgRenderObject*        pRenderObjects;
-	uint32_t               renderObjectCount;
-	SgResource*            pResources;
-	uint32_t               resourceCount;
-
-	VkWriteDescriptorSet*  pWriteDescriptorSets;
-	const char*            materialObjectsName;
-	const char*            materialName; 
-} SgMaterialRenderObjects;
+SG_DEFINE_HANDLE(SgMaterialRenderObjects);
 
 typedef struct SgMaterialCreateInfo {
 	const char*            pMaterialName;
