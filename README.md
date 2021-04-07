@@ -21,11 +21,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Roadmap
 
-<!---
-(Note: Mb not a good idea as it would lead to hanging pointers to a freed data and unobvious state change (Function only needs a pointer to an app to change any state it wants. If we allow the users to be lazy, they will be).)
---!>
 
-* [ ] - Superstruct to contain all of the applictation state and clean it (or parts of it of a select type) up upon a cleanup function call. Possibly repurpose SgApp (Ex Funcs: sgClearApp, sgClearResouces, sgClearMaterials)
+
+
+* [ ] - Superstruct to contain all of the applictation state and clean it (or parts of it of a select type) up upon a cleanup function call. Possibly repurpose SgApp (Ex Funcs: sgClearApp, sgClearResouces, sgClearMaterials) <!--(Note: Mb not a good idea as it would lead to hanging pointers to a freed data and unobvious state change (Function only needs a pointer to an app to change any state it wants. If we allow the users to be lazy, they will be).) -->
 * [ ] - Material and MaterialRenderObject serialization
 * [ ] - Resource update in bulk with a semaphore
 * [ ] - Fix mesh load
