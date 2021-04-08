@@ -314,7 +314,8 @@ _Bool renderPassBindRenderObjects(const void* item, void* udata) {
 	vkCmdBindPipeline(*pInfo->pCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pMaterial->pipeline);
 	vkCmdBindDescriptorSets(*pInfo->pCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pMaterial->pipelineLayout, 0, pMaterial->descriptorSetCount, pRenderObjects->pDescriptorSets, 0, NULL);
 	for (uint32_t i = 0; i < pRenderObjects->renderObjectCount; ++i) {
-		vkCmdDrawIndexed(*pInfo->pCommandBuffer, pInfo->pMeshSet->pIndexSizes[pRenderObjects->pRenderObjects[i].meshID], 1, 0, pInfo->pMeshSet->pVertexOffsets[pRenderObjects->pRenderObjects[i].meshID], 0);
+		uint32_t meshID = pRenderObjects->pRenderObjects[i].meshID;
+		vkCmdDrawIndexed(*pInfo->pCommandBuffer, pInfo->pMeshSet->pIndexSizes[meshID], 1, 0, pInfo->pMeshSet->pVertexOffsets[meshID], 0);
 	}
 	
 

@@ -23,13 +23,6 @@ static uint64_t keyHash(const void *item, uint64_t seed0, uint64_t seed1) {
     return hashmap_sip(key->pPath, strlen(key->pPath), seed0, seed1);
 }
 
-
-static bool keyIter(const void *item, void *udata) {
-	const SgMeshItem* key = item;
-	sgLogInfo("[MeshIter]: Path: %s, Offset: %d", key->pPath, key->offsetid);
-    return true;
-}
-
 SgResult sgCreateMeshSet(SgMeshSet** ppMeshArray) {
 	SgMeshSet* pMeshArray = *ppMeshArray;
 	SG_CALLOC_NUM(pMeshArray, 1);
@@ -108,16 +101,26 @@ static uint32_t loadOBJ(const char* pPath, SgVertex** ppVertices) {
 	return totalIndices;
 }
 
+uint32_t sgOptimizeMesh(uint32_t indexCount, uint32_t vertexCount, uint32_t* indices, void* vertices, uint32_t sizeOfVertex) {
+	uint32_t *premap;
+	SG_MALLOC_NUM(premap, indexCount);
+
+	uint32_t remapVertexCount = meshopt_generateVertexRemap(premap, indices, indexCount, vertices, vertexCount, sizeOfVertex);
+	meshopt_remapIndexBuffer(indices, indices, indexCount, premap);
+	meshopt_remapVertexBuffer(vertices, vertices, vertexCount, sizeOfVertex, premap);
+	free(premap);
+	return remapVertexCount;
+}
+
 uint32_t sgLoadMesh(const char *pPath, SgMeshSet **ppMesh) {
 	// obj mesh load
-
 	SgMeshSet* pMesh = *ppMesh;
 
 	// TODO: Fix zis constant realloc
-	SG_STRETCHALLOC(pMesh->pVertexOffsets, pMesh->meshCount+1, "[ALLOC]");
-	SG_STRETCHALLOC(pMesh->pIndexOffsets, pMesh->meshCount+1, "[ALLOC]");
-	SG_STRETCHALLOC(pMesh->pIndexSizes, pMesh->meshCount+1, "[ALLOC]");
-	SG_STRETCHALLOC(pMesh->pVertexSizes, pMesh->meshCount+1, "[ALLOC]");
+	SG_STRETCHALLOC(pMesh->pVertexOffsets, pMesh->meshCount+2, "[ALLOC]");
+	SG_STRETCHALLOC(pMesh->pIndexOffsets, pMesh->meshCount+2, "[ALLOC]");
+	SG_STRETCHALLOC(pMesh->pIndexSizes, pMesh->meshCount+2, "[ALLOC]");
+	SG_STRETCHALLOC(pMesh->pVertexSizes, pMesh->meshCount+2, "[ALLOC]");
 	SgVertex *pVertices;
 	uint32_t totalIndices = loadOBJ(pPath, &pVertices);
 	// MeshLoad
@@ -125,12 +128,14 @@ uint32_t sgLoadMesh(const char *pPath, SgMeshSet **ppMesh) {
 	// DEBUG
 	if (1) {
 		uint32_t totalVertices = totalIndices;
-		SG_STRETCHALLOC(pMesh->pVertices, pMesh->vertexCount+totalIndices, "[ALLOC]");
-		SG_STRETCHALLOC(pMesh->pIndices,  pMesh->indexCount+totalVertices, "[ALLOC]");
-		memcpy(&pMesh->pVertices[pMesh->vertexCount], pVertices, totalVertices*sizeof(SgVertex));
+		SG_STRETCHALLOC(pMesh->pVertices, pMesh->vertexCount+totalVertices, "[ALLOC]");
+		SG_STRETCHALLOC(pMesh->pIndices,  pMesh->indexCount+totalIndices, "[ALLOC]");
+		memcpy(&pMesh->pVertices[pMesh->vertexCount], pVertices, totalVertices*sizeof(*pMesh->pVertices));
+		free(pVertices);
 		for (uint32_t i = 0; i < totalIndices; ++i) {
-			pMesh->pIndices[pMesh->indexCount+i] = i;
+			pMesh->pIndices[i + pMesh->indexCount] = i + pMesh->vertexCount;
 		}
+
 		pMesh->pIndexSizes[pMesh->meshCount]    = totalIndices;
 		pMesh->pVertexSizes[pMesh->meshCount]   = totalVertices;
 		pMesh->pIndexOffsets[pMesh->meshCount]  = pMesh->indexCount;
@@ -139,11 +144,11 @@ uint32_t sgLoadMesh(const char *pPath, SgMeshSet **ppMesh) {
 		pMesh->vertexCount += totalVertices;
 		pMesh->meshCount += 1;
 		*ppMesh = pMesh;
-		free(pVertices);
 		return pMesh->meshCount-1;
 	}
+
 	uint32_t *premap;
-	SG_MALLOC_NUM(premap, totalIndices);
+	SG_MALLOC_NUM(premap, pMesh->indexCount+totalIndices);
 
 	uint32_t totalVertices = meshopt_generateVertexRemap(premap, NULL, totalIndices, pVertices, totalIndices, sizeof(*pMesh->pVertices));
 
@@ -153,8 +158,8 @@ uint32_t sgLoadMesh(const char *pPath, SgMeshSet **ppMesh) {
 
 	meshopt_remapVertexBuffer(&pMesh->pVertices[pMesh->vertexCount], pVertices, totalIndices, sizeof(*pMesh->pVertices), premap);
 	meshopt_remapIndexBuffer(&pMesh->pIndices[pMesh->indexCount], NULL, totalIndices, premap);
-	meshopt_optimizeVertexCache(&pMesh->pIndices[pMesh->indexCount], &pMesh->pIndices[pMesh->indexCount], totalIndices, totalVertices);
-	meshopt_optimizeVertexFetch(&pMesh->pVertices[pMesh->vertexCount], &pMesh->pIndices[pMesh->indexCount], totalIndices, &pMesh->pVertices[pMesh->vertexCount], totalVertices, sizeof(*pMesh->pVertices));
+	//meshopt_optimizeVertexCache(&pMesh->pIndices[pMesh->indexCount], &pMesh->pIndices[pMesh->indexCount], totalIndices, totalVertices);
+	//meshopt_optimizeVertexFetch(&pMesh->pVertices[pMesh->vertexCount], &pMesh->pIndices[pMesh->indexCount], totalIndices, &pMesh->pVertices[pMesh->vertexCount], totalVertices, sizeof(*pMesh->pVertices));
 
 	pMesh->pIndexOffsets[pMesh->meshCount]  = pMesh->indexCount;
 	pMesh->pVertexOffsets[pMesh->meshCount] = pMesh->vertexCount;

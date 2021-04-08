@@ -238,7 +238,7 @@ int main() {
 	uint32_t kittenMeshID = sgAddMesh("res/kitten.obj", &pMesh);
 	uint32_t chaletMeshID = sgAddMesh("res/chalet.obj", &pMesh);
 	uint32_t cubeMeshID   = sgAddMesh("res/cube.obj", &pMesh);
-	uint32_t mytiamMeshID = sgAddMesh("res/myriam.obj", &pMesh);
+	uint32_t myriamMeshID = sgAddMesh("res/myriam.obj", &pMesh);
 	SgMeshTransformInfo kittenMeshTransformInfo = {
 		.move = {2.5, 0.3, 1.1},
 		.scale = {0.5, 0.5, 0.5,},
@@ -261,7 +261,7 @@ int main() {
 		.move = {0.5, 0.3, -1.1},
 		.scale = {0.01, 0.01, 0.01,},
 	};
-	sgTransformMesh(&kittenMeshTransformInfo4, pMesh->pVertexOffsets[mytiamMeshID], pMesh->pVertexSizes[mytiamMeshID], pMesh->pVertices);
+	sgTransformMesh(&kittenMeshTransformInfo4, pMesh->pVertexOffsets[myriamMeshID], pMesh->pVertexSizes[myriamMeshID], pMesh->pVertices);
 	/**/
 
 	/* Resource Init */
@@ -390,7 +390,7 @@ int main() {
 
 	SgRenderObject myriamRenderObjects[] = {
 		{
-			.meshID = mytiamMeshID,
+			.meshID = myriamMeshID,
 		},
 		{
 			.meshID = cubeMeshID,

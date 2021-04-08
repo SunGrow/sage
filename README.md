@@ -21,16 +21,13 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Roadmap
 
-
-
-
-
 * [ ] - Material and MaterialRenderObject serialization
+* [ ] - Graphics Settings (msaa, lod)
 * [ ] - Resource update in bulk with a semaphore
-* [ ] - Fix mesh load
+* [ ] - Fix mesh load (also mb move to 16 bit indices)
 * [ ] - Programmable render pass interface
+* [ ] - Compute Shader
 * [ ] - Superstruct to contain all of the applictation state and clean it (or parts of it of a select type) up upon a cleanup function call. Possibly repurpose SgApp (Ex Funcs: sgClearApp, sgClearResouces, sgClearMaterials) <!--(Note: Mb not a good idea as it would lead to hanging pointers to a freed data and unobvious state change (Function only needs a pointer to an app to change any state it wants. If we allow the users to be lazy, they will be).) -->
-* [ ] - Make an actual roadmap that is not filled with junk
 * [ ] - Animations
 * [ ] - Sound
 * [ ] - Job system
