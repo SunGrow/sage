@@ -239,29 +239,6 @@ int main() {
 	uint32_t chaletMeshID = sgAddMesh("res/chalet.obj", &pMesh);
 	uint32_t cubeMeshID   = sgAddMesh("res/cube.obj", &pMesh);
 	uint32_t myriamMeshID = sgAddMesh("res/myriam.obj", &pMesh);
-	SgMeshTransformInfo kittenMeshTransformInfo = {
-		.move = {2.5, 0.3, 1.1},
-		.scale = {0.5, 0.5, 0.5,},
-	};
-	sgTransformMesh(&kittenMeshTransformInfo, pMesh->pVertexOffsets[kittenMeshID], pMesh->pVertexSizes[kittenMeshID], pMesh->pVertices);
-
-	SgMeshTransformInfo kittenMeshTransformInfo2 = {
-		.move = {.1, 0.1, 1.1},
-		.scale = {0.5, 0.5, -0.5,},
-	};
-	sgTransformMesh(&kittenMeshTransformInfo2, pMesh->pVertexOffsets[chaletMeshID], pMesh->pVertexSizes[chaletMeshID], pMesh->pVertices);
-
-	SgMeshTransformInfo kittenMeshTransformInfo3 = {
-		.move = {1.0, -0.1, -0.1},
-		.scale = {0.5, 0.5, 0.5,},
-	};
-	sgTransformMesh(&kittenMeshTransformInfo3, pMesh->pVertexOffsets[cubeMeshID], pMesh->pVertexSizes[cubeMeshID], pMesh->pVertices);
-
-	SgMeshTransformInfo kittenMeshTransformInfo4 = {
-		.move = {0.5, 0.3, -1.1},
-		.scale = {0.01, 0.01, 0.01,},
-	};
-	sgTransformMesh(&kittenMeshTransformInfo4, pMesh->pVertexOffsets[myriamMeshID], pMesh->pVertexSizes[myriamMeshID], pMesh->pVertices);
 	/**/
 
 	/* Resource Init */
@@ -355,6 +332,7 @@ int main() {
 	SgResourceBinding materialChaletResourceBindings[] = {
 		(SgResourceBinding) {.type = SG_RESOURCE_TYPE_MESH, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0, .setBinding = 0},
 		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 1, .setBinding = 0},
+		(SgResourceBinding) {.type = SG_RESOURCE_TYPE_UNIFORM, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 2, .setBinding = 0},
 		(SgResourceBinding){.type = SG_RESOURCE_TYPE_UNIFORM, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0, .setBinding = 1},
 	};
 	SgMaterialCreateInfo materialChaletCreateInfo = {
@@ -388,15 +366,17 @@ int main() {
 	sgInitMaterialMap(app, &materialMap);
 
 
-	SgRenderObject myriamRenderObjects[] = {
+	SgRenderObject pMyriamRenderObjects[] = {
 		{
 			.meshID = myriamMeshID,
+			.instanceCount = 1,
 		},
 		{
 			.meshID = cubeMeshID,
+			.instanceCount = 1,
 		},
 	};
-	SgResource myriamRenderObjectResources[] = {
+	SgResource pMyriamRenderObjectResources[] = {
 		meshResource,
 		/*TODO: texture arrays */
 		skinAlphaTextureResource,
@@ -408,25 +388,62 @@ int main() {
 	};
 	SgRenderObjectCreateInfo myriamRenderObject = {
 		.materialName = "materialMyriam",
-		.materialObjectsName = "myriamMesh",
-		.pRenderObjects = myriamRenderObjects,
-		.renderObjectCount = NUMOF(myriamRenderObjects),
-		.pResources = myriamRenderObjectResources,
-		.resourceCount = NUMOF(myriamRenderObjectResources),
+		.pName = "myriamMesh",
+		.pRenderObjects = pMyriamRenderObjects,
+		.renderObjectCount = NUMOF(pMyriamRenderObjects),
+		.pResources = pMyriamRenderObjectResources,
+		.resourceCount = NUMOF(pMyriamRenderObjectResources),
 	};
 	sgAddMaterialRenderObjects(&myriamRenderObject, &materialMap);
 
+	struct SgObjectInfo {
+		m4 transform;
+		v4 position;
+	};
+	struct SgObjectInfo chaletObjects[] = {
+		{
+			.transform = {
+				{1.0,0.0,0.0,0.0},
+				{0.0,1.0,0.0,0.0},
+				{0.0,0.0,1.0,0.0},
+				{0.0,0.0,0.0,1.0}
+			},
+			.position = {
+				1.0,1.0,0.0,1.0
+			},
+		},
+		{
+			.transform = {
+				{1.0,0.0,0.0,0.0},
+				{0.0,1.0,0.0,0.0},
+				{0.0,0.0,1.0,0.0},
+				{0.0,0.0,0.0,1.0}
+			},
+			.position = {
+				2.0,0.0,0.0,1.0
+			},
+		},
+	};
 	SgRenderObject chaletRenderObjects[] = {
 		{
 			.meshID = chaletMeshID,
+			.instanceCount = NUMOF(chaletObjects),
 		},
 	};
+
+	SgResource chaletTransformMatricesResource;
+	SgResourceCreateInfo chaletTransformMatricesCreateInfo = {
+		.bytes = chaletObjects,
+		.size = sizeof(chaletObjects),
+		.type = SG_RESOURCE_TYPE_UNIFORM,
+	};
+	sgCreateResource(app, &chaletTransformMatricesCreateInfo, &chaletTransformMatricesResource);
 	SgResource materialChaletResources[] = {
-		meshResource, meshTextureResource, cameraResource
+		meshResource, meshTextureResource, chaletTransformMatricesResource, cameraResource
 	};
 	SgRenderObjectCreateInfo chaletRenderObject = {
 		.materialName = "materialChalet",
-		.materialObjectsName = "chaletMesh",
+		.pName = "chaletMesh",
 		.pRenderObjects = chaletRenderObjects,
 		.renderObjectCount = NUMOF(chaletRenderObjects),
 		.pResources = materialChaletResources,
@@ -434,17 +451,51 @@ int main() {
 	};
 	sgAddMaterialRenderObjects(&chaletRenderObject, &materialMap);
 
+	struct SgObjectInfo kittenObjects[] = {
+		{
+			.transform = {
+				{1.0,0.0,0.0,0.0},
+				{0.0,1.0,0.0,0.0},
+				{0.0,0.0,1.0,0.0},
+				{0.0,0.0,0.0,1.0}
+			},
+			.position = {
+				1.0,2.0,0.0,1.0
+			},
+		},
+		{
+			.transform = {
+				{1.0,0.0,0.0,0.0},
+				{0.0,1.0,0.0,0.0},
+				{0.0,0.0,1.0,0.0},
+				{0.0,0.0,0.0,1.0}
+			},
+			.position = {
+				0.0,1.0,1.0,1.0
+			},
+		},
+	};
+
+	SgResource kittenTransformMatricesResource;
+	SgResourceCreateInfo kittenTransformMatricesCreateInfo = {
+		.bytes = kittenObjects,
+		.size = sizeof(kittenObjects),
+		.type = SG_RESOURCE_TYPE_UNIFORM,
+	};
+	sgCreateResource(app, &kittenTransformMatricesCreateInfo, &kittenTransformMatricesResource);
+	
+	SgResource materialKittenResources[] = {
+		meshResource, meshTextureResource, kittenTransformMatricesResource, cameraResource
+	};
 	SgRenderObject kittenRenderObjects[] = {
 		{
 			.meshID = kittenMeshID,
+			.instanceCount = NUMOF(kittenObjects),
 		},
-	};
-	SgResource materialKittenResources[] = {
-		meshResource, meshTextureResource, cameraResource
 	};
 	SgRenderObjectCreateInfo kittenRenderObject = {
 		.materialName = "materialChalet",
-		.materialObjectsName = "kittenMesh",
+		.pName = "kittenMesh",
 		.pRenderObjects = kittenRenderObjects,
 		.renderObjectCount = NUMOF(kittenRenderObjects),
 		.pResources = materialKittenResources,
@@ -485,9 +536,9 @@ int main() {
 		sgUpdateResource(app, &cameraData, &cameraResource);
 	}
 
-	// TODO: Proper cleanup
-
 	sgDestroyResource(app, &cameraResource);
+	sgDestroyResource(app, &chaletTransformMatricesResource);
+	sgDestroyResource(app, &kittenTransformMatricesResource);
 	sgDestroyResource(app, &meshResource);
 	sgDestroyResource(app, &meshIndicesResource);
 	sgDestroyResource(app, &meshTextureResource);

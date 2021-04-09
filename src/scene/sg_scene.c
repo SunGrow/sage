@@ -31,5 +31,5 @@ void sgUpdateTransformUniform(const SgCamera* pCamera, SgTransformUniform *pTran
 	v3 at;
 	v3_add(at, pCamera->position, pCamera->front);
 	lookat(pTransformUniform->view, pCamera->position, at, pCamera->up);
-	perspective(pTransformUniform->projection, pCamera->fov, pCamera->aspectRatio, 0.1f, 10.0f);
+	perspective(pTransformUniform->projection, pCamera->fov, pCamera->aspectRatio, 0.01f, 10.0f);
 }

@@ -113,8 +113,8 @@ void sgUnloadTexture(SgTexture **ppTexture);
 //////
 
 typedef struct SgRenderObject {
-	uint32_t meshID;
-	m4       transformMatrix;
+	uint32_t meshID; // ID to get a mesh from set
+	uint32_t instanceCount;
 } SgRenderObject;
 
 typedef struct SgResourceBinding {
@@ -130,8 +130,8 @@ typedef struct SgRenderObjectCreateInfo {
 	SgResource*              pResources;
 	uint32_t                 resourceCount;
 
-	const char*              materialObjectsName;
 	const char*              materialName;
+	const char*              pName;
 } SgRenderObjectCreateInfo;
 
 SG_DEFINE_HANDLE(SgMaterialRenderObjects);
@@ -158,6 +158,13 @@ SgResult sgCreateMaterialMap(const SgApp app, uint32_t materialCount, SgMaterial
 SgMaterial sgAddMaterial(const SgMaterialCreateInfo* pCreateInfo, SgMaterialMap* pMaterialMap);
 SgMaterial sgGetMaterial(const char* pMaterialName, const SgMaterialMap materialMap);
 SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pRenderObjectsCreateInfo, SgMaterialMap* pMaterialMap);
+typedef struct SgRenderObjectUpdateInfo {
+	SgRenderObject*          pRenderObjects;
+	uint32_t                 renderObjectCount;
+
+	const char*              pName;
+} SgRenderObjectUpdateInfo;
+void sgUpdateRenderObjects(const SgRenderObjectUpdateInfo* pUpdateInfo, SgMaterialMap* pMaterialMap);
 SgResult sgWriteMaterialRenderObjects(SgMaterialMap* pMaterialMap);
 // Will create/recreate descriptor set that could fit all of the material descriptor sets and consequentially fill it up with descriptor sets
 SgResult sgInitMaterialMap(SgApp app, SgMaterialMap* pMaterialMap);

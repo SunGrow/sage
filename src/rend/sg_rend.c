@@ -315,7 +315,8 @@ _Bool renderPassBindRenderObjects(const void* item, void* udata) {
 	vkCmdBindDescriptorSets(*pInfo->pCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pMaterial->pipelineLayout, 0, pMaterial->descriptorSetCount, pRenderObjects->pDescriptorSets, 0, NULL);
 	for (uint32_t i = 0; i < pRenderObjects->renderObjectCount; ++i) {
 		uint32_t meshID = pRenderObjects->pRenderObjects[i].meshID;
-		vkCmdDrawIndexed(*pInfo->pCommandBuffer, pInfo->pMeshSet->pIndexSizes[meshID], 1, 0, pInfo->pMeshSet->pVertexOffsets[meshID], 0);
+		//
+		vkCmdDrawIndexed(*pInfo->pCommandBuffer, pInfo->pMeshSet->pIndexSizes[meshID], pRenderObjects->pRenderObjects[i].instanceCount, 0, pInfo->pMeshSet->pVertexOffsets[meshID], 0);
 	}
 	
 
@@ -325,9 +326,11 @@ _Bool renderPassBindRenderObjects(const void* item, void* udata) {
 SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdateCommands** ppUpdateCommands) {
 
 	vkDeviceWaitIdle(pInitInfo->pMaterialMap->pApp->device);
-	SgUpdateCommands *pUpdateCommands;
-	SG_CALLOC_NUM(pUpdateCommands, 1);
-	SG_CALLOC_NUM(pUpdateCommands->pCommandBuffers, pInitInfo->pMaterialMap->swapchain.imageCount);
+	SgUpdateCommands *pUpdateCommands = *ppUpdateCommands;
+	if (pUpdateCommands == NULL) {
+		SG_CALLOC_NUM(pUpdateCommands, 1);
+	}
+	SG_STRETCHALLOC(pUpdateCommands->pCommandBuffers, pInitInfo->pMaterialMap->swapchain.imageCount, "Update Command Realloc Error");
 
 	VkCommandBufferAllocateInfo commandAllocInfo = {
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,

@@ -9,7 +9,7 @@
 
 typedef struct SgRenderObject {
 	uint32_t meshID; // ID to get a mesh from set
-	m4       transformMatrix;
+	uint32_t instanceCount;
 } SgRenderObject;
 
 typedef struct SgRenderObjectCreateInfo {
@@ -18,9 +18,16 @@ typedef struct SgRenderObjectCreateInfo {
 	SgResource**             ppResources;
 	uint32_t                 resourceCount;
 
-	const char*              materialObjectsName;
 	const char*              materialName; // ID to be addressed in a map
+	const char*              pName;
 } SgRenderObjectCreateInfo;
+
+typedef struct SgRenderObjectUpdateInfo {
+	SgRenderObject*          pRenderObjects;
+	uint32_t                 renderObjectCount;
+
+	const char*              pName;
+} SgRenderObjectUpdateInfo;
 
 typedef struct SgMaterialRenderObjects {
 	SgRenderObject*        pRenderObjects;
@@ -32,8 +39,8 @@ typedef struct SgMaterialRenderObjects {
 	uint32_t               descriptorSetCount;
 
 	VkWriteDescriptorSet*  pWriteDescriptorSets;
-	const char*            materialObjectsName;
 	const char*            materialName; 
+	const char*            pName;
 } SgMaterialRenderObjects;
 
 typedef struct SgMaterialCreateInfo {
@@ -87,6 +94,7 @@ SgResult sgCreateMaterialMap(SgApp* pApp, uint32_t materialCount, SgMaterialMap*
 SgMaterial* sgAddMaterial(const SgMaterialCreateInfo* pCreateInfo, SgMaterialMap** ppMaterialMap);
 SgMaterial* sgGetMaterial(const char* pMaterialName, const SgMaterialMap* ppMaterialMap);
 SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pRenderObjectsCreateInfo, SgMaterialMap** ppMaterialMap);
+void sgUpdateRenderObjects(const SgRenderObjectUpdateInfo* pUpdateInfo, SgMaterialMap** ppMaterialMap);
 SgResult sgWriteMaterialRenderObjects(SgMaterialMap** ppMaterialMap);
 // Will create/recreate descriptor set that could fit all of the material descriptor sets
 SgResult sgInitMaterialMap(SgApp* pApp, SgMaterialMap** ppMaterialMap);

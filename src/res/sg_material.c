@@ -5,12 +5,12 @@
 static int materialRenderObjectsKeyCompare(const void* a, const void* b, void* udata) {
 	const SgMaterialRenderObjects* keyA = a;
 	const SgMaterialRenderObjects* keyB = b;
-	return strcmp(keyA->materialObjectsName, keyB->materialObjectsName);
+	return strcmp(keyA->pName, keyB->pName);
 }
 
 static uint64_t materialRenderObjectsKeyHash(const void *item, uint64_t seed0, uint64_t seed1) {
     const SgMaterialRenderObjects* key = item;
-    return hashmap_sip(key->materialObjectsName, strlen(key->materialObjectsName), seed0, seed1);
+    return hashmap_sip(key->pName, strlen(key->pName), seed0, seed1);
 }
 
 static int materialKeyCompare(const void* a, const void* b, void* udata) {
@@ -648,7 +648,7 @@ SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pCreateInfo,
 		.ppResources = pCreateInfo->ppResources,
 		.resourceCount = pCreateInfo->resourceCount,
 
-		.materialObjectsName = pCreateInfo->materialObjectsName,
+		.pName = pCreateInfo->pName,
 		.materialName = pCreateInfo->materialName,
 	};
 	//
@@ -687,6 +687,21 @@ SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pCreateInfo,
 	vkAllocateDescriptorSets(pMaterialMap->pApp->device, &descriptorSetAllocInfo, renderObject.pDescriptorSets);
 	//
 	return SG_SUCCESS;
+}
+
+void sgUpdateRenderObjects(const SgRenderObjectUpdateInfo* pUpdateInfo, SgMaterialMap** ppMaterialMap) {
+	SgMaterialMap* pMaterialMap = *ppMaterialMap;
+	SgMaterialRenderObjects* pMaterialRenderObject;
+	SgMaterialRenderObjects findMaterialRenderObject = {
+		.pName = pUpdateInfo->pName,
+	};
+	pMaterialRenderObject = hashmap_get(pMaterialMap->pMaterialRenderObjectMap, &findMaterialRenderObject);
+	if (pMaterialRenderObject) {
+		pMaterialRenderObject->pRenderObjects = pUpdateInfo->pRenderObjects;
+		pMaterialRenderObject->renderObjectCount = pUpdateInfo->renderObjectCount;
+	} else {
+		sgLogDebug_Debug("Render Object %s for update not found", pUpdateInfo->pName);
+	}
 }
 
 _Bool materialRenderObjectWrite(const void *item, void *udata) {
@@ -798,8 +813,6 @@ _Bool sgFreeMaterialMapIter(const void* item, void* data) {
 }
 _Bool sgFreeMaterialRenderObjectMapIter(const void* item, void* data) {
 	const SgMaterialRenderObjects* pMaterialRenderObject = item;
-	SgMaterialMap* pMaterialMap = data;
-	VkDevice device = pMaterialMap->pApp->device;
 	free(pMaterialRenderObject->pWriteDescriptorSets);
 	free(pMaterialRenderObject->pDescriptorSets);
 	return 1;
