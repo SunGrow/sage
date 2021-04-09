@@ -498,13 +498,14 @@ int main() {
 
 	sgDeinitUpdateCommands(app, &updateCommands);
 
+	sgDestroyMaterialMap(app, &materialMap);
 	sgDestroyShader(app, &chaletVertShader);
 	sgDestroyShader(app, &chaletFragShader);
+	sgDestroyShader(app, &myriamVertShader);
+	sgDestroyShader(app, &myriamFragShader);
 	sgUnloadContexts(app, &contexts); 
 	sgDestroyApp(&app);
 	sgUnloadMesh(&pMesh);
-	sgUnloadTexture(&pChaletTexture);
-	sgUnloadTexture(&pSkinAlphaTexture);
 
 	return 0;
 }

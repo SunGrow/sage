@@ -162,6 +162,8 @@ SgResult sgWriteMaterialRenderObjects(SgMaterialMap* pMaterialMap);
 // Will create/recreate descriptor set that could fit all of the material descriptor sets and consequentially fill it up with descriptor sets
 SgResult sgInitMaterialMap(SgApp app, SgMaterialMap* pMaterialMap);
 
+void sgDestroyMaterialMap(SgApp app, SgMaterialMap* pMaterialMap);
+
 typedef struct SgData {
 	void*             bytes;
 	size_t            size;

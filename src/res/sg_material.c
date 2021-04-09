@@ -507,7 +507,9 @@ SgResult sgCreateMaterial(const SgMaterialMap* pMaterialMap, const SgMaterialCre
 	sgCreateDescriptorSetLayout(pMaterialMap->pApp, pCreateInfo, &pMaterial->setLayouts);
 	sgCreatePipelineLayout(pMaterialMap->pApp, &pMaterial->setLayouts, &graphicsPipelineBuilder.pipelineLayout);
 	sgBuildGraphicsPipeline(pMaterialMap->pApp, &graphicsPipelineBuilder, pMaterialMap->renderPass, &pMaterial->pipeline);
-	free(graphicsPipelineBuilder.pShaderStages);
+	if (graphicsPipelineBuilder.pShaderStages) {
+		free(graphicsPipelineBuilder.pShaderStages);
+	}
 	pMaterial->pName = pCreateInfo->pMaterialName;
 	pMaterial->ppShaders = pCreateInfo->ppShaders;
 	pMaterial->shaderCount = pCreateInfo->shaderCount;
@@ -780,4 +782,54 @@ SgResult sgWriteMaterialRenderObjects(SgMaterialMap** ppMaterialMap) {
 	hashmap_scan(pMaterialMap->pMaterialRenderObjectMap, materialRenderObjectWrite, pMaterialMap);
 
 	return SG_SUCCESS;
+}
+
+_Bool sgFreeMaterialMapIter(const void* item, void* data) {
+	const SgMaterial* pMaterial = item;
+	SgMaterialMap* pMaterialMap = data;
+	VkDevice device = pMaterialMap->pApp->device;
+	vkDestroyPipelineLayout(device, pMaterial->pipelineLayout, VK_NULL_HANDLE); // TODO: pipeline layout hashmap
+	vkDestroyPipeline(device, pMaterial->pipeline, VK_NULL_HANDLE);
+	for (uint32_t i = 0; i < pMaterial->setLayouts.setLayoutCount; ++i) {
+		vkDestroyDescriptorSetLayout(device, pMaterial->setLayouts.pSetLayouts[i], VK_NULL_HANDLE);
+	}
+	free(pMaterial->setLayouts.pSetLayouts);
+	return 1;
+}
+_Bool sgFreeMaterialRenderObjectMapIter(const void* item, void* data) {
+	const SgMaterialRenderObjects* pMaterialRenderObject = item;
+	SgMaterialMap* pMaterialMap = data;
+	VkDevice device = pMaterialMap->pApp->device;
+	free(pMaterialRenderObject->pWriteDescriptorSets);
+	free(pMaterialRenderObject->pDescriptorSets);
+	return 1;
+}
+
+void sgDestroySwapchain(SgApp* pApp, SgSwapchain* pSwapchain) {
+	vmaDestroyImage(pApp->allocator, pSwapchain->depthImage.image, pSwapchain->depthImage.allocation);
+	vkDestroyImageView(pApp->device, pSwapchain->depthImageView.imageView, VK_NULL_HANDLE);
+	vmaDestroyImage(pApp->allocator, pSwapchain->blendImage.image, pSwapchain->blendImage.allocation);
+	vkDestroyImageView(pApp->device, pSwapchain->blendImageView.imageView, VK_NULL_HANDLE);
+	for (uint32_t i = 0; i < pSwapchain->imageCount; ++i) {
+		vkDestroyImageView(pApp->device, pSwapchain->pFrameImageViews[i], VK_NULL_HANDLE);
+		vkDestroyFramebuffer(pApp->device, pSwapchain->pFrameBuffers[i], VK_NULL_HANDLE);
+	}
+	vkDestroySwapchainKHR(pApp->device, pSwapchain->swapchain, VK_NULL_HANDLE);
+}
+
+void sgDestroyMaterialMap(SgApp* pApp, SgMaterialMap** ppMaterialMap) {
+	SgMaterialMap* pMaterialMap = *ppMaterialMap;
+	if(pMaterialMap) {
+		hashmap_scan(pMaterialMap->pMaterialRenderObjectMap, sgFreeMaterialRenderObjectMapIter, pMaterialMap);
+		hashmap_free(pMaterialMap->pMaterialRenderObjectMap);
+		hashmap_scan(pMaterialMap->pMaterialMap, sgFreeMaterialMapIter, pMaterialMap);
+		hashmap_free(pMaterialMap->pMaterialMap);
+		vkDestroyRenderPass(pApp->device, pMaterialMap->renderPass, VK_NULL_HANDLE);
+		sgDestroySwapchain(pApp, &pMaterialMap->swapchain);
+		vkDestroyDescriptorPool(pApp->device, pMaterialMap->descriptorPool, VK_NULL_HANDLE);
+
+		free(pMaterialMap);
+	}
+	*ppMaterialMap = NULL;
+	return;
 }

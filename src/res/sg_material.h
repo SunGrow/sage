@@ -88,8 +88,10 @@ SgMaterial* sgAddMaterial(const SgMaterialCreateInfo* pCreateInfo, SgMaterialMap
 SgMaterial* sgGetMaterial(const char* pMaterialName, const SgMaterialMap* ppMaterialMap);
 SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pRenderObjectsCreateInfo, SgMaterialMap** ppMaterialMap);
 SgResult sgWriteMaterialRenderObjects(SgMaterialMap** ppMaterialMap);
-// Will create/recreate descriptor set that could fit all of the material descriptor sets and consequentially fill it up with descriptor sets
+// Will create/recreate descriptor set that could fit all of the material descriptor sets
 SgResult sgInitMaterialMap(SgApp* pApp, SgMaterialMap** ppMaterialMap);
+
+void sgDestroyMaterialMap(SgApp* pApp, SgMaterialMap** ppMaterialMap);
 
 
 #endif

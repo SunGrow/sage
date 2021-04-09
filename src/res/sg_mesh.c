@@ -213,6 +213,7 @@ void sgLoadTexture(const char *pPath, SgTexture **ppTexture) {
 
 void sgUnloadTexture(SgTexture **ppTexture) {
 	stbi_image_free(ppTexture[0]->pixels);
+
 	ppTexture[0]->pixels = NULL;
 	ppTexture[0]->channels = 0;
 	ppTexture[0]->width = 0;
