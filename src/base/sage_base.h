@@ -155,11 +155,26 @@ typedef struct SgResource {
 	VkImageView                  imageView;
 	VkSampler                    imageSampler;
 	SgBuffer                     stagingBuffer;
-	VkCommandBuffer              commandBuffer;
-	VkCommandPool                commandPool;
-
 	SgResourceTypeFlags          type;
+
+	uint32_t*                    pCommandBufferID;
+
+	void*                        lastBytes;
+	uint32_t                     lastSize;
+	
+	const char*                  pName;
 } SgResource;
+
+typedef struct SgResourceMap {
+	struct hashmap*              pResourceMap;
+	VkCommandBuffer*             pCommadBuffers;
+	uint32_t                     commandBufferCount;
+
+	VkCommandBuffer*             pCommadBuffersForSpecificUpdate;
+
+	VkFence                      fence;
+	VkCommandPool                commandPool;
+} SgResourceMap;
 
 typedef struct SgSwapchain {
 	VkSwapchainKHR            swapchain;

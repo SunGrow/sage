@@ -184,19 +184,6 @@ void sgUnloadMesh(SgMesh **ppMesh) {
 	free(*ppMesh);
 }
 
-
-void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t offset, uint32_t vertCount, SgVertex *pVertices) {
-	for (uint32_t i = 0; i < vertCount; ++i) {
-		pVertices[offset+i].vert[0] *= pTransformInfo->scale[0];
-		pVertices[offset+i].vert[1] *= pTransformInfo->scale[1];
-		pVertices[offset+i].vert[2] *= pTransformInfo->scale[2];
-
-		pVertices[offset+i].vert[0] += pTransformInfo->move[0];
-		pVertices[offset+i].vert[1] += pTransformInfo->move[1];
-		pVertices[offset+i].vert[2] += pTransformInfo->move[2];
-	}
-}
-
 void sgLoadTexture(const char *pPath, SgTexture **ppTexture) {
 	SgTexture *pTexture = calloc(1, sizeof(pTexture[0]));
 	pTexture->pixels = stbi_load(pPath, &pTexture->width, &pTexture->height,

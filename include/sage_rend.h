@@ -62,10 +62,15 @@ typedef struct SgResourceCreateInfo {
 	void*               bytes;
 	uint32_t            size;
 	VkExtent3D          extent;
+
+	const char*         pName;
 } SgResourceCreateInfo;
 
-SG_DEFINE_HANDLE(SgResource);
-SgResult sgCreateResource(const SgApp app, const SgResourceCreateInfo *pCreateInfo, SgResource *pResource);
+SG_DEFINE_HANDLE(SgResourceMap);
+SgResult sgCreateResourceMap(const SgApp app, SgResourceMap* pResourceMap);
+SgResult sgAddResource(const SgApp app, const SgResourceCreateInfo *pCreateInfo, SgResourceMap* pResourceMap);
+SgResult sgDestroyResourceMap(const SgApp app, SgResourceMap* pResourceMap);
+SgResult sgInitResourceMap(const SgApp app, SgResourceMap* pResourceMap);
 
 /* Make mesh load fit with the engine theme */
 typedef struct SgVertex {
@@ -86,7 +91,7 @@ typedef struct SgMeshSet {
 	uint32_t           meshCount;
 	struct hashmap*    meshMap;      // Return an offset id
 
-	SgResource         indicesResource;
+	const char*        indicesResourceName;
 } SgMeshSet;
 
 SgResult  sgCreateMeshSet(SgMeshSet** ppMeshArray);
@@ -95,11 +100,6 @@ uint32_t  sgAddMesh(const char* pPath, SgMeshSet** ppMeshArray);
 uint32_t* sgGetMeshID(const char* pPath, const SgMeshSet* pMeshArray);
 void      sgUnloadMesh(SgMeshSet **ppMesh);
 
-typedef struct SgMeshTransformInfo {
-	v3 move;
-	v3 scale;
-} SgMeshTransformInfo;
-
 typedef struct SgTexture {
 	int32_t width, height, channels;
 	uint32_t size;
@@ -107,7 +107,6 @@ typedef struct SgTexture {
 } SgTexture;
 
 void sgLoadTexture(const char *pPath, SgTexture **pTexture);
-void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t offset, uint32_t vertCount, SgVertex *pVertices);
 void sgUnloadTexture(SgTexture **ppTexture);
 
 //////
@@ -127,7 +126,7 @@ typedef struct SgResourceBinding {
 typedef struct SgRenderObjectCreateInfo {
 	SgRenderObject*          pRenderObjects;
 	uint32_t                 renderObjectCount;
-	SgResource*              pResources;
+	const char**             ppResourceNames;
 	uint32_t                 resourceCount;
 
 	const char*              materialName;
@@ -154,7 +153,12 @@ typedef struct SgSetLayouts {
 SG_DEFINE_HANDLE(SgMaterial);
 SG_DEFINE_HANDLE(SgMaterialMap);
 
-SgResult sgCreateMaterialMap(const SgApp app, uint32_t materialCount, SgMaterialMap* pMaterialMap);
+typedef struct SgMaterialMapCreateInfo {
+	const SgResourceMap resourceMap;
+	uint32_t materailCount;
+} SgMaterialMapCreateInfo;
+
+SgResult sgCreateMaterialMap(const SgApp app, const SgMaterialMapCreateInfo* pCreateInfo, SgMaterialMap* pMaterialMap);
 SgMaterial sgAddMaterial(const SgMaterialCreateInfo* pCreateInfo, SgMaterialMap* pMaterialMap);
 SgMaterial sgGetMaterial(const char* pMaterialName, const SgMaterialMap materialMap);
 SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pRenderObjectsCreateInfo, SgMaterialMap* pMaterialMap);
@@ -175,10 +179,14 @@ typedef struct SgData {
 	void*             bytes;
 	size_t            size;
 } SgData;
-SgResult sgUpdateResource(const SgApp app, SgData* pData, SgResource* pResource);
+SgResult sgUpdateResource(const SgApp app, SgResourceMap resourceMap, const SgData* pData, const char* pName);
+SgResult sgUpdateResources(const SgApp app, SgResourceMap resourceMap, const uint32_t resourceCount, const SgData** ppData, const char** ppNames);
+// Update resources with last assigned data (the pointer is stored, so you better not have destroyed the last used data)
+SgResult sgUpdateAllResources(const SgApp app, SgResourceMap resourceMap);
 
 typedef struct SgUpdateCommandsInitInfo {
 	SgMaterialMap          materialMap;
+	SgResourceMap          resourceMap;
 	SgMeshSet*             pMeshSet;
 } SgUpdateCommandsInitInfo;
 
@@ -194,7 +202,6 @@ typedef struct SgAppUpdateInfo {
 SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo);
 
 void sgDestroyShader(const SgApp app, SgShader *pShader);
-void sgDestroyResource(const SgApp app, SgResource *pResource);
 void sgDeinitUpdateCommands(const SgApp app, SgUpdateCommands* pUpdateCommands);
 void sgDestroyApp(SgApp *pApp);
 

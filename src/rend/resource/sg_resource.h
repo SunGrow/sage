@@ -1,18 +1,27 @@
 #ifndef SAGE_RESORUCE_H
 #define SAGE_RESORUCE_H 1
 #include "sage_base.h"
+#include "hashmap.h"
 
 typedef struct SgResourceCreateInfo {
 	SgResourceTypeFlags type;
 	void*               bytes;
 	uint32_t            size;
 	VkExtent3D          extent;
+
+	const char*         pName;
 } SgResourceCreateInfo;
 
-SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *pCreateInfo, SgResource **ppResource);
+SgResult sgCreateResourceMap(const SgApp* pApp, SgResourceMap** ppResourceMap);
+SgResult sgAddResource(const SgApp* pApp, const SgResourceCreateInfo *pCreateInfo, SgResourceMap** ppResourceMap);
+SgResult sgDestroyResourceMap(const SgApp* pApp, SgResourceMap** ppResourceMap);
+SgResult sgInitResourceMap(const SgApp* pApp, SgResourceMap** ppResourceMap);
 
 
-SgResult sgUpdateResource(const SgApp* pApp, const SgData* pData, SgResource** ppResource);
+SgResult sgUpdateResource(const SgApp* pApp, SgResourceMap* pResourceMap, const SgData* pData, const char* pName);
+SgResult sgUpdateResources(const SgApp* pApp, SgResourceMap* pResourceMap, const uint32_t resourceCount, const SgData** ppData, const char** ppNames);
+// Update resources with last assigned data (the pointer is stored, so you better not have destroyed the last used data)
+SgResult sgUpdateAllResources(const SgApp* pApp, SgResourceMap* pResourceMap);
 
 typedef struct SgBufferCreateInfo {
 	void*               bytes;

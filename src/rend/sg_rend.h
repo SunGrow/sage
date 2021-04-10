@@ -36,6 +36,7 @@ SgResult sgCreateShader(const SgApp *pApp, const SgShaderCreateInfo *pCreateInfo
 
 typedef struct SgUpdateCommandsInitInfo {
 	SgMaterialMap*         pMaterialMap;
+	SgResourceMap*         pResourceMap;
 	SgMeshSet*             pMeshSet;
 } SgUpdateCommandsInitInfo;
 

@@ -15,10 +15,10 @@ typedef struct SgRenderObject {
 typedef struct SgRenderObjectCreateInfo {
 	SgRenderObject*          pRenderObjects;
 	uint32_t                 renderObjectCount;
-	SgResource**             ppResources;
+	const char**             ppResourceNames;
 	uint32_t                 resourceCount;
 
-	const char*              materialName; // ID to be addressed in a map
+	const char*              materialName;
 	const char*              pName;
 } SgRenderObjectCreateInfo;
 
@@ -32,7 +32,7 @@ typedef struct SgRenderObjectUpdateInfo {
 typedef struct SgMaterialRenderObjects {
 	SgRenderObject*        pRenderObjects;
 	uint32_t               renderObjectCount;
-	SgResource**           ppResources;
+	const char**           ppResourceNames;
 	uint32_t               resourceCount;
 
 	VkDescriptorSet*       pDescriptorSets;
@@ -75,14 +75,15 @@ typedef struct SgMaterial {
 } SgMaterial;
 
 typedef struct SgMaterialMap {
-	struct hashmap*    pMaterialRenderObjectMap;
-	struct hashmap*    pMaterialMap;
-	uint32_t           materialCount;
+	struct hashmap*          pMaterialRenderObjectMap;
+	struct hashmap*          pMaterialMap;
+	uint32_t                 materialCount;
 
-	VkDescriptorPool   descriptorPool;
+	VkDescriptorPool         descriptorPool;
 
-	SgSwapchain        swapchain;
-	VkRenderPass       renderPass;
+	SgSwapchain              swapchain;
+	VkRenderPass             renderPass;
+	const SgResourceMap*     pResourceMap;
 	SgApp*             pApp;
 } SgMaterialMap;
 
@@ -90,7 +91,12 @@ typedef struct SgMaterialMap {
 SgResult sgBuildGraphicsPipeline(const SgApp* pApp, const SgGraphicsPipelineBuilder* pPipelineBuilder, VkRenderPass renderPass, VkPipeline* pPipeline);
 SgResult sgBuildComputePipeline(const SgApp* pApp, SgComputePipelineBuilder* pPipelineBuilder, VkPipeline* pPipeline);
 
-SgResult sgCreateMaterialMap(SgApp* pApp, uint32_t materialCount, SgMaterialMap** ppMaterialMap);
+typedef struct SgMaterialMapCreateInfo {
+	const SgResourceMap* pResourceMap;
+	uint32_t materailCount;
+} SgMaterialMapCreateInfo;
+
+SgResult sgCreateMaterialMap(const SgApp* pApp, const SgMaterialMapCreateInfo* pCreateInfo, SgMaterialMap** ppMaterialMap);
 SgMaterial* sgAddMaterial(const SgMaterialCreateInfo* pCreateInfo, SgMaterialMap** ppMaterialMap);
 SgMaterial* sgGetMaterial(const char* pMaterialName, const SgMaterialMap* ppMaterialMap);
 SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pRenderObjectsCreateInfo, SgMaterialMap** ppMaterialMap);

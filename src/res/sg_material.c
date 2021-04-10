@@ -271,11 +271,11 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 	return SG_SUCCESS;
 }
 
-SgResult sgCreateMaterialMap(SgApp* pApp, uint32_t materialCount, SgMaterialMap** ppMaterialMap) {
+SgResult sgCreateMaterialMap(const SgApp* pApp, const SgMaterialMapCreateInfo* pCreateInfo, SgMaterialMap** ppMaterialMap) {
 	SgMaterialMap* pMaterialMap = *ppMaterialMap;
 	SG_CALLOC_NUM(pMaterialMap, 1);
-	pMaterialMap->pMaterialRenderObjectMap = hashmap_new(sizeof(SgMaterialRenderObjects), materialCount, 0, 0, materialRenderObjectsKeyHash, materialRenderObjectsKeyCompare, NULL);
-	pMaterialMap->pMaterialMap = hashmap_new(sizeof(SgMaterial), materialCount, 0, 0, materialKeyHash, materialKeyCompare, NULL);
+	pMaterialMap->pMaterialRenderObjectMap = hashmap_new(sizeof(SgMaterialRenderObjects), pCreateInfo->materailCount, 0, 0, materialRenderObjectsKeyHash, materialRenderObjectsKeyCompare, NULL);
+	pMaterialMap->pMaterialMap = hashmap_new(sizeof(SgMaterial), pCreateInfo->materailCount, 0, 0, materialKeyHash, materialKeyCompare, NULL);
 
 	sgFillDefaultRenderpass(pApp, &pMaterialMap->renderPass);
 	/* Create Swapchain */
@@ -284,6 +284,7 @@ SgResult sgCreateMaterialMap(SgApp* pApp, uint32_t materialCount, SgMaterialMap*
 	};
 	sgCreateSwapchain(pApp, &swapchainCreateInfo, &pMaterialMap->swapchain);
 	pMaterialMap->pApp = pApp;
+	pMaterialMap->pResourceMap = pCreateInfo->pResourceMap;
 	*ppMaterialMap = pMaterialMap;
 	return SG_SUCCESS;
 }
@@ -645,7 +646,7 @@ SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pCreateInfo,
 	SgMaterialRenderObjects renderObject = {
 		.pRenderObjects = pCreateInfo->pRenderObjects,
 		.renderObjectCount = pCreateInfo->renderObjectCount,
-		.ppResources = pCreateInfo->ppResources,
+		.ppResourceNames = pCreateInfo->ppResourceNames,
 		.resourceCount = pCreateInfo->resourceCount,
 
 		.pName = pCreateInfo->pName,
@@ -748,18 +749,26 @@ _Bool materialRenderObjectWrite(const void *item, void *udata) {
 			SG_CALLOC_NUM(pBufferInfo, 1);
 			ppImageInfo[i] = pImageInfo;
 			ppBufferInfo[i] = pBufferInfo;
-			if (pMaterial->pResourceBindings[j].type != pRenderObject->ppResources[j]->type) {
-				sgLogDebug("id: %d type: %d does not match %d", j, pMaterial->pResourceBindings[j].type, pRenderObject->ppResources[j]->type);
+
+			SgResource findResource = {
+				.pName = pRenderObject->ppResourceNames[j],
+			};
+			SgResource* pResource = hashmap_get(pMMap->pResourceMap->pResourceMap, &findResource);
+			if (pResource == NULL) {
+				sgLogError("Render Object Resource %s not ound", findResource.pName);
+			}
+			if (pMaterial->pResourceBindings[j].type != pResource->type) {
+				sgLogDebug("id: %d type: %d does not match %d", j, pMaterial->pResourceBindings[j].type, pResource->type);
 			}
 
 			if (pMaterial->pResourceBindings[j].type == SG_RESOURCE_TYPE_TEXTURE_2D) {
 				pImageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				pImageInfo->imageView = pRenderObject->ppResources[j]->imageView;
-				pImageInfo->sampler   = pRenderObject->ppResources[j]->imageSampler;
+				pImageInfo->imageView = pResource->imageView;
+				pImageInfo->sampler   = pResource->imageSampler;
 			} else {
-				pBufferInfo->buffer = pRenderObject->ppResources[j]->dataBuffer.buffer;
+				pBufferInfo->buffer = pResource->dataBuffer.buffer;
 				pBufferInfo->offset = 0;
-				pBufferInfo->range = pRenderObject->ppResources[j]->dataBuffer.size;
+				pBufferInfo->range = pResource->dataBuffer.size;
 			}
 			pRenderObject->pWriteDescriptorSets[resCount].pImageInfo = pImageInfo;
 			pRenderObject->pWriteDescriptorSets[resCount].pBufferInfo = pBufferInfo;
@@ -832,6 +841,7 @@ void sgDestroySwapchain(SgApp* pApp, SgSwapchain* pSwapchain) {
 
 void sgDestroyMaterialMap(SgApp* pApp, SgMaterialMap** ppMaterialMap) {
 	SgMaterialMap* pMaterialMap = *ppMaterialMap;
+	vkQueueWaitIdle(pMaterialMap->pApp->graphicsQueue);
 	if(pMaterialMap) {
 		hashmap_scan(pMaterialMap->pMaterialRenderObjectMap, sgFreeMaterialRenderObjectMapIter, pMaterialMap);
 		hashmap_free(pMaterialMap->pMaterialRenderObjectMap);

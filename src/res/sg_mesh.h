@@ -33,7 +33,7 @@ typedef struct SgMeshSet {
 	uint32_t           meshCount;
 	struct hashmap*    meshMap;      // Return an offset id
 
-	SgResource*        indicesResource;
+	const char*        indicesResourceName;
 } SgMeshSet;
 
 
@@ -46,13 +46,6 @@ void      sgUnloadMesh(SgMesh **ppMesh);
 
 
 ///
-
-typedef struct SgMeshTransformInfo {
-	v3 move;
-	v3 scale;
-} SgMeshTransformInfo;
-
-void sgTransformMesh(const SgMeshTransformInfo *pTransformInfo, uint32_t offset, uint32_t vertCount, SgVertex *pVertices);
 
 typedef struct SgTexture {
 	int32_t width, height, channels;

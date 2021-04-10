@@ -222,13 +222,15 @@ int main() {
 
 	sgInitTransformUniform(&cameraTransform.camera, &transformuniform);
 	/**/
-	SgResource cameraResource;
+	SgResourceMap resourceMap;
+	sgCreateResourceMap(app, &resourceMap);
 	SgResourceCreateInfo cameraResourceCreateInfo = {
 		.bytes = &transformuniform,
 		.size = sizeof(SgTransformUniform),
 		.type = SG_RESOURCE_TYPE_UNIFORM,
+		.pName = "cameraResource",
 	};
-	sgCreateResource(app, &cameraResourceCreateInfo, &cameraResource);
+	sgAddResource(app, &cameraResourceCreateInfo, &resourceMap);
 
 
 	/* Placeholder Mesh */
@@ -242,98 +244,104 @@ int main() {
 	/**/
 
 	/* Resource Init */
-	SgResource meshResource;
 	SgResourceCreateInfo meshResourceCreateInfo = {
 		.bytes = pMesh->pVertices,
 		.size = pMesh->vertexCount * sizeof(pMesh->pVertices[0]),
 		.type = SG_RESOURCE_TYPE_MESH,
-	};
-	sgCreateResource(app, &meshResourceCreateInfo, &meshResource);
 
-	SgResource meshIndicesResource;
+		.pName = "meshResource"
+	};
+	sgAddResource(app, &meshResourceCreateInfo, &resourceMap);
+
 	SgResourceCreateInfo meshIndicesResourceCreateInfo = {
 		.bytes = pMesh->pIndices,
 		.size = pMesh->indexCount * sizeof(pMesh->pIndices[0]),
 		.type = SG_RESOURCE_TYPE_INDICES,
+
+		.pName = "meshIndicesResource",
 	};
-	sgCreateResource(app, &meshIndicesResourceCreateInfo, &meshIndicesResource);
+	sgAddResource(app, &meshIndicesResourceCreateInfo, &resourceMap);
 	// TODO: Wrap into a creation inside of an api, ffs
-	pMesh->indicesResource = meshIndicesResource;
+	pMesh->indicesResourceName = meshIndicesResourceCreateInfo.pName;
 	/* Placeholder Mesh2 */
 	/**/
 
 	/* Resource Init */
 	SgTexture *pChaletTexture;
 	sgLoadTexture("res/chalet.jpg", &pChaletTexture);
-	SgResource meshTextureResource;
 	SgResourceCreateInfo meshTextureResourceCreateInfo = {
 		.bytes = pChaletTexture->pixels,
 		.size = pChaletTexture->size,
 		.extent = (VkExtent3D) {.height = pChaletTexture->height, .width = pChaletTexture->width, .depth = 1.0},
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
+
+		.pName = "chaletTextureResource",
 	};
-	sgCreateResource(app, &meshTextureResourceCreateInfo, &meshTextureResource);
-	sgUnloadTexture(&pChaletTexture);
+	sgAddResource(app, &meshTextureResourceCreateInfo, &resourceMap);
 
 	///
 	SgTexture *pSkinAlphaTexture;
 	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_01Skin.jpg", &pSkinAlphaTexture);
-	SgResource skinAlphaTextureResource;
 	SgResourceCreateInfo skinTextureResourceCreateInfo = {
 		.bytes = pSkinAlphaTexture->pixels,
 		.size = pSkinAlphaTexture->size,
 		.extent = (VkExtent3D) {.height = pSkinAlphaTexture->height, .width = pSkinAlphaTexture->width, .depth = 1.0},
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
+
+		.pName = "myriamAlphaSkinTextureResource",
 	};
-	sgCreateResource(app, &skinTextureResourceCreateInfo, &skinAlphaTextureResource);
-	sgUnloadTexture(&pSkinAlphaTexture);
+	sgAddResource(app, &skinTextureResourceCreateInfo, &resourceMap);
 
 	SgTexture *pHairAlphaTexture;
 	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_02Hair.jpg", &pHairAlphaTexture);
-	SgResource hairAlphaTextureResource;
 	SgResourceCreateInfo hairTextureResourceCreateInfo = {
 		.bytes = pHairAlphaTexture->pixels,
 		.size = pHairAlphaTexture->size,
 		.extent = (VkExtent3D) {.height = pHairAlphaTexture->height, .width = pHairAlphaTexture->width, .depth = 1.0},
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
+
+		.pName = "myriamAlphaHairTextureResource",
 	};
-	sgCreateResource(app, &hairTextureResourceCreateInfo, &hairAlphaTextureResource);
-	sgUnloadTexture(&pHairAlphaTexture);
+	sgAddResource(app, &hairTextureResourceCreateInfo, &resourceMap);
 
 	SgTexture *pClothAlphaTexture;
 	sgLoadTexture("res/tex/10016_w_Myriam_Body_A_03Cloth.jpg", &pClothAlphaTexture);
-	SgResource clothAlphaTextureResource;
 	SgResourceCreateInfo clothTextureResourceCreateInfo = {
 		.bytes = pClothAlphaTexture->pixels,
 		.size = pClothAlphaTexture->size,
 		.extent = (VkExtent3D) {.height = pClothAlphaTexture->height, .width = pClothAlphaTexture->width, .depth = 1.0},
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
+
+		.pName = "myriamAlphaClothTextureResource",
 	};
-	sgCreateResource(app, &clothTextureResourceCreateInfo, &clothAlphaTextureResource);
-	sgUnloadTexture(&pClothAlphaTexture);
+	sgAddResource(app, &clothTextureResourceCreateInfo, &resourceMap);
 
 	SgTexture *pBodyDTexture;
 	sgLoadTexture("res/tex/10016_w_Myriam_Body_D_2k.jpg", &pBodyDTexture);
-	SgResource bodyDTextureResource;
 	SgResourceCreateInfo bodyDTextureResourceCreateInfo = {
 		.bytes = pBodyDTexture->pixels,
 		.size = pBodyDTexture->size,
 		.extent = (VkExtent3D) {.height = pBodyDTexture->height, .width = pBodyDTexture->width, .depth = 1.0},
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
+
+		.pName = "myriamBodyDTextureResource",
 	};
-	sgCreateResource(app, &bodyDTextureResourceCreateInfo, &bodyDTextureResource);
-	sgUnloadTexture(&pBodyDTexture);
+	sgAddResource(app, &bodyDTextureResourceCreateInfo, &resourceMap);
 	///
 
 	SgMaterialMap materialMap;
-	sgCreateMaterialMap(app, 1, &materialMap);
+	SgMaterialMapCreateInfo materialMapCreateInfo = {
+		.materailCount = 1,
+		.resourceMap = resourceMap,
+	};
+	sgCreateMaterialMap(app, &materialMapCreateInfo, &materialMap);
 
 	SgShader pShadersChalet[] = {chaletVertShader, chaletFragShader};
 	SgResourceBinding materialChaletResourceBindings[] = {
-		(SgResourceBinding) {.type = SG_RESOURCE_TYPE_MESH, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0, .setBinding = 0},
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 1, .setBinding = 0},
-		(SgResourceBinding) {.type = SG_RESOURCE_TYPE_UNIFORM, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 2, .setBinding = 0},
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_UNIFORM, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0, .setBinding = 1},
+		(SgResourceBinding){ .type = SG_RESOURCE_TYPE_MESH,       .stage = SG_SHADER_STAGE_VERTEX_BIT,   .setBinding = 0, .binding = 0, },
+		(SgResourceBinding){ .type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .setBinding = 0, .binding = 1, },
+		(SgResourceBinding){ .type = SG_RESOURCE_TYPE_MESH,       .stage = SG_SHADER_STAGE_VERTEX_BIT,   .setBinding = 0, .binding = 2, },
+		(SgResourceBinding){ .type = SG_RESOURCE_TYPE_UNIFORM,    .stage = SG_SHADER_STAGE_VERTEX_BIT,   .setBinding = 1, .binding = 0, },
 	};
 	SgMaterialCreateInfo materialChaletCreateInfo = {
 		.pMaterialName = "materialChalet",
@@ -347,12 +355,12 @@ int main() {
 
 	SgShader pShadersMyriam[] = {myriamVertShader, myriamFragShader};
 	SgResourceBinding materialMyriamSetResourceBinding[] = {
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_MESH, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0, .setBinding = 0},
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 1, .setBinding = 0},
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 2, .setBinding = 0},
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 3, .setBinding = 0},
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .binding = 4, .setBinding = 0},
-		(SgResourceBinding){.type = SG_RESOURCE_TYPE_UNIFORM, .stage = SG_SHADER_STAGE_VERTEX_BIT, .binding = 0, .setBinding = 1},
+		(SgResourceBinding){ .type = SG_RESOURCE_TYPE_MESH,       .stage = SG_SHADER_STAGE_VERTEX_BIT,   .setBinding = 0, .binding = 0, },
+		(SgResourceBinding){ .type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .setBinding = 0, .binding = 1, },
+		(SgResourceBinding){ .type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .setBinding = 0, .binding = 2, },
+		(SgResourceBinding){ .type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .setBinding = 0, .binding = 3, },
+		(SgResourceBinding){ .type = SG_RESOURCE_TYPE_TEXTURE_2D, .stage = SG_SHADER_STAGE_FRAGMENT_BIT, .setBinding = 0, .binding = 4, },
+		(SgResourceBinding){ .type = SG_RESOURCE_TYPE_UNIFORM,    .stage = SG_SHADER_STAGE_VERTEX_BIT,   .setBinding = 1, .binding = 0, },
 	};
 	SgMaterialCreateInfo materialMyriamCreateInfo = {
 		.pMaterialName = "materialMyriam",
@@ -376,23 +384,23 @@ int main() {
 			.instanceCount = 1,
 		},
 	};
-	SgResource pMyriamRenderObjectResources[] = {
-		meshResource,
+	const char* pMyriamRenderObjectResourceNames[] = {
+		meshResourceCreateInfo.pName,
 		/*TODO: texture arrays */
-		skinAlphaTextureResource,
-		hairAlphaTextureResource,
-		clothAlphaTextureResource,
-		bodyDTextureResource,
+		skinTextureResourceCreateInfo.pName,
+		hairTextureResourceCreateInfo.pName,
+		clothTextureResourceCreateInfo.pName,
+		bodyDTextureResourceCreateInfo.pName,
 		/**/
-		cameraResource,
+		cameraResourceCreateInfo.pName,
 	};
 	SgRenderObjectCreateInfo myriamRenderObject = {
 		.materialName = "materialMyriam",
 		.pName = "myriamMesh",
 		.pRenderObjects = pMyriamRenderObjects,
 		.renderObjectCount = NUMOF(pMyriamRenderObjects),
-		.pResources = pMyriamRenderObjectResources,
-		.resourceCount = NUMOF(pMyriamRenderObjectResources),
+		.ppResourceNames = pMyriamRenderObjectResourceNames,
+		.resourceCount = NUMOF(pMyriamRenderObjectResourceNames),
 	};
 	sgAddMaterialRenderObjects(&myriamRenderObject, &materialMap);
 
@@ -431,23 +439,24 @@ int main() {
 		},
 	};
 
-	SgResource chaletTransformMatricesResource;
 	SgResourceCreateInfo chaletTransformMatricesCreateInfo = {
 		.bytes = chaletObjects,
 		.size = sizeof(chaletObjects),
-		.type = SG_RESOURCE_TYPE_UNIFORM,
+		.type = SG_RESOURCE_TYPE_MESH,
+
+		.pName = "chaletTransformMatrices",
 	};
-	sgCreateResource(app, &chaletTransformMatricesCreateInfo, &chaletTransformMatricesResource);
-	SgResource materialChaletResources[] = {
-		meshResource, meshTextureResource, chaletTransformMatricesResource, cameraResource
+	sgAddResource(app, &chaletTransformMatricesCreateInfo, &resourceMap);
+	const char* materialChaletResourceNames[] = {
+		meshResourceCreateInfo.pName, meshTextureResourceCreateInfo.pName, chaletTransformMatricesCreateInfo.pName, cameraResourceCreateInfo.pName
 	};
 	SgRenderObjectCreateInfo chaletRenderObject = {
 		.materialName = "materialChalet",
 		.pName = "chaletMesh",
 		.pRenderObjects = chaletRenderObjects,
 		.renderObjectCount = NUMOF(chaletRenderObjects),
-		.pResources = materialChaletResources,
-		.resourceCount = NUMOF(materialChaletResources),
+		.ppResourceNames = materialChaletResourceNames,
+		.resourceCount = NUMOF(materialChaletResourceNames),
 	};
 	sgAddMaterialRenderObjects(&chaletRenderObject, &materialMap);
 
@@ -476,16 +485,19 @@ int main() {
 		},
 	};
 
-	SgResource kittenTransformMatricesResource;
 	SgResourceCreateInfo kittenTransformMatricesCreateInfo = {
 		.bytes = kittenObjects,
 		.size = sizeof(kittenObjects),
-		.type = SG_RESOURCE_TYPE_UNIFORM,
+		.type = SG_RESOURCE_TYPE_MESH,
+
+		.pName = "kittenTransformMatrices",
 	};
-	sgCreateResource(app, &kittenTransformMatricesCreateInfo, &kittenTransformMatricesResource);
+	sgAddResource(app, &kittenTransformMatricesCreateInfo, &resourceMap);
+	sgInitResourceMap(app, &resourceMap);
+	sgUpdateAllResources(app, resourceMap);
 	
-	SgResource materialKittenResources[] = {
-		meshResource, meshTextureResource, kittenTransformMatricesResource, cameraResource
+	const char* materialKittenResourceNames[] = {
+		meshResourceCreateInfo.pName, meshTextureResourceCreateInfo.pName, kittenTransformMatricesCreateInfo.pName, cameraResourceCreateInfo.pName
 	};
 	SgRenderObject kittenRenderObjects[] = {
 		{
@@ -498,8 +510,8 @@ int main() {
 		.pName = "kittenMesh",
 		.pRenderObjects = kittenRenderObjects,
 		.renderObjectCount = NUMOF(kittenRenderObjects),
-		.pResources = materialKittenResources,
-		.resourceCount = NUMOF(materialKittenResources),
+		.ppResourceNames = materialKittenResourceNames,
+		.resourceCount = NUMOF(materialKittenResourceNames),
 	};
 	sgAddMaterialRenderObjects(&kittenRenderObject, &materialMap);
 
@@ -510,6 +522,7 @@ int main() {
 	SgUpdateCommandsInitInfo updateInitInfo = {
 		.materialMap = materialMap,
 		.pMeshSet = pMesh,
+		.resourceMap = resourceMap,
 	};
 	SgUpdateCommands updateCommands;
 	sgInitUpdateCommands(&updateInitInfo, &updateCommands);
@@ -533,22 +546,17 @@ int main() {
 			.bytes = &transformuniform,
 			.size  = sizeof(transformuniform),
 		};
-		sgUpdateResource(app, &cameraData, &cameraResource);
+		sgUpdateResource(app, resourceMap, &cameraData, cameraResourceCreateInfo.pName);
 	}
 
-	sgDestroyResource(app, &cameraResource);
-	sgDestroyResource(app, &chaletTransformMatricesResource);
-	sgDestroyResource(app, &kittenTransformMatricesResource);
-	sgDestroyResource(app, &meshResource);
-	sgDestroyResource(app, &meshIndicesResource);
-	sgDestroyResource(app, &meshTextureResource);
-	sgDestroyResource(app, &skinAlphaTextureResource);
-	sgDestroyResource(app, &hairAlphaTextureResource);
-	sgDestroyResource(app, &clothAlphaTextureResource);
-	sgDestroyResource(app, &bodyDTextureResource);
-
+	sgUnloadTexture(&pChaletTexture);
+	sgUnloadTexture(&pSkinAlphaTexture);
+	sgUnloadTexture(&pHairAlphaTexture);
+	sgUnloadTexture(&pClothAlphaTexture);
+	sgUnloadTexture(&pBodyDTexture);
 	sgDeinitUpdateCommands(app, &updateCommands);
 
+	sgDestroyResourceMap(app, &resourceMap);
 	sgDestroyMaterialMap(app, &materialMap);
 	sgDestroyShader(app, &chaletVertShader);
 	sgDestroyShader(app, &chaletFragShader);

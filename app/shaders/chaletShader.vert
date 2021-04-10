@@ -17,7 +17,7 @@ struct objectInfo {
 	vec4 position;
 };
 
-layout(set = 0, binding = 2) readonly buffer ObjectInfos_T {
+layout(set = 0, binding = 2) buffer ObjectInfos_T {
 	objectInfo objects[];
 } ObjectInfos;
 

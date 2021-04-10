@@ -326,10 +326,8 @@ _Bool renderPassBindRenderObjects(const void* item, void* udata) {
 SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdateCommands** ppUpdateCommands) {
 
 	vkDeviceWaitIdle(pInitInfo->pMaterialMap->pApp->device);
-	SgUpdateCommands *pUpdateCommands = *ppUpdateCommands;
-	if (pUpdateCommands == NULL) {
-		SG_CALLOC_NUM(pUpdateCommands, 1);
-	}
+	SgUpdateCommands *pUpdateCommands;
+	SG_CALLOC_NUM(pUpdateCommands, 1);
 	SG_STRETCHALLOC(pUpdateCommands->pCommandBuffers, pInitInfo->pMaterialMap->swapchain.imageCount, "Update Command Realloc Error");
 
 	VkCommandBufferAllocateInfo commandAllocInfo = {
@@ -373,7 +371,14 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 		vkCmdSetViewport(pUpdateCommands->pCommandBuffers[i], 0, 1, &pInitInfo->pMaterialMap->pApp->viewport);
 		vkCmdSetScissor(pUpdateCommands->pCommandBuffers[i], 0, 1, &pInitInfo->pMaterialMap->pApp->scissor);
 		vkCmdBeginRenderPass(pUpdateCommands->pCommandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-		vkCmdBindIndexBuffer(pUpdateCommands->pCommandBuffers[i], pInitInfo->pMeshSet->indicesResource->dataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+		SgResource findResource = {
+			.pName = pInitInfo->pMeshSet->indicesResourceName,
+		};
+		SgResource* pResource = hashmap_get(pInitInfo->pResourceMap->pResourceMap, &findResource);
+		if (pResource == NULL) {
+			sgLogError("Index Resource Not Present");
+		}
+		vkCmdBindIndexBuffer(pUpdateCommands->pCommandBuffers[i], pResource->dataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
 
 		struct bindRenderObjectInfo renderObjectInfo = {
 			.pMeshSet = pInitInfo->pMeshSet,
@@ -493,9 +498,7 @@ void sgDestroyResource(const SgApp *pApp, SgResource **ppResource) {
 			vmaDestroyBuffer(pApp->allocator, pResource->dataBuffer.buffer, pResource->dataBuffer.allocation);
 		}
 	}
-	vkDestroyCommandPool(pApp->device, pResource->commandPool, VK_NULL_HANDLE);
-	free(pResource);
-	ppResource = NULL;
+	free(pResource->pCommandBufferID);
 }
 
 void sgDeinitUpdateCommands(const SgApp *pApp, SgUpdateCommands** ppUpdateCommands) {
