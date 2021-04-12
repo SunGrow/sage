@@ -83,6 +83,10 @@ static SgResult sgFillActionMap(const SgActiveContextsCreateInfo* pCreateInfo, c
 				pActionMap->actionFuncs[j] = pCreateInfo->pActionFuncs[k];
 			}
 		}
+		if (pActionMap->actionFuncs[j] == NULL) {
+			sgLogWarn("[Context]: action under the name %s not found", actionName->valuestring);
+		};
+		
 		cJSON* actorID = cJSON_GetObjectItem(action, "actorID");
 		pActionMap->actorIDs[j] = actorID->valueint;
 
@@ -96,24 +100,34 @@ static SgResult sgFillActionMap(const SgActiveContextsCreateInfo* pCreateInfo, c
 		cJSON* inputName = cJSON_GetObjectItem(action, "input");
 		cJSON* modName = cJSON_GetObjectItem(action, "mod");
 		if (strlen(inputName->valuestring)) {
+			SgBool stringFound = SG_FALSE;
 			for (uint32_t k = 0; k < pCreateInfo->signalCount; ++k) {
 				if (pCreateInfo->pInputSignals[k].keyName) {
 					if (strcmp(pCreateInfo->pInputSignals[k].keyName, inputName->valuestring) == SG_SUCCESS) {
 						inputKey.key = pCreateInfo->pInputSignals[k].key;
+						stringFound = SG_TRUE;
 					}
 				}
 			}
+			if (stringFound == SG_FALSE) {
+				sgLogWarn("[Context]: Key under the name %s not found", inputName->valuestring);
+			};
 		} else {
 			inputKey.key = 0;
 		}
 		if (strlen(modName->valuestring)) {
+			SgBool stringFound = SG_FALSE;
 			for (uint32_t k = 0; k < pCreateInfo->signalCount; ++k) {
 				if (pCreateInfo->pInputSignals[k].modName) {
 					if (strcmp(pCreateInfo->pInputSignals[k].modName, modName->valuestring) == SG_SUCCESS) {
 						inputKey.mods = pCreateInfo->pInputSignals[k].mod;
+						stringFound = SG_TRUE;
 					}
 				}
 			}
+			if (stringFound == SG_FALSE) {
+				sgLogWarn("[Context]: Mod under the name %s not found", modName->valuestring);
+			};
 		} else {
 			inputKey.mods = 0;
 		}
@@ -145,6 +159,9 @@ void sgUpdateContext(const SgActiveContextsCreateInfo* pCreateInfo, SgActiveCont
 					pActiveContexts->pContexts[i].pActors[j] = pCreateInfo->pActors[k];
 				}
 			}
+			if (pActiveContexts->pContexts[i].pActors[j] == NULL) {
+				sgLogWarn("[Context]: actor under the name %s not found", actorName->valuestring);
+			};
 		}
 		cJSON* toggleMap = cJSON_GetObjectItem(context, "toggleMap");
 		sgFillActionMap(pCreateInfo, toggleMap, &pActiveContexts->pContexts[i].toggleMap);

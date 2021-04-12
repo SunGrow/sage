@@ -27,4 +27,10 @@ void keyShoot(SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgW
 
 void rotateCamera(SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgWindow pWindow);
 
+void lightKeyPressFroward(SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgWindow pWindow);
+void lightKeyPressUp     (SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgWindow pWindow);
+void lightKeyPressLeft   (SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgWindow pWindow);
+void lightKeyPressRight  (SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgWindow pWindow);
+void lightKeyPressDown   (SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgWindow pWindow);
+void lightKeyPressBack   (SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgWindow pWindow);
 #endif

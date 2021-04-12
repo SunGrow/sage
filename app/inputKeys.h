@@ -63,6 +63,11 @@ SgInputSignal inputSignals[] = {
 		.type    = SG_INPUT_TYPE_KEYBOARD,
 	},
 	{
+		.key     = GLFW_KEY_Q,
+		.keyName = "q",
+		.type    = SG_INPUT_TYPE_KEYBOARD,
+	},
+	{
 		.key     = GLFW_MOUSE_BUTTON_1,
 		.keyName = "left",
 		.type    = SG_INPUT_TYPE_MOUSE,
