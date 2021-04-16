@@ -1,7 +1,7 @@
 #ifndef SG_REND_H
 #define SG_REND_H
 
-#include "sage_base.h"
+#include "sg_base.h"
 #define VK_NO_PROTOTYPES
 #include "volk.h"
 #define GLFW_INCLUDE_VULKAN

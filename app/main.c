@@ -207,10 +207,19 @@ int main() {
 	sgSceneInit(&scene);
 
 	// Shaders
+	// TODO: Shader Map
 	SgFile chaletVertShaderFile;
 	SgFile chaletFragShaderFile;
+	SgFile myriamVertShaderFile;
+	SgFile myriamFragShaderFile;
+	SgFile lightingVertShaderFile;
+	SgFile lightingFragShaderFile;
 	sgOpenFile("shaders/chaletShader.vert.spv", &chaletVertShaderFile);
 	sgOpenFile("shaders/chaletShader.frag.spv", &chaletFragShaderFile);
+	sgOpenFile("shaders/myriamShader.vert.spv", &myriamVertShaderFile);
+	sgOpenFile("shaders/myriamShader.frag.spv", &myriamFragShaderFile);
+	sgOpenFile("shaders/lightSourceShader.vert.spv", &lightingVertShaderFile);
+	sgOpenFile("shaders/lightSourceShader.frag.spv", &lightingFragShaderFile);
 	SgShaderCreateInfo chaletVertShaderCreateInfo = {
 		.file = chaletVertShaderFile,
 		.stage = SG_SHADER_STAGE_VERTEX_BIT,
@@ -219,18 +228,6 @@ int main() {
 		.file = chaletFragShaderFile,
 		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 	};
-	SgShader chaletVertShader;
-	sgCreateShader(app, &chaletVertShaderCreateInfo, &chaletVertShader);
-	SgShader chaletFragShader;
-	sgCreateShader(app, &chaletFragShaderCreateInfo, &chaletFragShader);
-	sgCloseFile(&chaletVertShaderFile);
-	sgCloseFile(&chaletFragShaderFile);
-
-	// Shaders
-	SgFile myriamVertShaderFile;
-	SgFile myriamFragShaderFile;
-	sgOpenFile("shaders/myriamShader.vert.spv", &myriamVertShaderFile);
-	sgOpenFile("shaders/myriamShader.frag.spv", &myriamFragShaderFile);
 	SgShaderCreateInfo myriamVertShaderCreateInfo = {
 		.file = myriamVertShaderFile,
 		.stage = SG_SHADER_STAGE_VERTEX_BIT,
@@ -239,17 +236,6 @@ int main() {
 		.file = myriamFragShaderFile,
 		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 	};
-	SgShader myriamVertShader;
-	sgCreateShader(app, &myriamVertShaderCreateInfo, &myriamVertShader);
-	SgShader myriamFragShader;
-	sgCreateShader(app, &myriamFragShaderCreateInfo, &myriamFragShader);
-	sgCloseFile(&myriamVertShaderFile);
-	sgCloseFile(&myriamFragShaderFile);
-
-	SgFile lightingVertShaderFile;
-	SgFile lightingFragShaderFile;
-	sgOpenFile("shaders/lightSourceShader.vert.spv", &lightingVertShaderFile);
-	sgOpenFile("shaders/lightSourceShader.frag.spv", &lightingFragShaderFile);
 	SgShaderCreateInfo lightingVertShaderCreateInfo = {
 		.file = lightingVertShaderFile,
 		.stage = SG_SHADER_STAGE_VERTEX_BIT,
@@ -258,10 +244,24 @@ int main() {
 		.file = lightingFragShaderFile,
 		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 	};
+	SgShader chaletVertShader;
+	SgShader chaletFragShader;
+	SgShader myriamVertShader;
+	SgShader myriamFragShader;
 	SgShader lightingVertShader;
-	sgCreateShader(app, &lightingVertShaderCreateInfo, &lightingVertShader);
 	SgShader lightingFragShader;
+
+	sgCreateShader(app, &chaletVertShaderCreateInfo, &chaletVertShader);
+	sgCreateShader(app, &chaletFragShaderCreateInfo, &chaletFragShader);
+	sgCreateShader(app, &myriamVertShaderCreateInfo, &myriamVertShader);
+	sgCreateShader(app, &myriamFragShaderCreateInfo, &myriamFragShader);
+	sgCreateShader(app, &lightingVertShaderCreateInfo, &lightingVertShader);
 	sgCreateShader(app, &lightingFragShaderCreateInfo, &lightingFragShader);
+
+	sgCloseFile(&chaletVertShaderFile);
+	sgCloseFile(&chaletFragShaderFile);
+	sgCloseFile(&myriamVertShaderFile);
+	sgCloseFile(&myriamFragShaderFile);
 	sgCloseFile(&lightingVertShaderFile);
 	sgCloseFile(&lightingFragShaderFile);
 	/* Should be inside of an API */
@@ -288,6 +288,17 @@ int main() {
 	uint32_t chaletMeshID = sgAddMesh("res/chalet.obj", &pMesh);
 	uint32_t myriamMeshID = sgAddMesh("res/myriam.obj", &pMesh);
 	uint32_t sphereMeshID = sgAddMesh("res/sphere.obj", &pMesh);
+	// Each segment has the same length as the previous one and could be replaced
+	// SgSubmeshCreateInfo submeshCreateInfo = {
+	//     .submeshSegmentCount = 2,
+	//     .submeshSegmentMeshData = (struct SgSubmeshData) {
+	//	       .pVertices = &vertices,
+	//	       .pIndices  = &indices,
+	//	       .indexCount = NUMOF(indices),
+	//	       .vertexCount = NUMOF(vertices),
+	//     },
+	// };
+	// sgAddSubmesh(&submeshCreateInfo, &pMesh);
 	/**/
 
 	/* Resource Init */

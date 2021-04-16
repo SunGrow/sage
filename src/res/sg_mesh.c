@@ -3,7 +3,6 @@
 #include "sg_mesh.h"
 #include "stdlib.h"
 #include "stdio.h"
-#include "sage_base.h"
 #include "fast_obj.h"
 #include "meshoptimizer.h"
 

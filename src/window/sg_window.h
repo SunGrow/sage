@@ -1,7 +1,7 @@
 #ifndef SG_WINDOW_H_
 #define SG_WINDOW_H_ 1
 
-#include "sage_base.h"
+#include "sg_base.h"
 #include "GLFW/glfw3.h"
 
 typedef void(* SgWindowCursorEnterFun) (SgWindow, int);

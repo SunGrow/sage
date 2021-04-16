@@ -1,4 +1,4 @@
-sgbase_src = files('sage_base.c')
+sgbase_src = files('sg_base.c')
 sgbase_inc = include_directories('.')
 sgbase_lib = static_library('sg_base',
                           sources: [sgbase_src],

@@ -1,5 +1,4 @@
 #include "sg_rend.h"
-#include "sage_base.h"
 #ifdef _DEBUG
 #include "debug/sg_rend_debug.h"
 #endif
@@ -164,6 +163,9 @@ SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppSgApp) {
 		sgLogError("[App Init]: Synchonization Primitive init failure");
 	}
 
+	SG_CALLOC_NUM(pApp->pScissor, 1);
+	SG_CALLOC_NUM(pApp->pViewport, 1);
+
 	/* End */
 	*ppSgApp = pApp;
 
@@ -326,8 +328,10 @@ _Bool renderPassBindRenderObjects(const void* item, void* udata) {
 SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdateCommands** ppUpdateCommands) {
 
 	vkDeviceWaitIdle(pInitInfo->pMaterialMap->pApp->device);
-	SgUpdateCommands *pUpdateCommands;
+	SgUpdateCommands *pUpdateCommands = *ppUpdateCommands;
+	// TODO: fix memory leak
 	SG_CALLOC_NUM(pUpdateCommands, 1);
+	pUpdateCommands->pResourceMap = pInitInfo->pResourceMap;
 	SG_STRETCHALLOC(pUpdateCommands->pCommandBuffers, pInitInfo->pMaterialMap->swapchain.imageCount, "Update Command Realloc Error");
 
 	VkCommandBufferAllocateInfo commandAllocInfo = {
@@ -355,11 +359,11 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 
 		// TODO: RESIZE SHOULD BE DYNAMIC! YOU YOURSELF MADE IT THAT WAY!
 		// YET NOW YOU ARE TOO LAZY TO MAKE IT A THING. WORK!
-		pInitInfo->pMaterialMap->pApp->scissor = (VkRect2D){
+		*pInitInfo->pMaterialMap->pApp->pScissor = (VkRect2D){
 		    { 0, 0, },
 			pInitInfo->pMaterialMap->swapchain.extent,
 		};
-		pInitInfo->pMaterialMap->pApp->viewport = (VkViewport)
+		*pInitInfo->pMaterialMap->pApp->pViewport = (VkViewport)
 		{ 0, 0, (float)pInitInfo->pMaterialMap->swapchain.extent.width, (float)pInitInfo->pMaterialMap->swapchain.extent.height, 0, 1};
 
 		VkCommandBufferBeginInfo commandBufferBeginInfo = {
@@ -368,8 +372,8 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 		vkBeginCommandBuffer(pUpdateCommands->pCommandBuffers[i], &commandBufferBeginInfo); 
 
 		/* */
-		vkCmdSetViewport(pUpdateCommands->pCommandBuffers[i], 0, 1, &pInitInfo->pMaterialMap->pApp->viewport);
-		vkCmdSetScissor(pUpdateCommands->pCommandBuffers[i], 0, 1, &pInitInfo->pMaterialMap->pApp->scissor);
+		vkCmdSetViewport(pUpdateCommands->pCommandBuffers[i], 0, 1, pInitInfo->pMaterialMap->pApp->pViewport);
+		vkCmdSetScissor(pUpdateCommands->pCommandBuffers[i], 0, 1, pInitInfo->pMaterialMap->pApp->pScissor);
 		vkCmdBeginRenderPass(pUpdateCommands->pCommandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 		SgResource findResource = {
 			.pName = pInitInfo->pMeshSet->indicesResourceName,
@@ -395,37 +399,15 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 }
 
 SgBool sgAppUpdate(SgAppUpdateInfo* pUpdateInfo) {
-	SgApp *pApp = pUpdateInfo->pMaterialMap->pApp;
+	SgApp *pApp = pUpdateInfo->pApp;
 	SgSwapchain* pSwapchain = &pUpdateInfo->pMaterialMap->swapchain;
 	if(glfwWindowShouldClose(pApp->pWindow))
 		return 0;
 	glfwPollEvents();
 	/* Retrieve Image */
     vkWaitForFences(pApp->device, 1, &pApp->pFrameFences[pApp->currentFrame], VK_TRUE, UINT64_MAX);
-	{
-		int width, height;
-		glfwGetWindowSize(pApp->pWindow, &width, &height);
-		pSwapchain->extent.height = height;
-		pSwapchain->extent.width = width;
-
-		pApp->scissor = (VkRect2D){
-		    { 0, 0, },
-			pUpdateInfo->pMaterialMap->swapchain.extent,
-		};
-		pApp->viewport = (VkViewport)
-		{ 
-			0, 0,
-			(float)pSwapchain->extent.width, (float)pSwapchain->extent.height, 0, 1
-		};
-	}
-
 
 	VkResult res = vkAcquireNextImageKHR(pApp->device, pSwapchain->swapchain, UINT64_MAX, pApp->pFrameReadySemaphore[pApp->currentFrame], VK_NULL_HANDLE, &pApp->frameImageIndex);
-	if (res == VK_ERROR_OUT_OF_DATE_KHR) {
-		sgLogWarn_Debug("[TODO]: RESIZE");
-	} else if (res != VK_SUCCESS && res != VK_SUBOPTIMAL_KHR) {
-		sgLogError("[App Update]: Frame Image acquisition failure");
-	}
 
 	/* Draw to Frame Image */
 	if (pApp->pFrameImageInFlightFences[pApp->frameImageIndex] != VK_NULL_HANDLE) {
@@ -462,6 +444,25 @@ SgBool sgAppUpdate(SgAppUpdateInfo* pUpdateInfo) {
 	    .pWaitSemaphores = &pApp->pFrameFinishedSemaphore[pApp->currentFrame],
 	};
 	vkQueuePresentKHR(pApp->graphicsQueue, &presentInfo);
+	if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR) {
+		vkQueueWaitIdle(pApp->graphicsQueue);
+		SgSwapchainCreateInfo swapchainCreateInfo = {
+			.renderPass = pUpdateInfo->pMaterialMap->renderPass,
+			.oldSwapchain = pUpdateInfo->pMaterialMap->swapchain.swapchain,
+		};
+		sgCleanupSwapchain(pApp, &pUpdateInfo->pMaterialMap->swapchain);
+		sgCreateSwapchain(pApp, &swapchainCreateInfo, &pUpdateInfo->pMaterialMap->swapchain);
+		SgUpdateCommandsInitInfo updateCommandsInitInfo = {
+			.pMaterialMap = pUpdateInfo->pMaterialMap,
+			.pMeshSet = pUpdateInfo->pMeshSet,
+			.pResourceMap = pUpdateInfo->pUpdateCommands->pResourceMap,
+		};
+		sgInitUpdateCommands(&updateCommandsInitInfo, &pUpdateInfo->pUpdateCommands);
+		return 1;
+	} else if (res != VK_SUCCESS && res != VK_SUBOPTIMAL_KHR) {
+		sgLogError("[App Update]: Frame Image acquisition failure");
+		return 0;
+	}
 
 	pApp->currentFrame = (pApp->currentFrame + 1) % SG_FRAME_QUEUE_LENGTH;
 	return 1;
@@ -535,6 +536,8 @@ void sgDestroyApp(SgApp **ppApp) {
 	vkDestroyInstance(pApp->instance, VK_NULL_HANDLE);
 	glfwDestroyWindow(pApp->pWindow);
 	glfwTerminate();
+	free(pApp->pViewport);
+	free(pApp->pScissor);
 	free(pApp);
 	ppApp = NULL;
 }

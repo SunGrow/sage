@@ -1,7 +1,7 @@
 #ifndef SG_INPUT_H
 #define SG_INPUT_H
 
-#include "sage_base.h"
+#include "sg_base.h"
 #include "GLFW/glfw3.h"
 #include "hashmap.h"
 #include "log.h"

@@ -1,5 +1,4 @@
 #include "sg_rend_device.h"
-#include "sage_base.h"
 #include <stdlib.h>
 
 // could replace with trying to get all of the families

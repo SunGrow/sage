@@ -1,7 +1,7 @@
 #ifndef SG_MESH
 #define SG_MESH
 
-#include "sage_base.h"
+#include "sg_base.h"
 #include "sg_math.h"
 #include "stb_image.h"
 #include "hashmap.h"

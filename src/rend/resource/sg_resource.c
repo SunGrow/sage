@@ -295,7 +295,7 @@ SgResult sgInitResourceMap(const SgApp* pApp, SgResourceMap** ppResourceMap) {
 };
 
 _Bool sgDestroyResourceIter(const void* item, void* data) {
-	const SgResource* pResource = item;
+	SgResource* pResource = item;
 	SgApp* pApp = data;
 	sgDestroyResource(pApp, &pResource);
 	return 1;

@@ -1,4 +1,4 @@
-sglog_src = files('sage_log.c')
+sglog_src = files('sg_log.c')
 sglog_inc = include_directories('.')
 sglog_lib = static_library('sg_log',
                           sources: [sglog_src],

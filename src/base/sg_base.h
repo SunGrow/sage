@@ -11,7 +11,7 @@
 #include "vk_mem_alloc.h"
 // TODO: Thread wrapper to easily change out apis when needed
 #include <pthread.h>
-#include "../log/sage_log.h"
+#include "../log/sg_log.h"
 
 #define SG_DEFINE_HANDLE( object ) typedef struct object##_T *object;
 #define NUMOF(arr) (sizeof(arr) / sizeof((arr)[0]))
@@ -85,8 +85,8 @@ typedef struct SgApp {
 	VkFence                   pFrameFences[SG_FRAME_QUEUE_LENGTH];
 	VkFence                   pFrameImageInFlightFences[SG_FRAME_QUEUE_LENGTH + 6];
 
-	VkRect2D                  scissor;
-	VkViewport                viewport;
+	VkRect2D*                 pScissor;
+	VkViewport*               pViewport;
 } SgApp;
 
 typedef enum SgResourceTypeFlagBits {
@@ -211,6 +211,7 @@ typedef struct SgComputePipelineBuilder {
 
 typedef struct SgUpdateCommands {
 	VkCommandBuffer*             pCommandBuffers;
+	SgResourceMap*               pResourceMap;
 } SgUpdateCommands;
 
 // Really does look like a file, doesn't it?

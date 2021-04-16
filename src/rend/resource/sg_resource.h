@@ -1,6 +1,6 @@
 #ifndef SAGE_RESORUCE_H
 #define SAGE_RESORUCE_H 1
-#include "sage_base.h"
+#include "sg_base.h"
 #include "hashmap.h"
 
 typedef struct SgResourceCreateInfo {

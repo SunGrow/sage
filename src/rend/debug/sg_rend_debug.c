@@ -1,4 +1,4 @@
-#include "sage_base.h"
+#include "sg_rend_debug.h"
 #include "sg_rend.h"
 #include "log.h"
 
@@ -16,7 +16,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 	return VK_FALSE;
 }
 
-SgResult registerDebugCallback(SgApp *pApp) {
+VkDebugReportCallbackEXT registerDebugCallback(SgApp *pApp) {
 	VkDebugUtilsMessengerCreateInfoEXT createInfo = {
 	    .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
 		.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT,

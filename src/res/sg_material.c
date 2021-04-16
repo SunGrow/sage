@@ -154,21 +154,16 @@ SgResult createVkSwapchain(const SgApp* pApp, VkSwapchainKHR oldswapchain, VkSwa
 	return SG_SUCCESS;
 }
 
-typedef struct SgSwapchainCreateInfo {
-	VkSwapchainKHR oldSwapchain;
-	VkRenderPass   renderPass;
-} SgSwapchainCreateInfo;
-
-SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo, SgSwapchain *pSwapchain) {
-
+SgResult sgCreateSwapchain(SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo, SgSwapchain *pSwapchain) {
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pApp->physicalDevice, pApp->surface, &pApp->surfaceAttributes.surfaceCapabilities);
 	createVkSwapchain(pApp, pCreateInfo->oldSwapchain, &pSwapchain->swapchain);
 	pSwapchain->extent = pApp->surfaceAttributes.surfaceCapabilities.currentExtent;
 
 	/* Frame Image Creation */
 	vkGetSwapchainImagesKHR(pApp->device, pSwapchain->swapchain, &pSwapchain->imageCount, VK_NULL_HANDLE);
-	SG_MALLOC_NUM(pSwapchain->pFrameImages, pSwapchain->imageCount);
+	SG_STRETCHALLOC(pSwapchain->pFrameImages, pSwapchain->imageCount, "Swapchain Image Allocation Failure");
 	vkGetSwapchainImagesKHR(pApp->device, pSwapchain->swapchain, &pSwapchain->imageCount, pSwapchain->pFrameImages);
-	SG_MALLOC_NUM(pSwapchain->pFrameImageViews, pSwapchain->imageCount);
+	SG_STRETCHALLOC(pSwapchain->pFrameImageViews, pSwapchain->imageCount, "Swapchain Image View Allocation Failure");
 
 	SgImageViewCreateInfo imageViewCreateInfo = {
 		.type = VK_IMAGE_VIEW_TYPE_2D,
@@ -254,7 +249,7 @@ SgResult sgCreateSwapchain(const SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo
 	    .height = pSwapchain->extent.height,
 	    .layers = 1,
 	};
-	SG_MALLOC_NUM(pSwapchain->pFrameBuffers, pSwapchain->imageCount);
+	SG_STRETCHALLOC(pSwapchain->pFrameBuffers, pSwapchain->imageCount, "Framebuffer Allocation Error");
 
 
 	for (uint32_t i = 0; i < pSwapchain->imageCount; ++i) {
@@ -303,6 +298,7 @@ SgResult sgFillGraphicsPipelineBuilder(const SgApp* pApp, SgGraphicsPipelineBuil
 
 	VkPipelineRasterizationStateCreateInfo rasterizationState = {
 	    .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+		.cullMode = VK_CULL_MODE_BACK_BIT,
 	    .lineWidth = 1.f,
 	};
 	pPipelineBuilder->rasterizer = rasterizationState;
@@ -827,7 +823,8 @@ _Bool sgFreeMaterialRenderObjectMapIter(const void* item, void* data) {
 	return 1;
 }
 
-void sgDestroySwapchain(SgApp* pApp, SgSwapchain* pSwapchain) {
+// TODO: make dynamic (dependent on swapchain contets...)
+void sgCleanupSwapchain(SgApp* pApp, SgSwapchain* pSwapchain) {
 	vmaDestroyImage(pApp->allocator, pSwapchain->depthImage.image, pSwapchain->depthImage.allocation);
 	vkDestroyImageView(pApp->device, pSwapchain->depthImageView.imageView, VK_NULL_HANDLE);
 	vmaDestroyImage(pApp->allocator, pSwapchain->blendImage.image, pSwapchain->blendImage.allocation);
@@ -836,6 +833,13 @@ void sgDestroySwapchain(SgApp* pApp, SgSwapchain* pSwapchain) {
 		vkDestroyImageView(pApp->device, pSwapchain->pFrameImageViews[i], VK_NULL_HANDLE);
 		vkDestroyFramebuffer(pApp->device, pSwapchain->pFrameBuffers[i], VK_NULL_HANDLE);
 	}
+}
+
+void sgDestroySwapchain(SgApp* pApp, SgSwapchain* pSwapchain) {
+	sgCleanupSwapchain(pApp, pSwapchain);
+	free(pSwapchain->pFrameBuffers);
+	free(pSwapchain->pFrameImageViews);
+	free(pSwapchain->pFrameImages);
 	vkDestroySwapchainKHR(pApp->device, pSwapchain->swapchain, VK_NULL_HANDLE);
 }
 

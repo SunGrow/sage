@@ -1,7 +1,7 @@
 #ifndef SG_SCENE_H
 #define SG_SCENE_H
 
-#include "sage_base.h"
+#include "sg_base.h"
 #include <inttypes.h>
 #include "sg_math.h"
 #include "GLFW/glfw3.h"

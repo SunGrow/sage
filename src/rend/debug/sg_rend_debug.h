@@ -3,7 +3,7 @@
 
 #define VK_NO_PROTOTYPES
 #include "volk.h"
-#include "sage_base.h"
+#include "sg_base.h"
 
 VkDebugReportCallbackEXT registerDebugCallback(SgApp *pApp);
 

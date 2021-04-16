@@ -1,7 +1,7 @@
 #ifndef SG_MATERIAL
 #define SG_MATERIAL
 
-#include "sage_base.h"
+#include "sg_base.h"
 #include "sg_math.h"
 #include "hashmap.h"
 #include "../rend/resource/sg_resource.h"
@@ -84,9 +84,16 @@ typedef struct SgMaterialMap {
 	SgSwapchain              swapchain;
 	VkRenderPass             renderPass;
 	const SgResourceMap*     pResourceMap;
-	SgApp*             pApp;
+	const SgApp*             pApp;
 } SgMaterialMap;
 
+typedef struct SgSwapchainCreateInfo {
+	VkSwapchainKHR oldSwapchain;
+	VkRenderPass   renderPass;
+} SgSwapchainCreateInfo;
+
+SgResult sgCreateSwapchain(SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo, SgSwapchain *pSwapchain);
+void sgCleanupSwapchain(SgApp* pApp, SgSwapchain* pSwapchain);
 
 SgResult sgBuildGraphicsPipeline(const SgApp* pApp, const SgGraphicsPipelineBuilder* pPipelineBuilder, VkRenderPass renderPass, VkPipeline* pPipeline);
 SgResult sgBuildComputePipeline(const SgApp* pApp, SgComputePipelineBuilder* pPipelineBuilder, VkPipeline* pPipeline);
