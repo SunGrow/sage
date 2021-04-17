@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <vulkan/vulkan_core.h>
 
-SgResult createWindowSurface(SgApp *pApp) {
-	glfwCreateWindowSurface(pApp->instance, pApp->pWindow, VK_NULL_HANDLE, &pApp->surface);
-	if (pApp->surface) {
+SgResult createWindowSurface(const VkInstance* pInstance, SgWindow* pWindow, VkSurfaceKHR* pSurface) {
+	glfwCreateWindowSurface(*pInstance, pWindow, VK_NULL_HANDLE, pSurface);
+	if (*pSurface) {
 		sgLogInfo_Debug("[AppInit]: Vulkan Surface created");
 	} else {
 		sgLogFatal("[AppInit]: Vulkan Surface creation failure");
@@ -64,10 +64,10 @@ VkPresentModeKHR getSurfacePresentMode(VkPhysicalDevice physicalDevice, VkSurfac
 	return result;
 }
 
-SgResult getSurfaceAttributes(SgApp *pApp) {
-	pApp->surfaceAttributes.format = getSurfaceFormat(pApp->physicalDevice, pApp->surface);
-	pApp->surfaceAttributes.presentMode = getSurfacePresentMode(pApp->physicalDevice, pApp->surface);
-	if (vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pApp->physicalDevice, pApp->surface, &pApp->surfaceAttributes.surfaceCapabilities) == VK_SUCCESS) {
+SgResult getSurfaceAttributes(const VkPhysicalDevice* pPhysicalDevice, const VkSurfaceKHR* pSurface, SurfaceAttributes* pSurfaceAttributes) {
+	pSurfaceAttributes->format = getSurfaceFormat(*pPhysicalDevice, *pSurface);
+	pSurfaceAttributes->presentMode = getSurfacePresentMode(*pPhysicalDevice, *pSurface);
+	if (vkGetPhysicalDeviceSurfaceCapabilitiesKHR(*pPhysicalDevice, *pSurface, &pSurfaceAttributes->surfaceCapabilities) == VK_SUCCESS) {
 		sgLogInfo_Debug("[AppInit]: Surface Capabilities acquired successfully");
 	} else {
 		sgLogWarn("[AppInit]: Surface Capabilities request error");

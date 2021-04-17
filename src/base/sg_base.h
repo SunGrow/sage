@@ -76,6 +76,7 @@ typedef struct SgApp {
 	pthread_t                 threads[SG_THREADS_COUNT];
 	// No secondary command buffer pools atm
 	VkCommandPool             pCommandPools[SG_FRAME_QUEUE_LENGTH * SG_THREADS_COUNT];
+	uint32_t                  commandPoolCount;
 
 	// Synchorization primitives
 	VkSemaphore               pFrameReadySemaphore[SG_FRAME_QUEUE_LENGTH];

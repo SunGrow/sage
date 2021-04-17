@@ -3,7 +3,10 @@
 
 #include "sg_base.h"
 
-SgResult initCommandPools(SgApp *pApp);
+typedef struct SgCommandPoolsCreateInfo {
+} SgCommandPoolsCreateInfo;
+
+SgResult createCommandPools(const VkDevice* pDevice, const uint32_t queueFamilyID, pthread_t* pThreads, VkCommandPool* pCommandPools, uint32_t commandPoolCount);
 
 typedef struct SgCommandBufferBeginEndInfo {
 	const VkCommandPool *pCommandPool;

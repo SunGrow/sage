@@ -16,7 +16,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 	return VK_FALSE;
 }
 
-VkDebugReportCallbackEXT registerDebugCallback(SgApp *pApp) {
+SgResult registerDebugCallback(const VkInstance* pInstance, VkDebugUtilsMessengerEXT *debugMessenger) {
 	VkDebugUtilsMessengerCreateInfoEXT createInfo = {
 	    .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
 		.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT,
@@ -24,7 +24,7 @@ VkDebugReportCallbackEXT registerDebugCallback(SgApp *pApp) {
 	    .pfnUserCallback = debugCallback,
 	};
 
-	VkResult res = vkCreateDebugUtilsMessengerEXT(pApp->instance, &createInfo, 0, &pApp->debugCallback);
+	VkResult res = vkCreateDebugUtilsMessengerEXT(*pInstance, &createInfo, 0, debugMessenger);
 
 	if (!res) {
 		sgLogInfo_Debug("[AppInit]: Vulkan debug report callback is setup");

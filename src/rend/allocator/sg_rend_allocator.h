@@ -3,6 +3,6 @@
 
 #include "sg_base.h"
 
-SgResult createAllocator(SgApp *pApp);
+SgResult createAllocator(const VkPhysicalDevice* pPhysicalDevice, const VkDevice* pDevice, const VkInstance* pInstance, VmaAllocator* pAllocator);
 
 #endif

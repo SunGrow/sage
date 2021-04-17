@@ -2,15 +2,15 @@
 #include "vk_mem_alloc.h"
 
 
-SgResult createAllocator(SgApp *pApp) {
+SgResult createAllocator(const VkPhysicalDevice* pPhysicalDevice, const VkDevice* pDevice, const VkInstance* pInstance, VmaAllocator* pAllocator) {
 	VmaAllocatorCreateInfo allocatorInfo = {
-	    .physicalDevice = pApp->physicalDevice,
-	    .device = pApp->device,
-	    .instance = pApp->instance,
+	    .physicalDevice = *pPhysicalDevice,
+	    .device = *pDevice,
+	    .instance = *pInstance,
 	    .vulkanApiVersion = VK_API_VERSION_1_2,
 	};
 
-	if(vmaCreateAllocator(&allocatorInfo, &pApp->allocator)) {
+	if(vmaCreateAllocator(&allocatorInfo, pAllocator)) {
 		sgLogError("[AppInit]: Allocator Creation failure");
 	} else {
 		sgLogInfo_Debug("[AppInit]: Allocator Creation successfull");

@@ -5,8 +5,8 @@
 uint32_t getGraphicsFamilyIndex(VkPhysicalDevice pd) {
 	uint32_t queueCount = 0;
 	vkGetPhysicalDeviceQueueFamilyProperties(pd, &queueCount, 0);
-
-	VkQueueFamilyProperties *queues = malloc(queueCount * sizeof(*queues));
+	VkQueueFamilyProperties *queues;
+	SG_MALLOC_NUM(queues, queueCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(pd, &queueCount, queues);
 
 	// Too lazy to handle multiple families case. Might do it later
@@ -62,14 +62,13 @@ VkPhysicalDevice pickPhysicalDevice(VkSurfaceKHR surface, VkPhysicalDevice *pPhy
 	return result;
 }
 
-SgResult getPhysicalDevice(SgApp *pApp) {
+SgResult getPhysicalDevice(SgPhysicalDeviceGetInfo *pGetInfo, VkPhysicalDevice* pPhysicalDevice) {
 	uint32_t deviceCount = 0;
-	vkEnumeratePhysicalDevices(pApp->instance, &deviceCount, VK_NULL_HANDLE);
+	vkEnumeratePhysicalDevices(*pGetInfo->pInstance, &deviceCount, VK_NULL_HANDLE);
 	VkPhysicalDevice *pPhysicalDevices = malloc(deviceCount * sizeof(*pPhysicalDevices));
-	vkEnumeratePhysicalDevices(pApp->instance, &deviceCount, pPhysicalDevices);
-	pApp->physicalDevice = pickPhysicalDevice(pApp->surface, pPhysicalDevices, deviceCount);
-	pApp->graphicsQueueFamilyIdx = getGraphicsFamilyIndex(pApp->physicalDevice);
-	if (pApp->physicalDevice) {
+	vkEnumeratePhysicalDevices(*pGetInfo->pInstance, &deviceCount, pPhysicalDevices);
+	*pPhysicalDevice = pickPhysicalDevice(*pGetInfo->pSurface, pPhysicalDevices, deviceCount);
+	if (*pPhysicalDevice) {
 		sgLogInfo_Debug("[AppInit]: Vulkan Physical Device found");
 	} else {
 		sgLogFatal("[AppInit]: Vulkan Physical Device not found");
@@ -82,32 +81,29 @@ static const char *deviceExtensionNames[] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 };
 
-SgResult getLogicalDevice(SgApp *pApp) {
-	// Should really come from a pApp
-	float pQueuePriorities[] = {1.0f};
-	// Should be abstracted away
-	VkDeviceQueueCreateInfo graphicsQueueCreateInfo = {
-	    .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-	    .queueFamilyIndex = pApp->graphicsQueueFamilyIdx,
-	    .queueCount = 1,
-	    .pQueuePriorities = pQueuePriorities,
-	};
-	VkDeviceQueueCreateInfo pQueueCreateInfos[] = {
-	    graphicsQueueCreateInfo,
-	};
+SgResult getLogicalDevice(SgLogicalDeviceGetInfo *pGetInfo, VkDevice* pDevice) {
+	VkDeviceQueueCreateInfo* pQueueCreateInfos;
+	SG_CALLOC_NUM(pQueueCreateInfos, pGetInfo->createInfosCount);
+	for (uint32_t i = 0; i < pGetInfo->createInfosCount; ++i) {
+		pQueueCreateInfos[i].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		pQueueCreateInfos[i].queueFamilyIndex = pGetInfo->pQueueCreateInfos[i].queueIndex;
+		pQueueCreateInfos[i].pQueuePriorities = pGetInfo->pQueueCreateInfos[i].pQueuePriorities;
+		pQueueCreateInfos[i].queueCount = pGetInfo->pQueueCreateInfos[i].queueCount;
+	}
 	VkDeviceCreateInfo createInfo = {
 	    .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-	    .queueCreateInfoCount = NUMOF(pQueueCreateInfos),
+	    .queueCreateInfoCount = pGetInfo->createInfosCount,
 	    .pQueueCreateInfos = pQueueCreateInfos,
 	    .enabledExtensionCount = NUMOF(deviceExtensionNames),
 	    .ppEnabledExtensionNames = deviceExtensionNames,
 	};
-	vkCreateDevice(pApp->physicalDevice, &createInfo, VK_NULL_HANDLE, &pApp->device);
-	if (pApp->device) {
+	vkCreateDevice(pGetInfo->physicalDevice, &createInfo, VK_NULL_HANDLE, pDevice);
+	if (*pDevice) {
 		sgLogInfo_Debug("[AppInit]: Logical Device created successfully");
 	} else {
 		sgLogWarn("[AppInit]: Logical Device creation failure");
 		return -1;
 	}
+	free(pQueueCreateInfos);
 	return SG_SUCCESS;
 }

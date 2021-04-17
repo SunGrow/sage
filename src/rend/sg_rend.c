@@ -18,7 +18,8 @@ static const char* SG_SURF_EXT[] = {
 };
 
 
-SgResult createGLFWwindow(const SgAppCreateInfo *pCreateInfo, SgApp *pApp) {
+static SgResult createGLFWwindow(const SgAppCreateInfo *pCreateInfo, SgWindow **ppWindow) {
+	SgWindow* pWindow = *ppWindow;
 	if (pCreateInfo->flags & SG_APP_WINDOW_RESIZABLE) {
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 	}
@@ -33,24 +34,25 @@ SgResult createGLFWwindow(const SgAppCreateInfo *pCreateInfo, SgApp *pApp) {
 		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
-		pApp->pWindow = glfwCreateWindow(mode->width, mode->height, pCreateInfo->pName, monitor, NULL);
+		pWindow = glfwCreateWindow(mode->width, mode->height, pCreateInfo->pName, monitor, NULL);
 	} else {
-		pApp->pWindow = glfwCreateWindow(pCreateInfo->size[0], pCreateInfo->size[1], pCreateInfo->pName, NULL, NULL);
+		pWindow = glfwCreateWindow(pCreateInfo->size[0], pCreateInfo->size[1], pCreateInfo->pName, NULL, NULL);
 	}
-	if(pApp->pWindow) {
+	if(pWindow) {
 		sgLogInfo_Debug("[AppInit]: GLFW window created");
 	} else {
 		sgLogFatal("[AppInit]: GLFW window creation error");
 	}
 
 	if (pCreateInfo->flags & SG_APP_CURSOR_HIDDEN) {
-		glfwSetInputMode(pApp->pWindow , GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetInputMode(pWindow , GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
-	glfwSetInputMode(pApp->pWindow, GLFW_STICKY_KEYS, GLFW_TRUE);
+	glfwSetInputMode(pWindow, GLFW_STICKY_KEYS, GLFW_TRUE);
+	*ppWindow = pWindow;
 	return SG_SUCCESS;
 }
 
-SgResult createVkInstance(const SgAppCreateInfo *pCreateInfo, SgApp *pApp) {
+static SgResult createVkInstance(const SgAppCreateInfo *pCreateInfo, VkInstance *pInstance) {
 	/* Instance */
     uint32_t apiver = volkGetInstanceVersion();
     if (apiver >= VK_API_VERSION_1_2) {
@@ -94,20 +96,20 @@ SgResult createVkInstance(const SgAppCreateInfo *pCreateInfo, SgApp *pApp) {
     createInfo.ppEnabledLayerNames = pdeblayers;
     createInfo.enabledLayerCount = NUMOF(pdeblayers);
 #endif
-    VkResult vkRes = vkCreateInstance(&createInfo, VK_NULL_HANDLE, &pApp->instance);
+    VkResult vkRes = vkCreateInstance(&createInfo, VK_NULL_HANDLE, pInstance);
 	if (vkRes == VK_SUCCESS) {
 		sgLogInfo_Debug("[AppInit]: Vulkan Instance created");
 	} else { 
 		sgLogFatal("[AppInit]: Vulkan Instance creation failure");
 	}
 
-	volkLoadInstance(pApp->instance);
+	volkLoadInstance(*pInstance);
 
     free(pExt);
 	return SG_SUCCESS;
 }
 
-SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppSgApp) {
+SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppApp) {
 	/* TODO: Implement custom allocation callbacks */
 	// static could be an alternative... But it is not thread safe. Mb will change to static later.
 	/* TODO: Make execution order explicit where it matters.           *
@@ -119,31 +121,50 @@ SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppSgApp) {
 	volkInitialize();
 
 	/* Window */
-	createGLFWwindow(pCreateInfo, pApp);
+	createGLFWwindow(pCreateInfo, &pApp->pWindow);
 	/* Vulkan Instance */
-	createVkInstance(pCreateInfo, pApp);
+	createVkInstance(pCreateInfo, &pApp->instance);
 #ifdef _DEBUG
 	/* Vulkan Debug Callback */
-	registerDebugCallback(pApp);
+	registerDebugCallback(&pApp->instance, &pApp->debugCallback);
 #endif
 	/* Vulkan Surface */
-	createWindowSurface(pApp);
+	createWindowSurface(&pApp->instance, pApp->pWindow, &pApp->surface);
 	/* Vulkan Physical Device */
-	getPhysicalDevice(pApp);
+	SgPhysicalDeviceGetInfo physicalDeviceGetInfo = {
+		.pInstance = &pApp->instance,
+		.pSurface = &pApp->surface,
+	};
+	getPhysicalDevice(&physicalDeviceGetInfo, &pApp->physicalDevice);
+	pApp->graphicsQueueFamilyIdx = getGraphicsFamilyIndex(pApp->physicalDevice);
 	/* TODO: Actually find sample count supported on a device */
 	pApp->msaaSampleCount = VK_SAMPLE_COUNT_2_BIT;
 	/* Vulkan Logical Device */
-	getLogicalDevice(pApp);
+	SgLogicalDeviceGetInfo logicalDeviceGetInfo = {
+		.createInfosCount = 1,
+		.pQueueCreateInfos = (SgDeviceQueueCreateInfo[]){
+			{
+				.queueIndex = pApp->graphicsQueueFamilyIdx,
+				.pQueuePriorities = (float[]) {
+					1
+				},
+				.queueCount = 1,
+			},
+		},
+		.physicalDevice = pApp->physicalDevice,
+	};
+	getLogicalDevice(&logicalDeviceGetInfo, &pApp->device);
 	vkGetDeviceQueue(pApp->device, pApp->graphicsQueueFamilyIdx, 0, &pApp->graphicsQueue);
 
 	/* Create Vulkan Allocator */
-	createAllocator(pApp);
+	createAllocator(&pApp->physicalDevice, &pApp->device, &pApp->instance, &pApp->allocator);
 
 	/* Vulkan Surface Attirbutes */
-	getSurfaceAttributes(pApp);
+	getSurfaceAttributes(&pApp->physicalDevice, &pApp->surface, &pApp->surfaceAttributes);
 
 	/* Command Pool Initialization */
-	initCommandPools(pApp);
+	pApp->commandPoolCount = SG_THREADS_COUNT;
+	createCommandPools(&pApp->device, pApp->graphicsQueueFamilyIdx, pApp->threads, pApp->pCommandPools, pApp->commandPoolCount);
 
 	/* Synchronization Primitive creation*/
 	VkSemaphoreCreateInfo semaphoreCreateInfo = {
@@ -167,7 +188,7 @@ SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppSgApp) {
 	SG_CALLOC_NUM(pApp->pViewport, 1);
 
 	/* End */
-	*ppSgApp = pApp;
+	*ppApp = pApp;
 
 	return SG_SUCCESS;
 }
@@ -513,7 +534,7 @@ void sgDestroyApp(SgApp **ppApp) {
 	SgApp* pApp = *ppApp;
 	vkDeviceWaitIdle(pApp->device);
 	
-	for (uint32_t i = 0; i < SG_THREADS_COUNT * SG_FRAME_QUEUE_LENGTH; ++i) {
+	for (uint32_t i = 0; i < pApp->commandPoolCount; ++i) {
 		vkResetCommandPool(pApp->device, pApp->pCommandPools[i], VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
 	}
 	for (uint32_t i = 0; i < SG_FRAME_QUEUE_LENGTH; ++i) {
@@ -522,7 +543,7 @@ void sgDestroyApp(SgApp **ppApp) {
 		vkDestroyFence(pApp->device, pApp->pFrameFences[i], VK_NULL_HANDLE);
 	}
 
-	for (uint32_t i = 0; i < SG_FRAME_QUEUE_LENGTH * SG_THREADS_COUNT; ++i) {
+	for (uint32_t i = 0; i < pApp->commandPoolCount; ++i) {
 		vkDestroyCommandPool(pApp->device, pApp->pCommandPools[i], VK_NULL_HANDLE);
 	}
 

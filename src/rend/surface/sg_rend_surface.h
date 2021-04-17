@@ -5,7 +5,7 @@
 #include "volk.h"
 #include "sg_base.h"
 
-SgResult createWindowSurface(SgApp *pApp);
-SgResult getSurfaceAttributes(SgApp *pApp);
+SgResult createWindowSurface(const VkInstance* pInstance, SgWindow* pWindow, VkSurfaceKHR* pSurface);
+SgResult getSurfaceAttributes(const VkPhysicalDevice* pPhysicalDevice, const VkSurfaceKHR* pSurface, SurfaceAttributes* pSurfaceAttributes);
 
 #endif

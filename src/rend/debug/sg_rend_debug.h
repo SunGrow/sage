@@ -5,6 +5,6 @@
 #include "volk.h"
 #include "sg_base.h"
 
-VkDebugReportCallbackEXT registerDebugCallback(SgApp *pApp);
+SgResult registerDebugCallback(const VkInstance* pInstance, VkDebugUtilsMessengerEXT *debugMessenger);
 
 #endif
