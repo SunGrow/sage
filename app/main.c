@@ -3,7 +3,6 @@
 #include "sage_rend.h"
 #include "sage_scene.h"
 #include "sage_input.h"
-#include "log.h"
 #include "math.h"
 #include "resourceBindings.h"
 #include "transformObjects.h"
@@ -65,7 +64,7 @@ int main() {
 	};
 
 	SgCamera camera = {
-	    .position = {-2.0f, -1.0f, -1.0f},
+	    .position = {-2.0f, 1.0f, -1.0f},
 	    .front = {2.0f, 0.0f, 0.0f},
 	    .up = {0.0f, 1.0f, 0.0f},
 	    .speed = 1,

@@ -162,6 +162,18 @@ static VkSampleCountFlagBits getMaxUsableSampleCount(VkPhysicalDevice physicalDe
     return VK_SAMPLE_COUNT_1_BIT;
 }
 
+void getSupportedDepthStencilFormats(const VkPhysicalDevice* pPhysicalDevice, VkFormat* pLowDepthStencil, VkFormat* pHighDepthStencil) {
+	VkFormatProperties props;
+	VkFormat formats[] = {VK_FORMAT_D16_UNORM_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT, VK_FORMAT_D32_SFLOAT_S8_UINT};
+	for (uint32_t i = 0; i < NUMOF(formats); ++i) {
+		vkGetPhysicalDeviceFormatProperties(*pPhysicalDevice, formats[i], &props);
+		if (props.optimalTilingFeatures && *pLowDepthStencil == 0) {
+			*pLowDepthStencil = formats[i];
+			*pHighDepthStencil = formats[i];
+		}
+	}
+	return;
+}
 
 SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppApp) {
 	/* TODO: Implement custom allocation callbacks */
@@ -206,6 +218,8 @@ SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppApp) {
 		},
 		.physicalDevice = pApp->physicalDevice,
 	};
+	getSupportedDepthStencilFormats(&pApp->physicalDevice, &pApp->lowDepthStencil, &pApp->highDepthStencil);
+
 	getLogicalDevice(&logicalDeviceGetInfo, &pApp->device);
 	vkGetDeviceQueue(pApp->device, pApp->graphicsQueueFamilyIdx, 0, &pApp->graphicsQueue);
 

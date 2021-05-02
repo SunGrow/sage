@@ -110,6 +110,9 @@ typedef struct SgApp {
 	VkFence                   pFrameFences[SG_FRAME_QUEUE_LENGTH];
 	VkFence                   pFrameImageInFlightFences[SG_FRAME_QUEUE_LENGTH + 6];
 
+	VkFormat                  lowDepthStencil;
+	VkFormat                  highDepthStencil;
+
 	VkRect2D*                 pScissor;
 	VkViewport*               pViewport;
 	// Config

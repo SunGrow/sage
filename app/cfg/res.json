@@ -115,7 +115,7 @@
 			"memoryUsage" : "gpuOnly",
 			"type"        : "image",
 			"imageType"   : "2D",
-			"format"      : "D16_UNORM_S8_UINT",
+			"format"      : "lowDepthStencil",
 			"tiling"      : "OPTIMAL",
 			"layout"      : "UNDEFINED",
 			"samples"     : "msaa",
