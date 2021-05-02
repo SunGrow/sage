@@ -8,7 +8,7 @@
 #include <errno.h>
 #include <string.h>
 
-uint32_t fsize(const char* path) {
+uint32_t fsize(FILE* fp, const char* path) {
 	struct stat st;
     if (stat(path, &st) == 0)
         return st.st_size;
@@ -17,14 +17,15 @@ uint32_t fsize(const char* path) {
 }
 #else
 #ifdef _WIN32
-uint32_t fsize(const char* path) {
-    sgLogWarning("[Base]: File handling on Windows is not fully supported yet");
+uint32_t fsize(FILE* fp, const char* path) {
+    sgLogWarn("[Base]: File handling on Windows is not fully supported yet");
+	uint32_t prev = ftell(fp);
 	fseek(fp, 0L, SEEK_END);
-    int sz=ftell(fp);
-    fseek(fp,prev,SEEK_SET); //go back to where we were
+    uint32_t sz = ftell(fp);
+    fseek(fp, prev, SEEK_SET); //go back to where we were
     return sz;
 }
-}
+
 #endif
 #endif
 
@@ -35,7 +36,7 @@ SgResult sgOpenFile(const char* path, SgFile **ppFile) {
 		sgLogWarn("[Base]: On path < %s > file not found", path);
 		return 1;
 	}
-	uint32_t length = fsize(path);
+	uint32_t length = fsize(file, path);
 
 	char* buffer;
 	SG_CALLOC_NUM(buffer, length);

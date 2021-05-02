@@ -62,12 +62,14 @@
 				}
 			],
 			"dependencies" : [
-				"srcSubpass" : "extern",
-				"dstSubpass" : "out",
-				"srcStageMask" : ["COLOR_ATTACHMENT_OUTPUT_BIT"],
-				"dstStageMask" : ["COLOR_ATTACHMENT_OUTPUT_BIT"],
-				"srcAccessMask" : [],
-				"dstAccessMask" : ["COLOR_ATTACHMENT_READ_BIT", "COLOR_ATTACHMENT_WRITE_BIT"]
+				{
+					"srcSubpass"    : "extern",
+					"dstSubpass"    : "out",
+					"srcStageMask"  : ["COLOR_ATTACHMENT_OUTPUT_BIT"],
+					"dstStageMask"  : ["COLOR_ATTACHMENT_OUTPUT_BIT"],
+					"srcAccessMask" : [],
+					"dstAccessMask" : ["COLOR_ATTACHMENT_READ_BIT", "COLOR_ATTACHMENT_WRITE_BIT"]
+				}
 			]
 		},
 		{
@@ -77,42 +79,54 @@
 	],
 	"resources" : [
 		{
-			"name" : "blendImage",
-			"memoryUsage" : "gpuOnly",
-			"type" : "image",
-			"imageType" : "2D",
-			"format" : "surface",
-			"tiling" : "OPTIMAL",
-			"layout" : "UNDEFINED",
-			"samples" : "msaa"
+			"name"        : "swapchainImage",
+			"type"        : "swapchainImage",
+			"__comment__" : "0 count means 'default to swapchain image count'",
+			"count"       : 0,
+			"imageViews"  : [
+				{
+					"name" : "swapchainImageView",
+					"aspectFlag" : "COLOR_BIT",
+					"levelCount" : 1,
+					"layerCount" : 1
+				}
+			]
 		},
 		{
-			"name" : "depthImage",
+			"name"        : "blendImage",
 			"memoryUsage" : "gpuOnly",
-			"type" : "image",
-			"imageType" : "2D",
-			"format" : "D16_UNORM_S8_UINT",
-			"tiling" : "OPTIMAL",
-			"layout" : "UNDEFINED",
-			"samples" : "msaa"
-		}
-	],
-	"resourceViews" : [
+			"type"        : "image",
+			"imageType"   : "2D",
+			"format"      : "surface",
+			"tiling"      : "OPTIMAL",
+			"layout"      : "UNDEFINED",
+			"samples"     : "msaa",
+			"imageViews"  : [
+				{
+					"name" : "blendImageView",
+					"aspectFlag" : "COLOR_BIT",
+					"levelCount" : 1,
+					"layerCount" : 1
+				}
+			]
+		},
 		{
-			"name" : "blendImageView",
-			"resourceName" : "blendImage",
-			"type" : "image",
-			"aspectFlag" : "DEPTH_BIT",
-			"levelCount" : 1,
-			"layerCount" : 1
-		}
-	],
-	"passReferences" : [
-		{
-			"resourceName" : "depth",
-			"passName" : "default",
-			"passType" : "render",
-			"attachmentName" : "depth"
+			"name"        : "depthImage",
+			"memoryUsage" : "gpuOnly",
+			"type"        : "image",
+			"imageType"   : "2D",
+			"format"      : "D16_UNORM_S8_UINT",
+			"tiling"      : "OPTIMAL",
+			"layout"      : "UNDEFINED",
+			"samples"     : "msaa",
+			"imageViews"  : [
+				{
+					"name" : "depthImageView",
+					"aspectFlag" : "DEPTH_BIT",
+					"levelCount" : 1,
+					"layerCount" : 1
+				}
+			]
 		}
 	],
 	"framebuffers" : [
