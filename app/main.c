@@ -1,66 +1,66 @@
+#include "inputFuncs.h"
+#include "inputKeys.h"
+#include "math.h"
+#include "resourceBindings.h"
 #include "sage.h"
+#include "sage_input.h"
 #include "sage_math.h"
 #include "sage_rend.h"
 #include "sage_scene.h"
-#include "sage_input.h"
-#include "math.h"
-#include "resourceBindings.h"
 #include "transformObjects.h"
-#include "inputKeys.h"
-#include "inputFuncs.h"
 
 #define NUMOF(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 int main() {
 	// Testing
-	
+
 	SgFile contextConfigFile;
 	const char* contextConfigFilePath = "cfg/contexts.json";
 	sgOpenFile(contextConfigFilePath, &contextConfigFile);
 
 	SgInputAction inputActions[] = {
-		keyPressForward,
-		keyPressLeft,
-		keyPressBack,
-		keyPressRight,
-		keyPressUp,
-		keyPressDown,
-		keyShoot,
+	    keyPressForward,
+	    keyPressLeft,
+	    keyPressBack,
+	    keyPressRight,
+	    keyPressUp,
+	    keyPressDown,
+	    keyShoot,
 
-		rotateCamera,
+	    rotateCamera,
 
-        lightKeyPressFroward,
-        lightKeyPressUp,
-        lightKeyPressLeft,
-        lightKeyPressRight,
-        lightKeyPressDown,
-        lightKeyPressBack,
+	    lightKeyPressForward,
+	    lightKeyPressUp,
+	    lightKeyPressLeft,
+	    lightKeyPressRight,
+	    lightKeyPressDown,
+	    lightKeyPressBack,
 	};
 	char* inputActionNames[] = {
-		"moveForward",
-		"moveLeft",  
-		"moveBack",  
-		"moveRight", 
-		"moveUp",
-		"moveDown",
-		"keyShoot",
+	    "keyPressForward",
+	    "keyPressLeft",
+	    "keyPressBack",
+	    "keyPressRight",
+	    "keyPressUp",
+	    "keyPressDown",
+	    "keyShoot",
 
-		"rotateCamera",
+	    "rotateCamera",
 
-        "lightForward",
-        "lightUp",
-        "lightLeft",
-        "lightRight",
-        "lightDown",
-        "lightBack",
+	    "lightKeyPressForward",
+	    "lightKeyPressUp",
+	    "lightKeyPressLeft",
+	    "lightKeyPressRight",
+	    "lightKeyPressDown",
+	    "lightKeyPressBack",
 	};
 
 	struct SgLighting {
 		v4 position;
 		v4 color;
 	} lighting = {
-		.position = {-3.0, 1.0, 0.0, 1.0},
-		.color = {1.0,1.0,0.6,1.0},
+	    .position = {-3.0, 1.0, 0.0, 1.0},
+	    .color = {1.0, 1.0, 0.6, 1.0},
 	};
 
 	SgCamera camera = {
@@ -77,35 +77,35 @@ int main() {
 	SgScene scene = {0};
 
 	SgActor testActors[] = {
-		&cameraTransform,
-		&lighting,
+	    &cameraTransform,
+	    &lighting,
 	};
 
 	char* actorNames[] = {
-		"cameraTransform",
-		"lighting",
+	    "cameraTransform",
+	    "lighting",
 	};
 
 	SgActiveContexts contexts;
 	SgActiveContextsCreateInfo activeContextsCreateInfo = {
 
-		.pActionFuncs  = inputActions,
-		.pActionNames  = inputActionNames,
-		.actionCount   = NUMOF(inputActions),
+	    .pActionFuncs = inputActions,
+	    .pActionNames = inputActionNames,
+	    .actionCount = NUMOF(inputActions),
 
-		.pActors       = testActors,
-		.pActorNames   = actorNames,
-		.actorCount    = NUMOF(testActors),
+	    .pActors = testActors,
+	    .pActorNames = actorNames,
+	    .actorCount = NUMOF(testActors),
 
-		.pInputSignals = inputSignals,
-		.signalCount   = NUMOF(inputSignals),
+	    .pInputSignals = inputSignals,
+	    .signalCount = NUMOF(inputSignals),
 
-		.file          = contextConfigFile,
+	    .file = contextConfigFile,
 	};
 
 	sgLoadContexts(&activeContextsCreateInfo, &contexts);
 	sgCloseFile(&contextConfigFile);
-	//SgActionNames oldNames[] = {
+	// SgActionNames oldNames[] = {
 	//	{
 	//		.actionType = SG_ACTION_TYPE_TRIGGER,
 	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
@@ -142,7 +142,7 @@ int main() {
 	//		.actionName = "moveLeft",
 	//	},
 	//};
-	//SgActionNames newNames[] = {
+	// SgActionNames newNames[] = {
 	//	{
 	//		.actionType = SG_ACTION_TYPE_TRIGGER,
 	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
@@ -179,30 +179,29 @@ int main() {
 	//		.actionName = "moveLeft",
 	//	},
 	//};
-	//SgActiveContextsChangeInfo changeInfo = {
+	// SgActiveContextsChangeInfo changeInfo = {
 	//	.pOldActions = oldNames,
 	//	.pNewActions = newNames,
 	//	.count = sizeof(oldNames) / sizeof(*oldNames),
 	//};
-	//sgChangeContext(&changeInfo, &contexts);
-	//sgUpdateContext(&activeContextsCreateInfo, &contexts);
-	//sgSaveContext(contexts, "cfg/contexts.json");
+	// sgChangeContext(&changeInfo, &contexts);
+	// sgUpdateContext(&activeContextsCreateInfo, &contexts);
+	// sgSaveContext(contexts, "cfg/contexts.json");
 	//
-	
 
 	SgFile appConfigFile;
 	const char* appConfigFilePath = "cfg/app.json";
 	sgOpenFile(appConfigFilePath, &appConfigFile);
 	SgAppCreateInfo createInfo = {
-		.pName = "Space Invaders",
-		.configFile = appConfigFile,
+	    .pName = "Space Invaders",
+	    .configFile = appConfigFile,
 	};
 	SgApp app;
 	sgCreateApp(&createInfo, &app);
 
 	sgCloseFile(&appConfigFile);
 
-	cameraTransform.camera.aspectRatio = 16/9;
+	cameraTransform.camera.aspectRatio = 16 / 9;
 	cameraTransform.camera.fov = deg_to_rad(80.f);
 	sgSceneInit(&scene);
 
@@ -223,28 +222,28 @@ int main() {
 	sgOpenFile("shaders/lightSourceShader.frag.spv", &lightingFragShaderFile);
 
 	SgShaderCreateInfo chaletVertShaderCreateInfo = {
-		.file = chaletVertShaderFile,
-		.stage = SG_SHADER_STAGE_VERTEX_BIT,
+	    .file = chaletVertShaderFile,
+	    .stage = SG_SHADER_STAGE_VERTEX_BIT,
 	};
 	SgShaderCreateInfo chaletFragShaderCreateInfo = {
-		.file = chaletFragShaderFile,
-		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
+	    .file = chaletFragShaderFile,
+	    .stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 	};
 	SgShaderCreateInfo myriamVertShaderCreateInfo = {
-		.file = myriamVertShaderFile,
-		.stage = SG_SHADER_STAGE_VERTEX_BIT,
+	    .file = myriamVertShaderFile,
+	    .stage = SG_SHADER_STAGE_VERTEX_BIT,
 	};
 	SgShaderCreateInfo myriamFragShaderCreateInfo = {
-		.file = myriamFragShaderFile,
-		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
+	    .file = myriamFragShaderFile,
+	    .stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 	};
 	SgShaderCreateInfo lightingVertShaderCreateInfo = {
-		.file = lightingVertShaderFile,
-		.stage = SG_SHADER_STAGE_VERTEX_BIT,
+	    .file = lightingVertShaderFile,
+	    .stage = SG_SHADER_STAGE_VERTEX_BIT,
 	};
 	SgShaderCreateInfo lightingFragShaderCreateInfo = {
-		.file = lightingFragShaderFile,
-		.stage = SG_SHADER_STAGE_FRAGMENT_BIT,
+	    .file = lightingFragShaderFile,
+	    .stage = SG_SHADER_STAGE_FRAGMENT_BIT,
 	};
 	SgShader chaletVertShader;
 	SgShader chaletFragShader;
@@ -275,17 +274,16 @@ int main() {
 	SgResourceMap resourceMap;
 	sgCreateResourceMap(app, &resourceMap);
 	SgResourceCreateInfo cameraResourceCreateInfo = {
-		.bytes = &transformuniform,
-		.size = sizeof(SgTransformUniform),
-		.type = SG_RESOURCE_TYPE_UNIFORM,
-		.pName = "cameraResource",
+	    .bytes = &transformuniform,
+	    .size = sizeof(SgTransformUniform),
+	    .type = SG_RESOURCE_TYPE_UNIFORM,
+	    .pName = "cameraResource",
 	};
 	sgAddResource(app, &cameraResourceCreateInfo, &resourceMap);
 
-
 	/* Placeholder Mesh */
-	SgMeshSet *pMesh;
-	
+	SgMeshSet* pMesh;
+
 	sgCreateMeshSet(&pMesh);
 	uint32_t kittenMeshID = sgAddMesh("res/kitten.obj", &pMesh);
 	uint32_t chaletMeshID = sgAddMesh("res/chalet.obj", &pMesh);
@@ -294,20 +292,19 @@ int main() {
 
 	/* Resource Init */
 	SgResourceCreateInfo meshResourceCreateInfo = {
-		.bytes = pMesh->pVertices,
-		.size = pMesh->vertexCount * sizeof(pMesh->pVertices[0]),
-		.type = SG_RESOURCE_TYPE_MESH,
+	    .bytes = pMesh->pVertices,
+	    .size = pMesh->vertexCount * sizeof(pMesh->pVertices[0]),
+	    .type = SG_RESOURCE_TYPE_MESH,
 
-		.pName = "meshResource"
-	};
+	    .pName = "meshResource"};
 	sgAddResource(app, &meshResourceCreateInfo, &resourceMap);
 
 	SgResourceCreateInfo meshIndicesResourceCreateInfo = {
-		.bytes = pMesh->pIndices,
-		.size = pMesh->indexCount * sizeof(pMesh->pIndices[0]),
-		.type = SG_RESOURCE_TYPE_INDICES,
+	    .bytes = pMesh->pIndices,
+	    .size = pMesh->indexCount * sizeof(pMesh->pIndices[0]),
+	    .type = SG_RESOURCE_TYPE_INDICES,
 
-		.pName = "meshIndicesResource",
+	    .pName = "meshIndicesResource",
 	};
 	sgAddResource(app, &meshIndicesResourceCreateInfo, &resourceMap);
 	// TODO: Wrap into a creation inside of an api, ffs
@@ -316,54 +313,62 @@ int main() {
 	/**/
 
 	/* Resource Init */
-	SgTexture *pChaletTexture;
-	SgTexture *pNormalTexture;
-	SgTexture *pBodyDTexture;
-	SgTexture *pDefTexture;
+	SgTexture* pChaletTexture;
+	SgTexture* pNormalTexture;
+	SgTexture* pBodyDTexture;
+	SgTexture* pDefTexture;
 	sgLoadTexture("res/chalet.jpg", &pChaletTexture);
 	sgLoadTexture("res/tex/10016_w_Myriam_Body_N_2k.jpg", &pNormalTexture);
 	sgLoadTexture("res/tex/10016_w_Myriam_Body_D_2k.jpg", &pBodyDTexture);
 	sgLoadTexture("res/def.jpg", &pDefTexture);
 
 	SgResourceCreateInfo meshTextureResourceCreateInfo = {
-		.bytes = pChaletTexture->pixels,
-		.size = pChaletTexture->size,
-		.extent = (VkExtent3D) {.height = pChaletTexture->height, .width = pChaletTexture->width, .depth = 1.0},
-		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
-		.layerCount = 1,
-		.levelCount = 1,
+	    .bytes = pChaletTexture->pixels,
+	    .size = pChaletTexture->size,
+	    .extent = (VkExtent3D){.height = pChaletTexture->height,
+	                           .width = pChaletTexture->width,
+	                           .depth = 1.0},
+	    .type = SG_RESOURCE_TYPE_TEXTURE_2D,
+	    .layerCount = 1,
+	    .levelCount = 1,
 
-		.pName = "chaletTextureResource",
+	    .pName = "chaletTextureResource",
 	};
 	SgResourceCreateInfo normalTextureResourceCreateInfo = {
-		.bytes = pNormalTexture->pixels,
-		.size = pNormalTexture->size,
-		.extent = (VkExtent3D) {.height = pNormalTexture->height, .width = pNormalTexture->width, .depth = 1.0},
-		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
-		.layerCount = 1,
-		.levelCount = 1,
+	    .bytes = pNormalTexture->pixels,
+	    .size = pNormalTexture->size,
+	    .extent = (VkExtent3D){.height = pNormalTexture->height,
+	                           .width = pNormalTexture->width,
+	                           .depth = 1.0},
+	    .type = SG_RESOURCE_TYPE_TEXTURE_2D,
+	    .layerCount = 1,
+	    .levelCount = 1,
 
-		.pName = "myriamNormalTextureResource",
+	    .pName = "myriamNormalTextureResource",
 	};
 	SgResourceCreateInfo bodyDTextureResourceCreateInfo = {
-		.bytes = pBodyDTexture->pixels,
-		.size = pBodyDTexture->size,
-		.extent = (VkExtent3D) {.height = pBodyDTexture->height, .width = pBodyDTexture->width, .depth = 1.0},
-		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
-		.layerCount = 1,
-		.levelCount = 1,
+	    .bytes = pBodyDTexture->pixels,
+	    .size = pBodyDTexture->size,
+	    .extent = (VkExtent3D){.height = pBodyDTexture->height,
+	                           .width = pBodyDTexture->width,
+	                           .depth = 1.0},
+	    .type = SG_RESOURCE_TYPE_TEXTURE_2D,
+	    .layerCount = 1,
+	    .levelCount = 1,
 
-		.pName = "myriamBodyDTextureResource",
+	    .pName = "myriamBodyDTextureResource",
 	};
 	SgResourceCreateInfo defTextureResourceCreateInfo = {
-		.bytes = pDefTexture->pixels,
-		.size = pDefTexture->size,
-		.extent = (VkExtent3D) {.height = pDefTexture->height, .width = pDefTexture->width, .depth = 1.0},
-		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
-		.layerCount = 1,
-		.levelCount = 1,
+	    .bytes = pDefTexture->pixels,
+	    .size = pDefTexture->size,
+	    .extent = (VkExtent3D){.height = pDefTexture->height,
+	                           .width = pDefTexture->width,
+	                           .depth = 1.0},
+	    .type = SG_RESOURCE_TYPE_TEXTURE_2D,
+	    .layerCount = 1,
+	    .levelCount = 1,
 
-		.pName = "DefTextureResource",
+	    .pName = "DefTextureResource",
 	};
 
 	sgAddResource(app, &meshTextureResourceCreateInfo, &resourceMap);
@@ -374,188 +379,179 @@ int main() {
 
 	SgMaterialMap materialMap;
 	SgMaterialMapCreateInfo materialMapCreateInfo = {
-		.materailCount = 2,
-		.resourceMap = resourceMap,
+	    .materailCount = 2,
+	    .resourceMap = resourceMap,
 	};
 	// Materials
 	sgCreateMaterialMap(app, &materialMapCreateInfo, &materialMap);
 
-	SgShader pShadersChalet[] = {chaletVertShader,  chaletFragShader};
-	SgShader pShadersMyriam[] = {myriamVertShader,  myriamFragShader};
+	SgShader pShadersChalet[] = {chaletVertShader, chaletFragShader};
+	SgShader pShadersMyriam[] = {myriamVertShader, myriamFragShader};
 	SgShader pShadersLighting[] = {lightingVertShader, lightingFragShader};
 
 	SgMaterialCreateInfo materialChaletCreateInfo = {
-		.pMaterialName = "materialChalet",
-		.pShaders = pShadersChalet,
-		.shaderCount = NUMOF(pShadersChalet),
-		.resourceBindingCount = NUMOF(materialChaletResourceBindings),
-		.pResourceBindings = materialChaletResourceBindings,
-		.renderObjectCount = 2,
+	    .pMaterialName = "materialChalet",
+	    .pShaders = pShadersChalet,
+	    .shaderCount = NUMOF(pShadersChalet),
+	    .resourceBindingCount = NUMOF(materialChaletResourceBindings),
+	    .pResourceBindings = materialChaletResourceBindings,
+	    .renderObjectCount = 2,
 	};
 
 	SgMaterialCreateInfo materialMyriamCreateInfo = {
-		.pMaterialName = "materialMyriam",
-		.pShaders = pShadersMyriam,
-		.shaderCount = NUMOF(pShadersMyriam),
-		.resourceBindingCount = NUMOF(materialMyriamSetResourceBinding),
-		.pResourceBindings = materialMyriamSetResourceBinding,
-		.renderObjectCount = 1,
+	    .pMaterialName = "materialMyriam",
+	    .pShaders = pShadersMyriam,
+	    .shaderCount = NUMOF(pShadersMyriam),
+	    .resourceBindingCount = NUMOF(materialMyriamSetResourceBinding),
+	    .pResourceBindings = materialMyriamSetResourceBinding,
+	    .renderObjectCount = 1,
 	};
 
 	SgMaterialCreateInfo materialLightingCreateInfo = {
-		.pMaterialName = "materialLighting",
-		.pShaders = pShadersLighting,
-		.shaderCount = NUMOF(pShadersLighting),
-		.resourceBindingCount = NUMOF(materialLightingSetResourceBinding),
-		.pResourceBindings = materialLightingSetResourceBinding,
-		.renderObjectCount = 1,
+	    .pMaterialName = "materialLighting",
+	    .pShaders = pShadersLighting,
+	    .shaderCount = NUMOF(pShadersLighting),
+	    .resourceBindingCount = NUMOF(materialLightingSetResourceBinding),
+	    .pResourceBindings = materialLightingSetResourceBinding,
+	    .renderObjectCount = 1,
 	};
 
 	sgAddMaterial(&materialChaletCreateInfo, &materialMap);
 	sgAddMaterial(&materialMyriamCreateInfo, &materialMap);
 	sgAddMaterial(&materialLightingCreateInfo, &materialMap);
-	
+
 	sgInitMaterialMap(app, &materialMap);
 	//
 
 	SgRenderObject pMyriamRenderObjects[] = {
-		{
-			.meshID = myriamMeshID,
-			.instanceCount = NUMOF(myriamObjects),
-		},
+	    {
+	        .meshID = myriamMeshID,
+	        .instanceCount = NUMOF(myriamObjects),
+	    },
 	};
 	SgResourceCreateInfo myriamTransformMatricesCreateInfo = {
-		.bytes = myriamObjects,
-		.size = sizeof(myriamObjects),
-		.type = SG_RESOURCE_TYPE_MESH,
+	    .bytes = myriamObjects,
+	    .size = sizeof(myriamObjects),
+	    .type = SG_RESOURCE_TYPE_MESH,
 
-		.pName = "myriamTransformMatrices",
+	    .pName = "myriamTransformMatrices",
 	};
 	sgAddResource(app, &myriamTransformMatricesCreateInfo, &resourceMap);
 
 	SgResourceCreateInfo lightingResourceCreateInfo = {
-		.bytes = &lighting,
-		.size = sizeof(lighting),
-		.type = SG_RESOURCE_TYPE_UNIFORM,
-		.pName = "lighting",
+	    .bytes = &lighting,
+	    .size = sizeof(lighting),
+	    .type = SG_RESOURCE_TYPE_UNIFORM,
+	    .pName = "lighting",
 	};
 	sgAddResource(app, &lightingResourceCreateInfo, &resourceMap);
 
 	const char* pMyriamRenderObjectResourceNames[] = {
-		meshResourceCreateInfo.pName,
-		/*TODO: texture arrays */
-		bodyDTextureResourceCreateInfo.pName,
-		normalTextureResourceCreateInfo.pName,
-		/**/
-		myriamTransformMatricesCreateInfo.pName,
-		lightingResourceCreateInfo.pName,
-		cameraResourceCreateInfo.pName,
+	    meshResourceCreateInfo.pName,
+	    /*TODO: texture arrays */
+	    bodyDTextureResourceCreateInfo.pName,
+	    normalTextureResourceCreateInfo.pName,
+	    /**/
+	    myriamTransformMatricesCreateInfo.pName,
+	    lightingResourceCreateInfo.pName,
+	    cameraResourceCreateInfo.pName,
 	};
 	SgRenderObjectCreateInfo myriamRenderObject = {
-		.materialName = "materialMyriam",
-		.pName = "myriamMesh",
-		.pRenderObjects = pMyriamRenderObjects,
-		.renderObjectCount = NUMOF(pMyriamRenderObjects),
-		.ppResourceNames = pMyriamRenderObjectResourceNames,
-		.resourceCount = NUMOF(pMyriamRenderObjectResourceNames),
+	    .materialName = "materialMyriam",
+	    .pName = "myriamMesh",
+	    .pRenderObjects = pMyriamRenderObjects,
+	    .renderObjectCount = NUMOF(pMyriamRenderObjects),
+	    .ppResourceNames = pMyriamRenderObjectResourceNames,
+	    .resourceCount = NUMOF(pMyriamRenderObjectResourceNames),
 	};
 	sgAddMaterialRenderObjects(&myriamRenderObject, &materialMap);
 
 	SgRenderObject chaletRenderObjects[] = {
-		{
-			.meshID = chaletMeshID,
-			.instanceCount = NUMOF(chaletObjects),
-		},
+	    {
+	        .meshID = chaletMeshID,
+	        .instanceCount = NUMOF(chaletObjects),
+	    },
 	};
 
 	SgResourceCreateInfo chaletTransformMatricesCreateInfo = {
-		.bytes = chaletObjects,
-		.size = sizeof(chaletObjects),
-		.type = SG_RESOURCE_TYPE_MESH,
+	    .bytes = chaletObjects,
+	    .size = sizeof(chaletObjects),
+	    .type = SG_RESOURCE_TYPE_MESH,
 
-		.pName = "chaletTransformMatrices",
+	    .pName = "chaletTransformMatrices",
 	};
 	sgAddResource(app, &chaletTransformMatricesCreateInfo, &resourceMap);
 	const char* materialChaletResourceNames[] = {
-		meshResourceCreateInfo.pName,
-		meshTextureResourceCreateInfo.pName,
-		chaletTransformMatricesCreateInfo.pName,
-		lightingResourceCreateInfo.pName,
-		cameraResourceCreateInfo.pName
-	};
+	    meshResourceCreateInfo.pName, meshTextureResourceCreateInfo.pName,
+	    chaletTransformMatricesCreateInfo.pName, lightingResourceCreateInfo.pName,
+	    cameraResourceCreateInfo.pName};
 	SgRenderObjectCreateInfo chaletRenderObject = {
-		.materialName = "materialChalet",
-		.pName = "chaletMesh",
-		.pRenderObjects = chaletRenderObjects,
-		.renderObjectCount = NUMOF(chaletRenderObjects),
-		.ppResourceNames = materialChaletResourceNames,
-		.resourceCount = NUMOF(materialChaletResourceNames),
+	    .materialName = "materialChalet",
+	    .pName = "chaletMesh",
+	    .pRenderObjects = chaletRenderObjects,
+	    .renderObjectCount = NUMOF(chaletRenderObjects),
+	    .ppResourceNames = materialChaletResourceNames,
+	    .resourceCount = NUMOF(materialChaletResourceNames),
 	};
 
 	sgAddMaterialRenderObjects(&chaletRenderObject, &materialMap);
 	SgResourceCreateInfo kittenTransformMatricesCreateInfo = {
-		.bytes = kittenObjects,
-		.size = sizeof(kittenObjects),
-		.type = SG_RESOURCE_TYPE_MESH,
+	    .bytes = kittenObjects,
+	    .size = sizeof(kittenObjects),
+	    .type = SG_RESOURCE_TYPE_MESH,
 
-		.pName = "kittenTransformMatrices",
+	    .pName = "kittenTransformMatrices",
 	};
 	sgAddResource(app, &kittenTransformMatricesCreateInfo, &resourceMap);
 
 	SgResourceCreateInfo sphereTransformMatricesCreateInfo = {
-		.bytes = sphereObjects,
-		.size = sizeof(sphereObjects),
-		.type = SG_RESOURCE_TYPE_MESH,
+	    .bytes = sphereObjects,
+	    .size = sizeof(sphereObjects),
+	    .type = SG_RESOURCE_TYPE_MESH,
 
-		.pName = "sphereTransformMatrices",
+	    .pName = "sphereTransformMatrices",
 	};
 	sgAddResource(app, &sphereTransformMatricesCreateInfo, &resourceMap);
 	sgInitResourceMap(app, &resourceMap);
 	sgUpdateAllResources(app, resourceMap);
-	
+
 	const char* materialKittenResourceNames[] = {
-		meshResourceCreateInfo.pName,
-		meshTextureResourceCreateInfo.pName,
-		kittenTransformMatricesCreateInfo.pName,
-		lightingResourceCreateInfo.pName,
-		cameraResourceCreateInfo.pName
-	};
+	    meshResourceCreateInfo.pName, meshTextureResourceCreateInfo.pName,
+	    kittenTransformMatricesCreateInfo.pName, lightingResourceCreateInfo.pName,
+	    cameraResourceCreateInfo.pName};
 	SgRenderObject kittenRenderObjects[] = {
-		{
-			.meshID = kittenMeshID,
-			.instanceCount = NUMOF(kittenObjects),
-		},
+	    {
+	        .meshID = kittenMeshID,
+	        .instanceCount = NUMOF(kittenObjects),
+	    },
 	};
 	SgRenderObjectCreateInfo kittenRenderObject = {
-		.materialName = "materialChalet",
-		.pName = "kittenMesh",
-		.pRenderObjects = kittenRenderObjects,
-		.renderObjectCount = NUMOF(kittenRenderObjects),
-		.ppResourceNames = materialKittenResourceNames,
-		.resourceCount = NUMOF(materialKittenResourceNames),
+	    .materialName = "materialChalet",
+	    .pName = "kittenMesh",
+	    .pRenderObjects = kittenRenderObjects,
+	    .renderObjectCount = NUMOF(kittenRenderObjects),
+	    .ppResourceNames = materialKittenResourceNames,
+	    .resourceCount = NUMOF(materialKittenResourceNames),
 	};
 	sgAddMaterialRenderObjects(&kittenRenderObject, &materialMap);
 
 	const char* materialSphereResourceNames[] = {
-		meshResourceCreateInfo.pName,
-		sphereTransformMatricesCreateInfo.pName,
-		lightingResourceCreateInfo.pName,
-		cameraResourceCreateInfo.pName
-	};
+	    meshResourceCreateInfo.pName, sphereTransformMatricesCreateInfo.pName,
+	    lightingResourceCreateInfo.pName, cameraResourceCreateInfo.pName};
 
 	SgRenderObject sphereRenderObjects[] = {
-		{
-			.meshID = sphereMeshID,
-			.instanceCount = NUMOF(sphereObjects),
-		},
+	    {
+	        .meshID = sphereMeshID,
+	        .instanceCount = NUMOF(sphereObjects),
+	    },
 	};
 	SgRenderObjectCreateInfo sphereRenderObject = {
-		.materialName = "materialLighting",
-		.pName = "sphereMesh",
-		.pRenderObjects = sphereRenderObjects,
-		.renderObjectCount = NUMOF(sphereRenderObjects),
-		.ppResourceNames = materialSphereResourceNames,
-		.resourceCount = NUMOF(materialSphereResourceNames),
+	    .materialName = "materialLighting",
+	    .pName = "sphereMesh",
+	    .pRenderObjects = sphereRenderObjects,
+	    .renderObjectCount = NUMOF(sphereRenderObjects),
+	    .ppResourceNames = materialSphereResourceNames,
+	    .resourceCount = NUMOF(materialSphereResourceNames),
 	};
 	sgAddMaterialRenderObjects(&sphereRenderObject, &materialMap);
 
@@ -564,22 +560,22 @@ int main() {
 	/* Graphics Instance Init */
 
 	SgUpdateCommandsInitInfo updateInitInfo = {
-		.materialMap = materialMap,
-		.pMeshSet = pMesh,
-		.resourceMap = resourceMap,
+	    .materialMap = materialMap,
+	    .pMeshSet = pMesh,
+	    .resourceMap = resourceMap,
 	};
 	SgUpdateCommands updateCommands;
 	sgInitUpdateCommands(&updateInitInfo, &updateCommands);
 
 	SgAppUpdateInfo updateInfo = {
-		.app = app,
-		.materialMap = materialMap,
-		.pMeshSet = pMesh,
-		.updateCommands = updateCommands,
+	    .app = app,
+	    .materialMap = materialMap,
+	    .pMeshSet = pMesh,
+	    .updateCommands = updateCommands,
 	};
 	sgSetActiveContexts(contexts, &app);
 
-	while(sgAppUpdate(&updateInfo)) {
+	while (sgAppUpdate(&updateInfo)) {
 		sgSceneUpdate(&scene);
 		cameraTransform.deltaTime = scene.deltaTime;
 		sgTransformCamera(&cameraTransform, &cameraTransform.camera);
@@ -587,34 +583,36 @@ int main() {
 		cameraTransform.cursorOffset[0] = 0;
 		cameraTransform.cursorOffset[1] = 0;
 		SgData cameraData = {
-			.bytes = &transformuniform,
-			.size  = sizeof(transformuniform),
+		    .bytes = &transformuniform,
+		    .size = sizeof(transformuniform),
 		};
 		SgData lightingData = {
-			.bytes = &lighting,
-			.size  = sizeof(lighting),
+		    .bytes = &lighting,
+		    .size = sizeof(lighting),
 		};
 		sphereObjects[0].position[0] = lighting.position[0];
 		sphereObjects[0].position[1] = lighting.position[1];
 		sphereObjects[0].position[2] = lighting.position[2];
 		sphereObjects[0].position[3] = lighting.position[3];
 		SgData sphereData = {
-			.bytes = &sphereObjects,
-			.size  = sizeof(sphereObjects),
+		    .bytes = &sphereObjects,
+		    .size = sizeof(sphereObjects),
 		};
-		sgUpdateResource(app, resourceMap, &cameraData, cameraResourceCreateInfo.pName);
+		sgUpdateResource(app, resourceMap, &cameraData,
+		                 cameraResourceCreateInfo.pName);
 		const char* resourceNames[] = {
-			cameraResourceCreateInfo.pName,
-			sphereTransformMatricesCreateInfo.pName,
-			lightingResourceCreateInfo.pName,
-			
+		    cameraResourceCreateInfo.pName,
+		    sphereTransformMatricesCreateInfo.pName,
+		    lightingResourceCreateInfo.pName,
+
 		};
 		const SgData* resourceDatas[] = {
-			&cameraData,
-			&sphereData,
-			&lightingData,
+		    &cameraData,
+		    &sphereData,
+		    &lightingData,
 		};
-		sgUpdateResources(app, resourceMap, NUMOF(resourceNames), resourceDatas, resourceNames);
+		sgUpdateResources(app, resourceMap, NUMOF(resourceNames), resourceDatas,
+		                  resourceNames);
 	}
 
 	sgUnloadTexture(&pChaletTexture);
@@ -630,7 +628,7 @@ int main() {
 	sgDestroyShader(app, &myriamFragShader);
 	sgDestroyShader(app, &lightingVertShader);
 	sgDestroyShader(app, &lightingFragShader);
-	sgUnloadContexts(app, &contexts); 
+	sgUnloadContexts(app, &contexts);
 	sgDestroyApp(&app);
 	sgUnloadMesh(&pMesh);
 

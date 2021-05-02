@@ -8,10 +8,9 @@ extern "C" {
 #include "sage_core.h"
 
 SG_DEFINE_HANDLE(SgWindow);
-typedef void(* SgWindowCursorEnterFun) (SgWindow, int);
+typedef void (*SgWindowCursorEnterFun)(SgWindow, int);
 void sgGetWindowSize(SgWindow window, int* xSize, int* ySize);
 void sgSetCursorEnterCallback(SgWindow window, SgWindowCursorEnterFun callback);
-
 
 #ifdef __cplusplus
 }

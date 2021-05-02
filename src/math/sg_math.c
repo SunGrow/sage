@@ -1,4 +1,5 @@
 #include "sg_math.h"
+
 #include <math.h>
 
 #ifndef M_PI
@@ -7,34 +8,28 @@
 #define PI M_PI
 #endif
 
-float
-deg_to_rad(const float deg) {
+float deg_to_rad(const float deg) {
 	return deg * PI / 180.0f;
 }
 
-float
-rad_to_deg(const float rad) {
+float rad_to_deg(const float rad) {
 	return rad * 180.0f / PI;
 }
 
-void
-v2_scale_by(v2 v2dst, const float scale, const v2 v2src) {
+void v2_scale_by(v2 v2dst, const float scale, const v2 v2src) {
 	v2dst[0] = v2src[0] * scale;
 	v2dst[1] = v2src[1] * scale;
 }
 
-float
-v3_dot(const v3 a, const v3 b) {
+float v3_dot(const v3 a, const v3 b) {
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-float
-v3_get_mag(const v3 v3src) {
+float v3_get_mag(const v3 v3src) {
 	return sqrtf(v3_dot(v3src, v3src));
 }
 
-void
-v3_scale_by(v3 v3dst, const float scale, const v3 v3src) {
+void v3_scale_by(v3 v3dst, const float scale, const v3 v3src) {
 	v3dst[0] = v3src[0] * scale;
 	v3dst[1] = v3src[1] * scale;
 	v3dst[2] = v3src[2] * scale;
@@ -42,8 +37,7 @@ v3_scale_by(v3 v3dst, const float scale, const v3 v3src) {
 	return;
 }
 
-void
-v3_sub(v3 v3dst, const v3 a, const v3 b) {
+void v3_sub(v3 v3dst, const v3 a, const v3 b) {
 	v3dst[0] = a[0] - b[0];
 	v3dst[1] = a[1] - b[1];
 	v3dst[2] = a[2] - b[2];
@@ -51,8 +45,7 @@ v3_sub(v3 v3dst, const v3 a, const v3 b) {
 	return;
 }
 
-void
-v3_add(v3 v3dst, const v3 a, const v3 b) {
+void v3_add(v3 v3dst, const v3 a, const v3 b) {
 	v3dst[0] = a[0] + b[0];
 	v3dst[1] = a[1] + b[1];
 	v3dst[2] = a[2] + b[2];
@@ -60,8 +53,7 @@ v3_add(v3 v3dst, const v3 a, const v3 b) {
 	return;
 }
 
-void
-v3_mul(v3 v3dst, const v3 a, const v3 b) {
+void v3_mul(v3 v3dst, const v3 a, const v3 b) {
 	v3dst[0] = a[0] * b[0];
 	v3dst[1] = a[1] * b[1];
 	v3dst[2] = a[2] * b[2];
@@ -69,8 +61,7 @@ v3_mul(v3 v3dst, const v3 a, const v3 b) {
 	return;
 }
 
-void
-v3_to_zero(v3 v3src) {
+void v3_to_zero(v3 v3src) {
 	v3src[0] = 0.0f;
 	v3src[1] = 0.0f;
 	v3src[2] = 0.0f;
@@ -78,8 +69,7 @@ v3_to_zero(v3 v3src) {
 	return;
 }
 
-void
-v3_cross(v3 v3dst, const v3 a, const v3 b) {
+void v3_cross(v3 v3dst, const v3 a, const v3 b) {
 	v3dst[0] = a[1] * b[2] - a[2] * b[1];
 	v3dst[1] = a[2] * b[0] - a[0] * b[2];
 	v3dst[2] = a[0] * b[1] - a[1] * b[0];
@@ -87,8 +77,7 @@ v3_cross(v3 v3dst, const v3 a, const v3 b) {
 	return;
 }
 
-void
-v3_normalize_to(v3 v3dst, const v3 v3src) {
+void v3_normalize_to(v3 v3dst, const v3 v3src) {
 	float mag;
 	mag = v3_get_mag(v3src);
 	int a = (mag ? 1.0f : 0);
@@ -99,23 +88,20 @@ v3_normalize_to(v3 v3dst, const v3 v3src) {
 	return;
 }
 
-void
-m4_to_zero(m4 m4src) {
+void m4_to_zero(m4 m4src) {
 	m4 m4tmp = {0};
 	m4_copy(m4src, m4tmp);
 	return;
 }
 
-void
-m4_copy(m4 m4dst, const m4 m4src) {
+void m4_copy(m4 m4dst, const m4 m4src) {
 	for (int i = 0; i < 4; ++i)
 		for (int j = 0; j < 4; ++j)
 			m4dst[i][j] = m4src[i][j];
 	return;
 }
 
-void
-m4_rotation_make(m4 m4src, const float angle, const v3 axis) {
+void m4_rotation_make(m4 m4src, const float angle, const v3 axis) {
 	v3 axis_norm, v, vs;
 	float cosin;
 
@@ -145,8 +131,7 @@ m4_rotation_make(m4 m4src, const float angle, const v3 axis) {
 	return;
 }
 
-void
-m4_mul(m4 m4dst, const m4 m4a, const m4 m4b) {
+void m4_mul(m4 m4dst, const m4 m4a, const m4 m4b) {
 	float a00 = m4a[0][0], a01 = m4a[0][1], a02 = m4a[0][2], a03 = m4a[0][3],
 	      a10 = m4a[1][0], a11 = m4a[1][1], a12 = m4a[1][2], a13 = m4a[1][3],
 	      a20 = m4a[2][0], a21 = m4a[2][1], a22 = m4a[2][2], a23 = m4a[2][3],
@@ -177,8 +162,7 @@ m4_mul(m4 m4dst, const m4 m4a, const m4 m4b) {
 	return;
 }
 
-void
-m4_rotation_mul(m4 m4dst, const m4 m4a, const m4 m4b) {
+void m4_rotation_mul(m4 m4dst, const m4 m4a, const m4 m4b) {
 	float a00 = m4a[0][0], a01 = m4a[0][1], a02 = m4a[0][2], a03 = m4a[0][3],
 	      a10 = m4a[1][0], a11 = m4a[1][1], a12 = m4a[1][2], a13 = m4a[1][3],
 	      a20 = m4a[2][0], a21 = m4a[2][1], a22 = m4a[2][2], a23 = m4a[2][3],
@@ -211,16 +195,14 @@ m4_rotation_mul(m4 m4dst, const m4 m4a, const m4 m4b) {
 	return;
 }
 
-void
-rotate_angle(m4 m4src, float angle, v3 axis) {
+void rotate_angle(m4 m4src, float angle, v3 axis) {
 	m4 m4rotation;
 	m4_rotation_make(m4rotation, angle, axis);
 	m4_rotation_mul(m4src, m4rotation, m4src);
 	return;
 }
 
-void
-lookat(m4 m4src, const v3 v3eye, const v3 v3at, const v3 v3up) {
+void lookat(m4 m4src, const v3 v3eye, const v3 v3at, const v3 v3up) {
 	v3 v3z_base, v3y_base, v3x_base;
 	/* Create basis vector opposite to basis vector z by first substracting
 	   camera position from the vector of a position to look at */
@@ -257,9 +239,11 @@ lookat(m4 m4src, const v3 v3eye, const v3 v3at, const v3 v3up) {
 	return;
 }
 
-void
-perspective(m4 m4src, const float fov_y, const float aspect_ratio,
-            const float nearVal, const float farVal) {
+void perspective(m4 m4src,
+                 const float fov_y,
+                 const float aspect_ratio,
+                 const float nearVal,
+                 const float farVal) {
 	float f, fn;
 
 	m4_to_zero(m4src);

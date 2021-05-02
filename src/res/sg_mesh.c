@@ -1,14 +1,15 @@
 #define FAST_OBJ_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #include "sg_mesh.h"
-#include "stdlib.h"
-#include "stdio.h"
+
 #include "fast_obj.h"
 #include "meshoptimizer.h"
+#include "stdio.h"
+#include "stdlib.h"
 
 typedef struct SgMeshItem {
-	const char*     pPath;
-	uint32_t        offsetid;
+	const char* pPath;
+	uint32_t offsetid;
 } SgMeshItem;
 
 static int keyCompare(const void* a, const void* b, void* udata) {
@@ -17,16 +18,17 @@ static int keyCompare(const void* a, const void* b, void* udata) {
 	return strcmp(keyA->pPath, keyB->pPath);
 }
 
-static uint64_t keyHash(const void *item, uint64_t seed0, uint64_t seed1) {
-    const SgMeshItem* key = item;
-    return hashmap_sip(key->pPath, strlen(key->pPath), seed0, seed1);
+static uint64_t keyHash(const void* item, uint64_t seed0, uint64_t seed1) {
+	const SgMeshItem* key = item;
+	return hashmap_sip(key->pPath, strlen(key->pPath), seed0, seed1);
 }
 
 SgResult sgCreateMeshSet(SgMeshSet** ppMeshArray) {
 	SgMeshSet* pMeshArray = *ppMeshArray;
 	SG_CALLOC_NUM(pMeshArray, 1);
-	pMeshArray->meshMap = hashmap_new(sizeof(SgMeshItem), 1, 0, 0, keyHash, keyCompare, NULL);
-	*ppMeshArray=pMeshArray;
+	pMeshArray->meshMap =
+	    hashmap_new(sizeof(SgMeshItem), 1, 0, 0, keyHash, keyCompare, NULL);
+	*ppMeshArray = pMeshArray;
 	return SG_SUCCESS;
 }
 
@@ -55,7 +57,7 @@ uint32_t* sgGetMeshID(const char* pPath, const SgMeshSet* pMeshArray) {
 
 // Returns indices count
 static uint32_t loadOBJ(const char* pPath, SgVertex** ppVertices) {
-	fastObjMesh *pObj = fast_obj_read(pPath);
+	fastObjMesh* pObj = fast_obj_read(pPath);
 	uint32_t totalIndices = 0;
 	for (uint32_t i = 0; i < pObj->face_count; ++i) {
 		totalIndices += 3 * (pObj->face_vertices[i] - 2);
@@ -69,20 +71,23 @@ static uint32_t loadOBJ(const char* pPath, SgVertex** ppVertices) {
 			fastObjIndex gi = pObj->indices[indexOffset + j];
 
 			SgVertex v = {
-				.vert = {
-					pObj->positions[gi.p * 3 + 0],
-					pObj->positions[gi.p * 3 + 1],
-					pObj->positions[gi.p * 3 + 2],
-				},
-				.norm = {
-					pObj->normals[gi.n * 3 + 0],
-					pObj->normals[gi.n * 3 + 1],
-					pObj->normals[gi.n * 3 + 2],
-				},
-			    .tex = {
-					pObj->texcoords[gi.t * 2 + 0],
-					1.0f - pObj->texcoords[gi.t * 2 + 1],
-				}, 
+			    .vert =
+			        {
+			            pObj->positions[gi.p * 3 + 0],
+			            pObj->positions[gi.p * 3 + 1],
+			            pObj->positions[gi.p * 3 + 2],
+			        },
+			    .norm =
+			        {
+			            pObj->normals[gi.n * 3 + 0],
+			            pObj->normals[gi.n * 3 + 1],
+			            pObj->normals[gi.n * 3 + 2],
+			        },
+			    .tex =
+			        {
+			            pObj->texcoords[gi.t * 2 + 0],
+			            1.0f - pObj->texcoords[gi.t * 2 + 1],
+			        },
 			};
 
 			// triangulation
@@ -100,71 +105,89 @@ static uint32_t loadOBJ(const char* pPath, SgVertex** ppVertices) {
 	return totalIndices;
 }
 
-uint32_t sgOptimizeMesh(uint32_t indexCount, uint32_t vertexCount, uint32_t* indices, void* vertices, uint32_t sizeOfVertex) {
-	uint32_t *premap;
+uint32_t sgOptimizeMesh(uint32_t indexCount,
+                        uint32_t vertexCount,
+                        uint32_t* indices,
+                        void* vertices,
+                        uint32_t sizeOfVertex) {
+	uint32_t* premap;
 	SG_MALLOC_NUM(premap, indexCount);
 
-	uint32_t remapVertexCount = meshopt_generateVertexRemap(premap, indices, indexCount, vertices, vertexCount, sizeOfVertex);
+	uint32_t remapVertexCount = meshopt_generateVertexRemap(
+	    premap, indices, indexCount, vertices, vertexCount, sizeOfVertex);
 	meshopt_remapIndexBuffer(indices, indices, indexCount, premap);
-	meshopt_remapVertexBuffer(vertices, vertices, vertexCount, sizeOfVertex, premap);
+	meshopt_remapVertexBuffer(vertices, vertices, vertexCount, sizeOfVertex,
+	                          premap);
 	free(premap);
 	return remapVertexCount;
 }
 
-uint32_t sgLoadMesh(const char *pPath, SgMeshSet **ppMesh) {
+uint32_t sgLoadMesh(const char* pPath, SgMeshSet** ppMesh) {
 	// obj mesh load
 	SgMeshSet* pMesh = *ppMesh;
 
 	// TODO: Fix zis constant realloc
-	SG_STRETCHALLOC(pMesh->pVertexOffsets, pMesh->meshCount+2, "[ALLOC]");
-	SG_STRETCHALLOC(pMesh->pIndexOffsets, pMesh->meshCount+2, "[ALLOC]");
-	SG_STRETCHALLOC(pMesh->pIndexSizes, pMesh->meshCount+2, "[ALLOC]");
-	SG_STRETCHALLOC(pMesh->pVertexSizes, pMesh->meshCount+2, "[ALLOC]");
-	SgVertex *pVertices;
+	SG_STRETCHALLOC(pMesh->pVertexOffsets, pMesh->meshCount + 2, "[ALLOC]");
+	SG_STRETCHALLOC(pMesh->pIndexOffsets, pMesh->meshCount + 2, "[ALLOC]");
+	SG_STRETCHALLOC(pMesh->pIndexSizes, pMesh->meshCount + 2, "[ALLOC]");
+	SG_STRETCHALLOC(pMesh->pVertexSizes, pMesh->meshCount + 2, "[ALLOC]");
+	SgVertex* pVertices;
 	uint32_t totalIndices = loadOBJ(pPath, &pVertices);
 	// MeshLoad
 	//
 	// DEBUG
 	if (1) {
 		uint32_t totalVertices = totalIndices;
-		SG_STRETCHALLOC(pMesh->pVertices, pMesh->vertexCount+totalVertices, "[ALLOC]");
-		SG_STRETCHALLOC(pMesh->pIndices,  pMesh->indexCount+totalIndices, "[ALLOC]");
-		memcpy(&pMesh->pVertices[pMesh->vertexCount], pVertices, totalVertices*sizeof(*pMesh->pVertices));
+		SG_STRETCHALLOC(pMesh->pVertices, pMesh->vertexCount + totalVertices,
+		                "[ALLOC]");
+		SG_STRETCHALLOC(pMesh->pIndices, pMesh->indexCount + totalIndices,
+		                "[ALLOC]");
+		memcpy(&pMesh->pVertices[pMesh->vertexCount], pVertices,
+		       totalVertices * sizeof(*pMesh->pVertices));
 		free(pVertices);
 		for (uint32_t i = 0; i < totalIndices; ++i) {
 			pMesh->pIndices[i + pMesh->indexCount] = i + pMesh->vertexCount;
 		}
 
-		pMesh->pIndexSizes[pMesh->meshCount]    = totalIndices;
-		pMesh->pVertexSizes[pMesh->meshCount]   = totalVertices;
-		pMesh->pIndexOffsets[pMesh->meshCount]  = pMesh->indexCount;
+		pMesh->pIndexSizes[pMesh->meshCount] = totalIndices;
+		pMesh->pVertexSizes[pMesh->meshCount] = totalVertices;
+		pMesh->pIndexOffsets[pMesh->meshCount] = pMesh->indexCount;
 		pMesh->pVertexOffsets[pMesh->meshCount] = pMesh->vertexCount;
-		pMesh->indexCount  += totalIndices;
+		pMesh->indexCount += totalIndices;
 		pMesh->vertexCount += totalVertices;
 		pMesh->meshCount += 1;
 		*ppMesh = pMesh;
-		return pMesh->meshCount-1;
+		return pMesh->meshCount - 1;
 	}
 
-	uint32_t *premap;
-	SG_MALLOC_NUM(premap, pMesh->indexCount+totalIndices);
+	uint32_t* premap;
+	SG_MALLOC_NUM(premap, pMesh->indexCount + totalIndices);
 
-	uint32_t totalVertices = meshopt_generateVertexRemap(premap, NULL, totalIndices, pVertices, totalIndices, sizeof(*pMesh->pVertices));
+	uint32_t totalVertices =
+	    meshopt_generateVertexRemap(premap, NULL, totalIndices, pVertices,
+	                                totalIndices, sizeof(*pMesh->pVertices));
 
 	// Return value fillup
-	SG_STRETCHALLOC(pMesh->pIndices, pMesh->indexCount+totalIndices, "[ALLOC]");
-	SG_STRETCHALLOC(pMesh->pVertices, pMesh->vertexCount+totalVertices, "[ALLOC]");
+	SG_STRETCHALLOC(pMesh->pIndices, pMesh->indexCount + totalIndices, "[ALLOC]");
+	SG_STRETCHALLOC(pMesh->pVertices, pMesh->vertexCount + totalVertices,
+	                "[ALLOC]");
 
-	meshopt_remapVertexBuffer(&pMesh->pVertices[pMesh->vertexCount], pVertices, totalIndices, sizeof(*pMesh->pVertices), premap);
-	meshopt_remapIndexBuffer(&pMesh->pIndices[pMesh->indexCount], NULL, totalIndices, premap);
-	//meshopt_optimizeVertexCache(&pMesh->pIndices[pMesh->indexCount], &pMesh->pIndices[pMesh->indexCount], totalIndices, totalVertices);
-	//meshopt_optimizeVertexFetch(&pMesh->pVertices[pMesh->vertexCount], &pMesh->pIndices[pMesh->indexCount], totalIndices, &pMesh->pVertices[pMesh->vertexCount], totalVertices, sizeof(*pMesh->pVertices));
+	meshopt_remapVertexBuffer(&pMesh->pVertices[pMesh->vertexCount], pVertices,
+	                          totalIndices, sizeof(*pMesh->pVertices), premap);
+	meshopt_remapIndexBuffer(&pMesh->pIndices[pMesh->indexCount], NULL,
+	                         totalIndices, premap);
+	// meshopt_optimizeVertexCache(&pMesh->pIndices[pMesh->indexCount],
+	// &pMesh->pIndices[pMesh->indexCount], totalIndices, totalVertices);
+	// meshopt_optimizeVertexFetch(&pMesh->pVertices[pMesh->vertexCount],
+	// &pMesh->pIndices[pMesh->indexCount], totalIndices,
+	// &pMesh->pVertices[pMesh->vertexCount], totalVertices,
+	// sizeof(*pMesh->pVertices));
 
-	pMesh->pIndexOffsets[pMesh->meshCount]  = pMesh->indexCount;
+	pMesh->pIndexOffsets[pMesh->meshCount] = pMesh->indexCount;
 	pMesh->pVertexOffsets[pMesh->meshCount] = pMesh->vertexCount;
-	pMesh->indexCount  += totalIndices;
+	pMesh->indexCount += totalIndices;
 	pMesh->vertexCount += totalVertices;
-	pMesh->pIndexSizes[pMesh->meshCount]  = totalIndices;
+	pMesh->pIndexSizes[pMesh->meshCount] = totalIndices;
 	pMesh->pVertexSizes[pMesh->meshCount] = totalVertices;
 	pMesh->meshCount += 1;
 	*ppMesh = pMesh;
@@ -172,10 +195,10 @@ uint32_t sgLoadMesh(const char *pPath, SgMeshSet **ppMesh) {
 	sgLogInfo("[Res]: Mesh Read Successfull");
 
 	free(premap);
-	return pMesh->meshCount-1;
+	return pMesh->meshCount - 1;
 }
 
-void sgUnloadMesh(SgMesh **ppMesh) {
+void sgUnloadMesh(SgMesh** ppMesh) {
 	(*ppMesh)->indexCount = 0;
 	(*ppMesh)->vertexCount = 0;
 	free((*ppMesh)->pIndices);
@@ -183,10 +206,10 @@ void sgUnloadMesh(SgMesh **ppMesh) {
 	free(*ppMesh);
 }
 
-void sgLoadTexture(const char *pPath, SgTexture **ppTexture) {
-	SgTexture *pTexture = calloc(1, sizeof(pTexture[0]));
+void sgLoadTexture(const char* pPath, SgTexture** ppTexture) {
+	SgTexture* pTexture = calloc(1, sizeof(pTexture[0]));
 	pTexture->pixels = stbi_load(pPath, &pTexture->width, &pTexture->height,
-	                            &pTexture->channels, STBI_rgb_alpha);
+	                             &pTexture->channels, STBI_rgb_alpha);
 	if (!pTexture->pixels) {
 		fprintf(stderr, "[Warning]: Texture on path < %s > not found\n", pPath);
 	}
@@ -197,7 +220,7 @@ void sgLoadTexture(const char *pPath, SgTexture **ppTexture) {
 	*ppTexture = pTexture;
 }
 
-void sgUnloadTexture(SgTexture **ppTexture) {
+void sgUnloadTexture(SgTexture** ppTexture) {
 	stbi_image_free(ppTexture[0]->pixels);
 
 	ppTexture[0]->pixels = NULL;
@@ -206,6 +229,3 @@ void sgUnloadTexture(SgTexture **ppTexture) {
 	ppTexture[0]->height = 0;
 	free(*ppTexture);
 }
-
-
-

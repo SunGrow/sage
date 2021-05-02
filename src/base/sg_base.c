@@ -1,37 +1,37 @@
 #include "sg_base.h"
-#include <stdlib.h>
+
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifdef __unix__
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 uint32_t fsize(FILE* fp, const char* path) {
 	struct stat st;
-    if (stat(path, &st) == 0)
-        return st.st_size;
-    sgLogError("[Base]: Cannot determine size of %s: %s", path, strerror(errno));
-    return -1;
+	if (stat(path, &st) == 0)
+		return st.st_size;
+	sgLogError("[Base]: Cannot determine size of %s: %s", path, strerror(errno));
+	return -1;
 }
 #else
 #ifdef _WIN32
 uint32_t fsize(FILE* fp, const char* path) {
-    sgLogWarn("[Base]: File handling on Windows is not fully supported yet");
+	sgLogWarn("[Base]: File handling on Windows is not fully supported yet");
 	uint32_t prev = ftell(fp);
 	fseek(fp, 0L, SEEK_END);
-    uint32_t sz = ftell(fp);
-    fseek(fp, prev, SEEK_SET); //go back to where we were
-    return sz;
+	uint32_t sz = ftell(fp);
+	fseek(fp, prev, SEEK_SET);  // go back to where we were
+	return sz;
 }
 
 #endif
 #endif
 
-
-SgResult sgOpenFile(const char* path, SgFile **ppFile) {
-	FILE *file = fopen(path, "rb");
+SgResult sgOpenFile(const char* path, SgFile** ppFile) {
+	FILE* file = fopen(path, "rb");
 	if (!file) {
 		sgLogWarn("[Base]: On path < %s > file not found", path);
 		return 1;
@@ -52,15 +52,15 @@ SgResult sgOpenFile(const char* path, SgFile **ppFile) {
 
 	SgFile* pFile;
 	SG_CALLOC_NUM(pFile, 1);
-	pFile->pBytes = (uint32_t*) buffer;
-	pFile->size   = length;
+	pFile->pBytes = (uint32_t*)buffer;
+	pFile->size = length;
 	*ppFile = pFile;
 
 	return SG_SUCCESS;
 }
 
-SgResult sgWriteFile(const char* path, SgFile *pFile) {
-	FILE *file = fopen(path, "wb");
+SgResult sgWriteFile(const char* path, SgFile* pFile) {
+	FILE* file = fopen(path, "wb");
 	if (!file) {
 		sgLogWarn("[Base]: On path < %s > file could not be created/opened", path);
 		return 1;
@@ -70,12 +70,11 @@ SgResult sgWriteFile(const char* path, SgFile *pFile) {
 	return SG_SUCCESS;
 }
 
-SgResult sgCloseFile(SgFile **ppFile) {
-	if((*ppFile)->pBytes){
+SgResult sgCloseFile(SgFile** ppFile) {
+	if ((*ppFile)->pBytes) {
 		free((*ppFile)->pBytes);
 		free(*ppFile);
 	}
 	*ppFile = NULL;
 	return SG_SUCCESS;
 }
-

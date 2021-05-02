@@ -19,36 +19,37 @@
  * layout... Oh, and I also have to make the cleanup function.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-
 typedef struct SgCamera {
-	v3              position;
-	v3              front;
-	v3              up;
-	float           speed;
-	float           fov;         // Radians
-	float           sensitivity;
-	float           aspectRatio;
-	v2              cursorPosition;
+	v3 position;
+	v3 front;
+	v3 up;
+	float speed;
+	float fov;  // Radians
+	float sensitivity;
+	float aspectRatio;
+	v2 cursorPosition;
 } SgCamera;
 
 typedef struct SgScene {
-	SgCamera*       pCamera;
-	double          startTime;
-	double          currentTime;
-	double          previousTime;
-	double          deltaTime;
+	SgCamera* pCamera;
+	double startTime;
+	double currentTime;
+	double previousTime;
+	double deltaTime;
 } SgScene;
 
 typedef struct SgTransformUniform {
-	m4              model;
-	m4              view;
-	m4              projection;
+	m4 model;
+	m4 view;
+	m4 projection;
 } SgTransformUniform;
 
 void sgSceneInit(SgScene* pScene);
 void sgSceneUpdate(SgScene* pScene);
 
-void sgInitTransformUniform(const SgCamera* pCamera, SgTransformUniform *pTransformUniform);
-void sgUpdateTransformUniform(const SgCamera* pCamera, SgTransformUniform *pTransformUniform);
+void sgInitTransformUniform(const SgCamera* pCamera,
+                            SgTransformUniform* pTransformUniform);
+void sgUpdateTransformUniform(const SgCamera* pCamera,
+                              SgTransformUniform* pTransformUniform);
 
 #endif

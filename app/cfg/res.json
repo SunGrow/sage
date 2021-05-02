@@ -131,7 +131,18 @@
 	],
 	"framebuffers" : [
 		{
-			"renderpass" : "default"
+			"name" : "default",
+			"renderpass" : "default",
+			"__comment__" : "0 count means 'default to swapchain image count'",
+			"width" : "swapchainWidth",
+			"height" : "swapchainHeight",
+			"imageViewAttachments" : [
+				"blendImageView",
+				"depthImageView",
+				"swapchainImageView"
+			],
+			"layers" : 1,
+			"count" : 0
 		}
 	]
 }

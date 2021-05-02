@@ -8,8 +8,12 @@ extern "C" {
 #include "sage_core.h"
 
 // Job Pool: A pool for a Job Buffer to be allocated from
-// Job DependencyLayer: An array of semaphores to be raised after the job execution. Once DependencyLayer is raised, a job buffer bind to a DependencyLayer could be executed
-// Job Buffer: List of commands to be executed on a thread. Commands are not guaranteed to be executed in order or on a single thread. Has a DependencyLayer semaphore pointer to be flipped after execution and a DependencyLayer pointer that a job buffer depends on 
+// Job DependencyLayer: An array of semaphores to be raised after the job
+// execution. Once DependencyLayer is raised, a job buffer bind to a
+// DependencyLayer could be executed Job Buffer: List of commands to be executed
+// on a thread. Commands are not guaranteed to be executed in order or on a
+// single thread. Has a DependencyLayer semaphore pointer to be flipped after
+// execution and a DependencyLayer pointer that a job buffer depends on
 
 SG_DEFINE_HANDLE(SgDependencyLayer);
 
@@ -32,7 +36,8 @@ typedef SgFlags SgJobAllocFlags;
 typedef struct SgJobBufferAllocInfo {
 } SgJobBufferAllocInfo;
 SG_DEFINE_HANDLE(SgJobBuffer);
-SgResult sgAllocateJobBuffers(SgJobBufferAllocInfo* pAllocInfo, SgJobBuffer* pJobBuffer);
+SgResult sgAllocateJobBuffers(SgJobBufferAllocInfo* pAllocInfo,
+                              SgJobBuffer* pJobBuffer);
 
 /*
  * typedef struct SgJobBuffer {
@@ -53,8 +58,7 @@ SgResult sgAllocateJobBuffers(SgJobBufferAllocInfo* pAllocInfo, SgJobBuffer* pJo
  * } SgCommand;
  */
 
-
-typedef void (*SgCommandFunc) (const void* input, void* object, void* output);
+typedef void (*SgCommandFunc)(const void* input, void* object, void* output);
 SG_DEFINE_HANDLE(SgCommand);
 typedef struct SgCommandAddInfo {
 	SgCommandFunc func;
@@ -75,7 +79,7 @@ SG_DEFINE_HANDLE(SgSemaphore);
 
 typedef struct SgJobSubmitInfo {
 	SgJobBuffer* pJobBuffers;
-	uint32_t     jobBufferCount;
+	uint32_t jobBufferCount;
 } SgJobSubmitInfo;
 
 #ifdef __cplusplus

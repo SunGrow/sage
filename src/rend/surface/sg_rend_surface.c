@@ -1,9 +1,13 @@
 #include "sg_rend_surface.h"
-#include "log.h"
+
 #include <stdlib.h>
 #include <vulkan/vulkan_core.h>
 
-SgResult createWindowSurface(const VkInstance* pInstance, SgWindow* pWindow, VkSurfaceKHR* pSurface) {
+#include "log.h"
+
+SgResult createWindowSurface(const VkInstance* pInstance,
+                             SgWindow* pWindow,
+                             VkSurfaceKHR* pSurface) {
 	glfwCreateWindowSurface(*pInstance, pWindow, VK_NULL_HANDLE, pSurface);
 	if (*pSurface) {
 		sgLogInfo_Debug("[AppInit]: Vulkan Surface created");
@@ -15,12 +19,15 @@ SgResult createWindowSurface(const VkInstance* pInstance, SgWindow* pWindow, VkS
 	return SG_SUCCESS;
 }
 
-VkSurfaceFormatKHR getSurfaceFormat(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface) {
+VkSurfaceFormatKHR getSurfaceFormat(VkPhysicalDevice physicalDevice,
+                                    VkSurfaceKHR surface) {
 	uint32_t formatCount = 0;
 	VkSurfaceFormatKHR format;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, VK_NULL_HANDLE);
-	VkSurfaceFormatKHR *pFormats = malloc(formatCount * sizeof(*pFormats));
-	vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, pFormats);
+	vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount,
+	                                     VK_NULL_HANDLE);
+	VkSurfaceFormatKHR* pFormats = malloc(formatCount * sizeof(*pFormats));
+	vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount,
+	                                     pFormats);
 	if (formatCount == 1 && pFormats[0].format == VK_FORMAT_UNDEFINED) {
 		free(pFormats);
 		sgLogInfo("[AppInit]: Surface Format not specified");
@@ -30,8 +37,8 @@ VkSurfaceFormatKHR getSurfaceFormat(VkPhysicalDevice physicalDevice, VkSurfaceKH
 		};
 	}
 	for (uint32_t i = 0; i < formatCount; ++i) {
-		if (pFormats[i].format == VK_FORMAT_B8G8R8A8_UNORM &&
-		    pFormats[i].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+		if (pFormats[i].format == VK_FORMAT_B8G8R8A8_UNORM
+		    && pFormats[i].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
 			format = pFormats[i];
 			free(pFormats);
 			sgLogInfo_Debug("[AppInit]: Surface Format found");
@@ -44,12 +51,15 @@ VkSurfaceFormatKHR getSurfaceFormat(VkPhysicalDevice physicalDevice, VkSurfaceKH
 	return format;
 }
 
-VkPresentModeKHR getSurfacePresentMode(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface) {
+VkPresentModeKHR getSurfacePresentMode(VkPhysicalDevice physicalDevice,
+                                       VkSurfaceKHR surface) {
 	uint32_t modeCount = 0;
 	VkPresentModeKHR result;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &modeCount, VK_NULL_HANDLE);
-	VkPresentModeKHR *pPresentModes = malloc(modeCount * sizeof(*pPresentModes)); 
-	vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &modeCount, pPresentModes);
+	vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &modeCount,
+	                                          VK_NULL_HANDLE);
+	VkPresentModeKHR* pPresentModes = malloc(modeCount * sizeof(*pPresentModes));
+	vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &modeCount,
+	                                          pPresentModes);
 	for (uint32_t i = 0; i < modeCount; ++i) {
 		if (pPresentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR) {
 			result = pPresentModes[i];
@@ -64,10 +74,15 @@ VkPresentModeKHR getSurfacePresentMode(VkPhysicalDevice physicalDevice, VkSurfac
 	return result;
 }
 
-SgResult getSurfaceAttributes(const VkPhysicalDevice* pPhysicalDevice, const VkSurfaceKHR* pSurface, SurfaceAttributes* pSurfaceAttributes) {
+SgResult getSurfaceAttributes(const VkPhysicalDevice* pPhysicalDevice,
+                              const VkSurfaceKHR* pSurface,
+                              SurfaceAttributes* pSurfaceAttributes) {
 	pSurfaceAttributes->format = getSurfaceFormat(*pPhysicalDevice, *pSurface);
-	pSurfaceAttributes->presentMode = getSurfacePresentMode(*pPhysicalDevice, *pSurface);
-	if (vkGetPhysicalDeviceSurfaceCapabilitiesKHR(*pPhysicalDevice, *pSurface, &pSurfaceAttributes->surfaceCapabilities) == VK_SUCCESS) {
+	pSurfaceAttributes->presentMode =
+	    getSurfacePresentMode(*pPhysicalDevice, *pSurface);
+	if (vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+	        *pPhysicalDevice, *pSurface, &pSurfaceAttributes->surfaceCapabilities)
+	    == VK_SUCCESS) {
 		sgLogInfo_Debug("[AppInit]: Surface Capabilities acquired successfully");
 	} else {
 		sgLogWarn("[AppInit]: Surface Capabilities request error");

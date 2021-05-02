@@ -6,21 +6,21 @@
 			"toggleMap" : [
 			],
 			"triggerMap" : [
-				{"type" : "keyboard", "input" : "w",        "mod" : "", "actionName" : "moveForward",  "actorID" : 0},
-				{"type" : "keyboard", "input" : "a",        "mod" : "", "actionName" : "moveLeft",     "actorID" : 0},
-				{"type" : "keyboard", "input" : "s",        "mod" : "", "actionName" : "moveBack",     "actorID" : 0},
-				{"type" : "keyboard", "input" : "d",        "mod" : "", "actionName" : "moveRight",    "actorID" : 0},
-				{"type" : "keyboard", "input" : "space",    "mod" : "", "actionName" : "moveUp",       "actorID" : 0},
-				{"type" : "keyboard", "input" : "q",        "mod" : "", "actionName" : "moveDown",     "actorID" : 0},
+				{"type" : "keyboard", "input" : "W",             "mod" : "", "actionName" : "keyPressForward",  "actorID" : 0},
+				{"type" : "keyboard", "input" : "A",             "mod" : "", "actionName" : "keyPressLeft",     "actorID" : 0},
+				{"type" : "keyboard", "input" : "S",             "mod" : "", "actionName" : "keyPressBack",     "actorID" : 0},
+				{"type" : "keyboard", "input" : "D",             "mod" : "", "actionName" : "keyPressRight",    "actorID" : 0},
+				{"type" : "keyboard", "input" : "SPACE",         "mod" : "", "actionName" : "keyPressUp",       "actorID" : 0},
+				{"type" : "keyboard", "input" : "LEFT_SHIFT",    "mod" : "", "actionName" : "keyPressDown",     "actorID" : 0},
 
-				{"type" : "keyboard", "input" : "i", "mod" : "", "actionName" : "lightForward",     "actorID" : 1},
-				{"type" : "keyboard", "input" : "k", "mod" : "", "actionName" : "lightUp",          "actorID" : 1},
-				{"type" : "keyboard", "input" : "h", "mod" : "", "actionName" : "lightLeft",        "actorID" : 1},
-				{"type" : "keyboard", "input" : "l", "mod" : "", "actionName" : "lightRight",       "actorID" : 1},
-				{"type" : "keyboard", "input" : "j", "mod" : "", "actionName" : "lightDown",        "actorID" : 1},
-				{"type" : "keyboard", "input" : "n", "mod" : "", "actionName" : "lightBack",        "actorID" : 1},
+				{"type" : "keyboard", "input" : "I", "mod" : "", "actionName" : "lightKeyPressForward",     "actorID" : 1},
+				{"type" : "keyboard", "input" : "K", "mod" : "", "actionName" : "lightKeyPressUp",          "actorID" : 1},
+				{"type" : "keyboard", "input" : "H", "mod" : "", "actionName" : "lightKeyPressLeft",        "actorID" : 1},
+				{"type" : "keyboard", "input" : "L", "mod" : "", "actionName" : "lightKeyPressRight",       "actorID" : 1},
+				{"type" : "keyboard", "input" : "J", "mod" : "", "actionName" : "lightKeyPressDown",        "actorID" : 1},
+				{"type" : "keyboard", "input" : "N", "mod" : "", "actionName" : "lightKeyPressBack",        "actorID" : 1},
 
-				{"type" : "mouse",    "input" : "left", "mod" : "", "actionName" : "keyShoot",     "actorID" : 0}
+				{"type" : "mouse",    "input" : "BUTTON_1", "mod" : "", "actionName" : "keyShoot",     "actorID" : 0}
 			],
 			"rangeMap" : [
 				{"type" : "mouse",    "input" : "",     "mod" : "", "actionName" : "rotateCamera", "actorID" : 0}

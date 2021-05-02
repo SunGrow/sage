@@ -5,7 +5,9 @@ void sgGetWindowSize(SgWindow* pWindow, int* xSize, int* ySize) {
 	return;
 }
 
-void sgSetCursorEnterCallback(SgWindow* pWindow, SgWindowCursorEnterFun callback) {
-	glfwSetCursorEnterCallback((GLFWwindow*)pWindow, (GLFWcursorenterfun) callback);
+void sgSetCursorEnterCallback(SgWindow* pWindow,
+                              SgWindowCursorEnterFun callback) {
+	glfwSetCursorEnterCallback((GLFWwindow*)pWindow,
+	                           (GLFWcursorenterfun)callback);
 	return;
 }
