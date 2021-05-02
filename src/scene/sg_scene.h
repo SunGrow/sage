@@ -32,7 +32,7 @@ typedef struct SgTransformUniform {
 } SgTransformUniform;
 
 typedef struct SgCameraTransformInfo {
-	v3              moveDirection;
+	v3              moveDirectionPos;
 	v2              cursorOffset;
 } SgCameraTransformInfo;
 void sgSceneInit(SgScene* pScene);

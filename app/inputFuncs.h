@@ -9,7 +9,8 @@
 #include "math.h"
 
 typedef struct SgCameraTransformInfo {
-	v3              moveDirection;
+	v3              moveDirectionPos;
+	v3              moveDirectionNeg;
 	v2              cursorOffset;
 	double          deltaTime;
 	SgCamera        camera;

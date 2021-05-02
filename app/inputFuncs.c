@@ -8,11 +8,18 @@ void sgTransformCamera(const SgCameraTransformInfo* pTransformInfo, SgCamera* pC
 	v3_cross(right, pCamera->front, pCamera->up);
 	v3_normalize_to(right, right);
 
-	v3_scale_by(tmp, pCamera->speed * pTransformInfo->deltaTime * pTransformInfo->moveDirection[0], pCamera->front);
+	v3_scale_by(tmp, pCamera->speed * pTransformInfo->deltaTime * pTransformInfo->moveDirectionPos[0], pCamera->front);
+    v3_add(pCamera->position, tmp, pCamera->position);
+    v3_scale_by(tmp, pCamera->speed * pTransformInfo->deltaTime * pTransformInfo->moveDirectionPos[1], pCamera->up);
+    v3_add(pCamera->position, tmp, pCamera->position);
+    v3_scale_by(tmp, pCamera->speed * pTransformInfo->deltaTime * pTransformInfo->moveDirectionPos[2], right);
 	v3_add(pCamera->position, tmp, pCamera->position);
-	v3_scale_by(tmp, pCamera->speed * pTransformInfo->deltaTime * pTransformInfo->moveDirection[1], pCamera->up);
-	v3_add(pCamera->position, tmp, pCamera->position);
-	v3_scale_by(tmp, pCamera->speed * pTransformInfo->deltaTime * pTransformInfo->moveDirection[2], right);
+
+	v3_scale_by(tmp, -pCamera->speed * pTransformInfo->deltaTime * pTransformInfo->moveDirectionNeg[0], pCamera->front);
+    v3_add(pCamera->position, tmp, pCamera->position);
+    v3_scale_by(tmp, -pCamera->speed * pTransformInfo->deltaTime * pTransformInfo->moveDirectionNeg[1], pCamera->up);
+    v3_add(pCamera->position, tmp, pCamera->position);
+    v3_scale_by(tmp, -pCamera->speed * pTransformInfo->deltaTime * pTransformInfo->moveDirectionNeg[2], right);
 	v3_add(pCamera->position, tmp, pCamera->position);
 
 	/* Rotate */
@@ -41,32 +48,32 @@ void sgTransformCamera(const SgCameraTransformInfo* pTransformInfo, SgCamera* pC
 
 void keyPressForward(SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
-	transformInfo->moveDirection[0] = isPressed ? 1.0f : 0.0f;
+	transformInfo->moveDirectionPos[0] = isPressed ? 1.0f : 0.0f;
 	return;
 }
 void keyPressUp(SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
-	transformInfo->moveDirection[1] = isPressed ? 1.0f : 0.0f;
+	transformInfo->moveDirectionPos[1] = isPressed ? 1.0f : 0.0f;
 	return;
 }
 void keyPressLeft(SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
-	transformInfo->moveDirection[2] = isPressed ? -1.0f : 0.0f;
+	transformInfo->moveDirectionNeg[2] = isPressed ? 1.0f : 0.0f;
 	return;
 }
 void keyPressRight(SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
-	transformInfo->moveDirection[2] = isPressed ? 1.0f : 0.0f;
+	transformInfo->moveDirectionPos[2] = isPressed ? 1.0f : 0.0f;
 	return;
 }
 void keyPressDown(SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
-	transformInfo->moveDirection[1] = isPressed ? -1.0f : 0.0f;
+	transformInfo->moveDirectionNeg[1] = isPressed ? 1.0f : 0.0f;
 	return;
 }
 void keyPressBack(SgBool isPressed, double rangeX, double rangeY, SgActor actor, SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*) actor;
-	transformInfo->moveDirection[0] = isPressed ? -1.0f : 0.0f;
+	transformInfo->moveDirectionNeg[0] = isPressed ? 1.0f : 0.0f;
 	return;
 }
 
