@@ -6,19 +6,19 @@
 			"toggleMap" : [
 			],
 			"triggerMap" : [
-				{"type" : "keyboard", "input" : "w",    "mod" : "", "actionName" : "moveForward",  "actorID" : 0},
-				{"type" : "keyboard", "input" : "a",    "mod" : "", "actionName" : "moveLeft",     "actorID" : 0},
-				{"type" : "keyboard", "input" : "s",    "mod" : "", "actionName" : "moveBack",     "actorID" : 0},
-				{"type" : "keyboard", "input" : "d",    "mod" : "", "actionName" : "moveRight",    "actorID" : 0},
+				{"type" : "keyboard", "input" : "w",        "mod" : "", "actionName" : "moveForward",  "actorID" : 0},
+				{"type" : "keyboard", "input" : "a",        "mod" : "", "actionName" : "moveLeft",     "actorID" : 0},
+				{"type" : "keyboard", "input" : "s",        "mod" : "", "actionName" : "moveBack",     "actorID" : 0},
+				{"type" : "keyboard", "input" : "d",        "mod" : "", "actionName" : "moveRight",    "actorID" : 0},
 				{"type" : "keyboard", "input" : "space",    "mod" : "", "actionName" : "moveUp",       "actorID" : 0},
-				{"type" : "keyboard", "input" : "q",    "mod" : "", "actionName" : "moveDown",     "actorID" : 0},
+				{"type" : "keyboard", "input" : "q",        "mod" : "", "actionName" : "moveDown",     "actorID" : 0},
 
 				{"type" : "keyboard", "input" : "i", "mod" : "", "actionName" : "lightForward",     "actorID" : 1},
-				{"type" : "keyboard", "input" : "k", "mod" : "", "actionName" : "lightUp",     "actorID" : 1},
-				{"type" : "keyboard", "input" : "h", "mod" : "", "actionName" : "lightLeft",     "actorID" : 1},
-				{"type" : "keyboard", "input" : "l", "mod" : "", "actionName" : "lightRight",     "actorID" : 1},
-				{"type" : "keyboard", "input" : "j", "mod" : "", "actionName" : "lightDown",     "actorID" : 1},
-				{"type" : "keyboard", "input" : "n", "mod" : "", "actionName" : "lightBack",     "actorID" : 1},
+				{"type" : "keyboard", "input" : "k", "mod" : "", "actionName" : "lightUp",          "actorID" : 1},
+				{"type" : "keyboard", "input" : "h", "mod" : "", "actionName" : "lightLeft",        "actorID" : 1},
+				{"type" : "keyboard", "input" : "l", "mod" : "", "actionName" : "lightRight",       "actorID" : 1},
+				{"type" : "keyboard", "input" : "j", "mod" : "", "actionName" : "lightDown",        "actorID" : 1},
+				{"type" : "keyboard", "input" : "n", "mod" : "", "actionName" : "lightBack",        "actorID" : 1},
 
 				{"type" : "mouse",    "input" : "left", "mod" : "", "actionName" : "keyShoot",     "actorID" : 0}
 			],

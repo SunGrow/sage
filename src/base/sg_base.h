@@ -12,6 +12,7 @@
 // TODO: Thread wrapper to easily change out apis when needed
 #include <pthread.h>
 #include "../log/sg_log.h"
+#include "cJSON.h" // TODO: wrapper
 
 #define SG_DEFINE_HANDLE( object ) typedef struct object##_T *object;
 #define NUMOF(arr) (sizeof(arr) / sizeof((arr)[0]))
@@ -54,6 +55,29 @@ enum {
 	SG_FRAME_QUEUE_LENGTH = 3,
 };
 
+typedef enum SgWindowCreateFlagBits {
+	SG_APP_CURSOR_HIDDEN         = BIT(0),
+	SG_APP_WINDOW_RESIZABLE      = BIT(1),
+	SG_APP_WINDOW_FULLSCREEN     = BIT(2),
+} SgAppCreateFlagBits;
+typedef SgFlags SgAppCreateFlags;
+
+typedef struct SgWindowConfig {
+	SgAppCreateFlags createFlags;
+	uint32_t         dimentions[2];
+	const char* pName;
+} SgWindowConfig;
+
+typedef struct SgGraphicsConfig {
+	uint32_t mssa;
+} SgGraphicsConfig;
+
+typedef struct SgAppConfig {
+	SgWindowConfig   windowConfig;
+	SgGraphicsConfig graphicsConfig;
+	cJSON*           configJSON;
+} SgAppConfig;
+
 typedef GLFWwindow SgWindow;
 
 typedef struct SgApp {
@@ -88,6 +112,8 @@ typedef struct SgApp {
 
 	VkRect2D*                 pScissor;
 	VkViewport*               pViewport;
+	// Config
+	SgAppConfig               appConfig;
 } SgApp;
 
 typedef enum SgResourceTypeFlagBits {

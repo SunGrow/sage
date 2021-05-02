@@ -17,15 +17,54 @@ static const char* SG_SURF_EXT[] = {
 #endif
 };
 
+static SgResult getAppConfig(const SgFile* pFile, SgAppConfig* pAppConfig) {
+	const char *error_ptr;
+	cJSON* configJSON = pAppConfig->configJSON;
 
-static SgResult createGLFWwindow(const SgAppCreateInfo *pCreateInfo, SgWindow **ppWindow) {
-	SgWindow* pWindow = *ppWindow;
-	if (pCreateInfo->flags & SG_APP_WINDOW_RESIZABLE) {
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+	if (configJSON == NULL) {
+		configJSON = cJSON_ParseWithOpts((char*) pFile->pBytes, &error_ptr, 1);
+		if (configJSON == NULL && error_ptr != NULL) {
+    	    log_error("[JSON]: Error before: %s\n", error_ptr);
+			return -1;
+		}
+    }
+	cJSON* window = cJSON_GetObjectItem(configJSON, "window");
+	{
+		cJSON* width = cJSON_GetObjectItem(window, "width");
+		pAppConfig->windowConfig.dimentions[0] = cJSON_GetNumberValue(width);
+		cJSON* height = cJSON_GetObjectItem(window, "height");
+		pAppConfig->windowConfig.dimentions[1] = cJSON_GetNumberValue(height);
+		cJSON* cursor = cJSON_GetObjectItem(window, "cursor");
+		if (!cJSON_GetNumberValue(cursor)) {
+			pAppConfig->windowConfig.createFlags |= SG_APP_CURSOR_HIDDEN;
+		}
+		cJSON* fullscreen = cJSON_GetObjectItem(window, "fullscreen");
+		if (cJSON_GetNumberValue(fullscreen)) {
+			pAppConfig->windowConfig.createFlags |= SG_APP_WINDOW_FULLSCREEN;
+		}
+		cJSON* resizable = cJSON_GetObjectItem(window, "resizable");
+		if (cJSON_GetNumberValue(resizable)) {
+			pAppConfig->windowConfig.createFlags |= SG_APP_WINDOW_RESIZABLE;
+		}
+
 	}
+	cJSON* graphics = cJSON_GetObjectItem(configJSON, "graphics");
+	{
+		cJSON* msaa = cJSON_GetObjectItem(graphics, "msaa");
+		pAppConfig->graphicsConfig.mssa = cJSON_GetNumberValue(msaa);
+		cJSON* vsync = cJSON_GetObjectItem(graphics, "vsync");
+	}
+	pAppConfig->configJSON = configJSON;
+
+	return SG_SUCCESS;
+}
+
+static SgResult createGLFWwindow(const SgAppConfig *pAppConfig, SgWindow **ppWindow) {
+	SgWindow* pWindow = *ppWindow;
+	glfwWindowHint(GLFW_RESIZABLE, pAppConfig->windowConfig.createFlags & SG_APP_WINDOW_RESIZABLE);
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-	if (pCreateInfo->flags & SG_APP_WINDOW_FULLSCREEN) {
+	if (pAppConfig->windowConfig.createFlags & SG_APP_WINDOW_FULLSCREEN) {
 		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 		 
@@ -34,9 +73,9 @@ static SgResult createGLFWwindow(const SgAppCreateInfo *pCreateInfo, SgWindow **
 		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
-		pWindow = glfwCreateWindow(mode->width, mode->height, pCreateInfo->pName, monitor, NULL);
+		pWindow = glfwCreateWindow(mode->width, mode->height, pAppConfig->windowConfig.pName, monitor, NULL);
 	} else {
-		pWindow = glfwCreateWindow(pCreateInfo->size[0], pCreateInfo->size[1], pCreateInfo->pName, NULL, NULL);
+		pWindow = glfwCreateWindow(pAppConfig->windowConfig.dimentions[0], pAppConfig->windowConfig.dimentions[1], pAppConfig->windowConfig.pName, NULL, NULL);
 	}
 	if(pWindow) {
 		sgLogInfo_Debug("[AppInit]: GLFW window created");
@@ -44,7 +83,7 @@ static SgResult createGLFWwindow(const SgAppCreateInfo *pCreateInfo, SgWindow **
 		sgLogFatal("[AppInit]: GLFW window creation error");
 	}
 
-	if (pCreateInfo->flags & SG_APP_CURSOR_HIDDEN) {
+	if (pAppConfig->windowConfig.createFlags & SG_APP_CURSOR_HIDDEN) {
 		glfwSetInputMode(pWindow , GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 	glfwSetInputMode(pWindow, GLFW_STICKY_KEYS, GLFW_TRUE);
@@ -108,20 +147,34 @@ static SgResult createVkInstance(const SgAppCreateInfo *pCreateInfo, VkInstance 
     free(pExt);
 	return SG_SUCCESS;
 }
+static VkSampleCountFlagBits getMaxUsableSampleCount(VkPhysicalDevice physicalDevice) {
+    VkPhysicalDeviceProperties physicalDeviceProperties;
+    vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
+
+    VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts & physicalDeviceProperties.limits.framebufferDepthSampleCounts;
+    if (counts & VK_SAMPLE_COUNT_64_BIT) { return VK_SAMPLE_COUNT_64_BIT; }
+    if (counts & VK_SAMPLE_COUNT_32_BIT) { return VK_SAMPLE_COUNT_32_BIT; }
+    if (counts & VK_SAMPLE_COUNT_16_BIT) { return VK_SAMPLE_COUNT_16_BIT; }
+    if (counts & VK_SAMPLE_COUNT_8_BIT)  { return VK_SAMPLE_COUNT_8_BIT;  }
+    if (counts & VK_SAMPLE_COUNT_4_BIT)  { return VK_SAMPLE_COUNT_4_BIT;  }
+    if (counts & VK_SAMPLE_COUNT_2_BIT)  { return VK_SAMPLE_COUNT_2_BIT;  }
+
+    return VK_SAMPLE_COUNT_1_BIT;
+}
+
 
 SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppApp) {
 	/* TODO: Implement custom allocation callbacks */
-	// static could be an alternative... But it is not thread safe. Mb will change to static later.
-	/* TODO: Make execution order explicit where it matters.           *
-	 * Having to setup individual small createinfo structures may help */
 	SgApp* pApp;
 	SG_CALLOC_NUM(pApp, 1);
 
 	glfwInit();
 	volkInitialize();
 
+	pApp->appConfig.windowConfig.pName = pCreateInfo->pName;
+	getAppConfig(pCreateInfo->pConfigFile, &pApp->appConfig);
 	/* Window */
-	createGLFWwindow(pCreateInfo, &pApp->pWindow);
+	createGLFWwindow(&pApp->appConfig, &pApp->pWindow);
 	/* Vulkan Instance */
 	createVkInstance(pCreateInfo, &pApp->instance);
 #ifdef _DEBUG
@@ -137,8 +190,8 @@ SgResult sgCreateApp(const SgAppCreateInfo *pCreateInfo, SgApp **ppApp) {
 	};
 	getPhysicalDevice(&physicalDeviceGetInfo, &pApp->physicalDevice);
 	pApp->graphicsQueueFamilyIdx = getGraphicsFamilyIndex(pApp->physicalDevice);
-	/* TODO: Actually find sample count supported on a device */
-	pApp->msaaSampleCount = VK_SAMPLE_COUNT_2_BIT;
+	VkSampleCountFlags maxSamples = getMaxUsableSampleCount(pApp->physicalDevice);
+	pApp->msaaSampleCount = (pApp->appConfig.graphicsConfig.mssa > maxSamples) ? maxSamples : pApp->appConfig.graphicsConfig.mssa;
 	/* Vulkan Logical Device */
 	SgLogicalDeviceGetInfo logicalDeviceGetInfo = {
 		.createInfosCount = 1,
@@ -219,105 +272,6 @@ SgResult sgCreateShader(const SgApp *pApp, const SgShaderCreateInfo* pCreateInfo
 	return SG_SUCCESS;
 }
 
-// TODO: Fix this static crap. Is a problem with an API, really. But I have no time to fix it
-// Comment: I guess, I meant that render pass and corresponding framebuffer content should be
-// changed from one place and thus everything in this function should change from the changes
-// in the input params... Or something along those lines. Should really teach myself to leave
-// better comments next time. Even at the times of frustration.
-SgResult createRenderPass(const SgApp *pApp, VkRenderPass* pRenderPass) {
-	VkDevice device = pApp->device;
-	VkFormat format = pApp->surfaceAttributes.format.format;
-
-	VkAttachmentDescription attachments[] = {
-	    {
-	        .format = format,
-	        .samples = pApp->msaaSampleCount,
-			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-    		.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-    		.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-    		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-    		.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-	    },
-	    {
-			.format = VK_FORMAT_D32_SFLOAT_S8_UINT,
-			.samples = pApp->msaaSampleCount,
-			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-			.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-			.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-			.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-			.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-	    },
-		{
-			.format = format,
-			.samples = VK_SAMPLE_COUNT_1_BIT,
-			.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-			.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-			.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-			.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-			.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-		},
-	};
-
-	VkAttachmentReference colorAttachmentRef = {
-	    .attachment = 0,
-	    .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-	};
-	VkAttachmentReference depthAttachmentRef = {
-	    .attachment = 1,
-	    .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-	};
-	VkAttachmentReference resolveAttachmentRef = {
-	    .attachment = 2,
-	    .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-	};
-
-	VkSubpassDescription subpass = {
-	    .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-	    .colorAttachmentCount = 1,
-	    .pColorAttachments = &colorAttachmentRef,
-	    .pDepthStencilAttachment = &depthAttachmentRef,
-		.pResolveAttachments = &resolveAttachmentRef,
-	};
-
-	VkSubpassDependency pDependencies[] = {
-		{
-			.srcSubpass = VK_SUBPASS_EXTERNAL,
-			.dstSubpass = 0,
-
-			.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-			.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-
-			.srcAccessMask = 0,
-			.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-		},
-	};
-
-	VkRenderPassCreateInfo createInfo = {
-	    .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-
-		.pAttachments = attachments,
-		.attachmentCount = NUMOF(attachments),
-
-		.pSubpasses = &subpass,
-		.subpassCount = 1,
-
-		.pDependencies = pDependencies,
-		.dependencyCount = NUMOF(pDependencies),
-	};
-
-
-	if(vkCreateRenderPass(device, &createInfo, 0, pRenderPass) == VK_SUCCESS) {
-		sgLogInfo_Debug("[Graphics Instance]: Render Pass Created");
-	} else {
-		sgLogError("[Graphics Instance]: Render Pass Creation Failure");
-	}
-
-	return SG_SUCCESS;
-}
-
 struct bindRenderObjectInfo {
 	SgMaterialMap*   pMaterialMap;
 	VkCommandBuffer* pCommandBuffer;
@@ -341,7 +295,6 @@ _Bool renderPassBindRenderObjects(const void* item, void* udata) {
 		//
 		vkCmdDrawIndexed(*pInfo->pCommandBuffer, pInfo->pMeshSet->pIndexSizes[meshID], pRenderObjects->pRenderObjects[i].instanceCount, 0, pInfo->pMeshSet->pVertexOffsets[meshID], 0);
 	}
-	
 
 	return 1;
 }
@@ -377,9 +330,6 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo *pInitInfo, SgUpdat
 			.clearValueCount = NUMOF(pClearValues),
 			.pClearValues = pClearValues,
 		};
-
-		// TODO: RESIZE SHOULD BE DYNAMIC! YOU YOURSELF MADE IT THAT WAY!
-		// YET NOW YOU ARE TOO LAZY TO MAKE IT A THING. WORK!
 		*pInitInfo->pMaterialMap->pApp->pScissor = (VkRect2D){
 		    { 0, 0, },
 			pInitInfo->pMaterialMap->swapchain.extent,

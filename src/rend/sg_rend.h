@@ -11,16 +11,9 @@
 #include "../res/sg_material.h"
 #include "hashmap.h"
 
-typedef enum SgAppCreateFlagBits {
-	SG_APP_CURSOR_HIDDEN         = 0x00000001,
-	SG_APP_WINDOW_RESIZABLE      = 0x00000002,
-	SG_APP_WINDOW_FULLSCREEN     = 0x00000004,
-} SgAppCreateFlagBits;
-typedef SgFlags SgAppCreateFlags;
-
 typedef struct SgAppCreateInfo {
 	const char*            pName;
-	SgAppCreateFlags       flags;
+	SgFile*                pConfigFile;
 	v2                     size;
 } SgAppCreateInfo;
 

@@ -72,6 +72,8 @@ static SgResult sgCreateResource(const SgApp* pApp, const SgResourceCreateInfo *
 			.pImage = &pResource->image,
 			.type   = pCreateInfo->type,
 			.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
+			.levelCount = pCreateInfo->levelCount,
+			.layerCount = pCreateInfo->layerCount,
 		};
 		sgCreateImageView(pApp, &imageViewCreateInfo, &imageView);
 		pResource->imageView = imageView.imageView;
@@ -386,8 +388,8 @@ SgResult sgCreateImageView(const SgApp* pApp, const SgImageViewCreateInfo *pCrea
 	    .viewType = pCreateInfo->type,
 	    .format = pCreateInfo->pImage->format,
 	    .subresourceRange.aspectMask = pCreateInfo->aspectFlags,
-	    .subresourceRange.levelCount = 1,
-	    .subresourceRange.layerCount = 1,
+	    .subresourceRange.levelCount = pCreateInfo->levelCount,
+	    .subresourceRange.layerCount = pCreateInfo->layerCount,
 	};
 	vkCreateImageView(pApp->device, &createinfo, VK_NULL_HANDLE, &pImageView->imageView);
 	return SG_SUCCESS;

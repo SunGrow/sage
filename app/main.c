@@ -15,8 +15,9 @@
 int main() {
 	// Testing
 	
-	SgFile configFile;
-	sgOpenFile("cfg/contexts.json", &configFile);
+	SgFile contextConfigFile;
+	const char* contextConfigFilePath = "cfg/contexts.json";
+	sgOpenFile(contextConfigFilePath, &contextConfigFile);
 
 	SgInputAction inputActions[] = {
 		keyPressForward,
@@ -58,8 +59,7 @@ int main() {
 	struct SgLighting {
 		v4 position;
 		v4 color;
-	};
-	struct SgLighting lighting = {
+	} lighting = {
 		.position = {-3.0, 1.0, 0.0, 1.0},
 		.color = {1.0,1.0,0.6,1.0},
 	};
@@ -101,11 +101,11 @@ int main() {
 		.pInputSignals = inputSignals,
 		.signalCount   = NUMOF(inputSignals),
 
-		.file          = configFile,
+		.file          = contextConfigFile,
 	};
 
 	sgLoadContexts(&activeContextsCreateInfo, &contexts);
-	sgCloseFile(&configFile);
+	sgCloseFile(&contextConfigFile);
 	//SgActionNames oldNames[] = {
 	//	{
 	//		.actionType = SG_ACTION_TYPE_TRIGGER,
@@ -191,18 +191,19 @@ int main() {
 	//
 	
 
+	SgFile appConfigFile;
+	const char* appConfigFilePath = "cfg/app.json";
+	sgOpenFile(appConfigFilePath, &appConfigFile);
 	SgAppCreateInfo createInfo = {
 		.pName = "Space Invaders",
-		.size  = {640, 480},
-		.flags = SG_APP_CURSOR_HIDDEN,
-//		.flags = SG_APP_WINDOW_FULLSCREEN,
+		.configFile = appConfigFile,
 	};
-
 	SgApp app;
-
 	sgCreateApp(&createInfo, &app);
 
-	cameraTransform.camera.aspectRatio = createInfo.size[0]/createInfo.size[1];
+	sgCloseFile(&appConfigFile);
+
+	cameraTransform.camera.aspectRatio = 16/9;
 	cameraTransform.camera.fov = deg_to_rad(80.f);
 	sgSceneInit(&scene);
 
@@ -214,12 +215,14 @@ int main() {
 	SgFile myriamFragShaderFile;
 	SgFile lightingVertShaderFile;
 	SgFile lightingFragShaderFile;
+
 	sgOpenFile("shaders/chaletShader.vert.spv", &chaletVertShaderFile);
 	sgOpenFile("shaders/chaletShader.frag.spv", &chaletFragShaderFile);
 	sgOpenFile("shaders/myriamShader.vert.spv", &myriamVertShaderFile);
 	sgOpenFile("shaders/myriamShader.frag.spv", &myriamFragShaderFile);
 	sgOpenFile("shaders/lightSourceShader.vert.spv", &lightingVertShaderFile);
 	sgOpenFile("shaders/lightSourceShader.frag.spv", &lightingFragShaderFile);
+
 	SgShaderCreateInfo chaletVertShaderCreateInfo = {
 		.file = chaletVertShaderFile,
 		.stage = SG_SHADER_STAGE_VERTEX_BIT,
@@ -264,6 +267,7 @@ int main() {
 	sgCloseFile(&myriamFragShaderFile);
 	sgCloseFile(&lightingVertShaderFile);
 	sgCloseFile(&lightingFragShaderFile);
+
 	/* Should be inside of an API */
 	SgTransformUniform transformuniform = {0};
 
@@ -288,18 +292,6 @@ int main() {
 	uint32_t chaletMeshID = sgAddMesh("res/chalet.obj", &pMesh);
 	uint32_t myriamMeshID = sgAddMesh("res/myriam.obj", &pMesh);
 	uint32_t sphereMeshID = sgAddMesh("res/sphere.obj", &pMesh);
-	// Each segment has the same length as the previous one and could be replaced
-	// SgSubmeshCreateInfo submeshCreateInfo = {
-	//     .submeshSegmentCount = 2,
-	//     .submeshSegmentMeshData = (struct SgSubmeshData) {
-	//	       .pVertices = &vertices,
-	//	       .pIndices  = &indices,
-	//	       .indexCount = NUMOF(indices),
-	//	       .vertexCount = NUMOF(vertices),
-	//     },
-	// };
-	// sgAddSubmesh(&submeshCreateInfo, &pMesh);
-	/**/
 
 	/* Resource Init */
 	SgResourceCreateInfo meshResourceCreateInfo = {
@@ -326,53 +318,58 @@ int main() {
 
 	/* Resource Init */
 	SgTexture *pChaletTexture;
+	SgTexture *pNormalTexture;
+	SgTexture *pBodyDTexture;
+	SgTexture *pDefTexture;
 	sgLoadTexture("res/chalet.jpg", &pChaletTexture);
+	sgLoadTexture("res/tex/10016_w_Myriam_Body_N_2k.jpg", &pNormalTexture);
+	sgLoadTexture("res/tex/10016_w_Myriam_Body_D_2k.jpg", &pBodyDTexture);
+	sgLoadTexture("res/def.jpg", &pDefTexture);
+
 	SgResourceCreateInfo meshTextureResourceCreateInfo = {
 		.bytes = pChaletTexture->pixels,
 		.size = pChaletTexture->size,
 		.extent = (VkExtent3D) {.height = pChaletTexture->height, .width = pChaletTexture->width, .depth = 1.0},
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
+		.layerCount = 1,
+		.levelCount = 1,
 
 		.pName = "chaletTextureResource",
 	};
-	sgAddResource(app, &meshTextureResourceCreateInfo, &resourceMap);
-
-	///
-	SgTexture *pNormalTexture;
-	sgLoadTexture("res/tex/10016_w_Myriam_Body_N_2k.jpg", &pNormalTexture);
 	SgResourceCreateInfo normalTextureResourceCreateInfo = {
 		.bytes = pNormalTexture->pixels,
 		.size = pNormalTexture->size,
 		.extent = (VkExtent3D) {.height = pNormalTexture->height, .width = pNormalTexture->width, .depth = 1.0},
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
+		.layerCount = 1,
+		.levelCount = 1,
 
 		.pName = "myriamNormalTextureResource",
 	};
-	sgAddResource(app, &normalTextureResourceCreateInfo, &resourceMap);
-
-
-	SgTexture *pBodyDTexture;
-	sgLoadTexture("res/tex/10016_w_Myriam_Body_D_2k.jpg", &pBodyDTexture);
 	SgResourceCreateInfo bodyDTextureResourceCreateInfo = {
 		.bytes = pBodyDTexture->pixels,
 		.size = pBodyDTexture->size,
 		.extent = (VkExtent3D) {.height = pBodyDTexture->height, .width = pBodyDTexture->width, .depth = 1.0},
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
+		.layerCount = 1,
+		.levelCount = 1,
 
 		.pName = "myriamBodyDTextureResource",
 	};
-	sgAddResource(app, &bodyDTextureResourceCreateInfo, &resourceMap);
-
-	SgTexture *pDefTexture;
-	sgLoadTexture("res/def.jpg", &pDefTexture);
 	SgResourceCreateInfo defTextureResourceCreateInfo = {
 		.bytes = pDefTexture->pixels,
 		.size = pDefTexture->size,
 		.extent = (VkExtent3D) {.height = pDefTexture->height, .width = pDefTexture->width, .depth = 1.0},
 		.type = SG_RESOURCE_TYPE_TEXTURE_2D,
+		.layerCount = 1,
+		.levelCount = 1,
 
 		.pName = "DefTextureResource",
 	};
+
+	sgAddResource(app, &meshTextureResourceCreateInfo, &resourceMap);
+	sgAddResource(app, &normalTextureResourceCreateInfo, &resourceMap);
+	sgAddResource(app, &bodyDTextureResourceCreateInfo, &resourceMap);
 	sgAddResource(app, &defTextureResourceCreateInfo, &resourceMap);
 	///
 
@@ -384,7 +381,10 @@ int main() {
 	// Materials
 	sgCreateMaterialMap(app, &materialMapCreateInfo, &materialMap);
 
-	SgShader pShadersChalet[] = {chaletVertShader, chaletFragShader};
+	SgShader pShadersChalet[] = {chaletVertShader,  chaletFragShader};
+	SgShader pShadersMyriam[] = {myriamVertShader,  myriamFragShader};
+	SgShader pShadersLighting[] = {lightingVertShader, lightingFragShader};
+
 	SgMaterialCreateInfo materialChaletCreateInfo = {
 		.pMaterialName = "materialChalet",
 		.pShaders = pShadersChalet,
@@ -393,9 +393,7 @@ int main() {
 		.pResourceBindings = materialChaletResourceBindings,
 		.renderObjectCount = 2,
 	};
-	sgAddMaterial(&materialChaletCreateInfo, &materialMap);
 
-	SgShader pShadersMyriam[] = {myriamVertShader, myriamFragShader};
 	SgMaterialCreateInfo materialMyriamCreateInfo = {
 		.pMaterialName = "materialMyriam",
 		.pShaders = pShadersMyriam,
@@ -404,9 +402,7 @@ int main() {
 		.pResourceBindings = materialMyriamSetResourceBinding,
 		.renderObjectCount = 1,
 	};
-	sgAddMaterial(&materialMyriamCreateInfo, &materialMap);
 
-	SgShader pShadersLighting[] = {lightingVertShader, lightingFragShader};
 	SgMaterialCreateInfo materialLightingCreateInfo = {
 		.pMaterialName = "materialLighting",
 		.pShaders = pShadersLighting,
@@ -415,9 +411,12 @@ int main() {
 		.pResourceBindings = materialLightingSetResourceBinding,
 		.renderObjectCount = 1,
 	};
-	sgAddMaterial(&materialLightingCreateInfo, &materialMap);
-	sgInitMaterialMap(app, &materialMap);
 
+	sgAddMaterial(&materialChaletCreateInfo, &materialMap);
+	sgAddMaterial(&materialMyriamCreateInfo, &materialMap);
+	sgAddMaterial(&materialLightingCreateInfo, &materialMap);
+	
+	sgInitMaterialMap(app, &materialMap);
 	//
 
 	SgRenderObject pMyriamRenderObjects[] = {

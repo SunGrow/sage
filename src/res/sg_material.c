@@ -40,7 +40,7 @@ static SgResult sgFillDefaultRenderpass(const SgApp* pApp, VkRenderPass* pRender
     		.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 	    },
 	    {
-			.format = VK_FORMAT_D32_SFLOAT_S8_UINT,
+			.format = VK_FORMAT_D16_UNORM_S8_UINT,
 			.samples = pApp->msaaSampleCount,
 			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
 			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
@@ -53,7 +53,7 @@ static SgResult sgFillDefaultRenderpass(const SgApp* pApp, VkRenderPass* pRender
 			.format = format,
 			.samples = VK_SAMPLE_COUNT_1_BIT,
 			.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-			.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
 			.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 			.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
 			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
@@ -168,6 +168,8 @@ SgResult sgCreateSwapchain(SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo, SgSw
 	SgImageViewCreateInfo imageViewCreateInfo = {
 		.type = VK_IMAGE_VIEW_TYPE_2D,
 		.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
+		.levelCount = 1,
+		.layerCount = 1,
 	};
 	for (uint32_t i = 0; i < pSwapchain->imageCount; ++i) {
 		SgImage image = {
@@ -186,7 +188,7 @@ SgResult sgCreateSwapchain(SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo, SgSw
 		.memoryUsage = VMA_MEMORY_USAGE_GPU_ONLY,
 		.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
 		.type = VK_IMAGE_TYPE_2D,
-		.format = VK_FORMAT_D32_SFLOAT_S8_UINT,
+		.format = VK_FORMAT_D16_UNORM_S8_UINT,
 		.tiling = VK_IMAGE_TILING_OPTIMAL,
 		.layout = VK_IMAGE_LAYOUT_UNDEFINED,
 		.samples = pApp->msaaSampleCount,
@@ -197,6 +199,8 @@ SgResult sgCreateSwapchain(SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo, SgSw
 		.aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT,
 		.pImage = &pSwapchain->depthImage,
 		.type = VK_IMAGE_VIEW_TYPE_2D,
+		.levelCount = 1,
+		.layerCount = 1,
 	};
 	sgCreateImageView(pApp, &depthImageViewCreateInfo, &pSwapchain->depthImageView);
 	/* Transition depth image */
@@ -222,7 +226,7 @@ SgResult sgCreateSwapchain(SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo, SgSw
 
 	/**/
 
-	/* Blend Image to Creation */
+	/* Blend Image Creation */
 	SgImageCreateInfo blendImageCreateInfo = {
 		.extent = (VkExtent3D) {pSwapchain->extent.width, pSwapchain->extent.height, 1},
 		.memoryUsage = VMA_MEMORY_USAGE_GPU_ONLY,
@@ -238,6 +242,8 @@ SgResult sgCreateSwapchain(SgApp *pApp, SgSwapchainCreateInfo *pCreateInfo, SgSw
 		.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
 		.pImage = &pSwapchain->blendImage,
 		.type = VK_IMAGE_VIEW_TYPE_2D,
+		.levelCount = 1,
+		.layerCount = 1,
 	};
 	sgCreateImageView(pApp, &blendImageViewCreateInfo, &pSwapchain->blendImageView);
 

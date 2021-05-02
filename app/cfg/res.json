@@ -1,0 +1,123 @@
+{
+	"passes" : [
+		{
+			"name" : "default",
+			"type" : "render",
+			"attachments" : [
+				{
+					"name"           : "color",
+					"format"         : "surface",
+					"samples"        : "msaa",
+					"loadOp"         : "CLEAR",
+					"storeOp"        : "DONT_CARE",
+					"stencilLoadOp"  : "DONT_CARE",
+					"stencilStoreOp" : "DONT_CARE",
+					"initialLayout"  : "UNDEFINED",
+					"finalLayout"    : "COLOR_ATTACHMENT_OPTIMAL"
+				},
+				{
+					"name"           : "depth",
+					"format"         : "surface",
+					"samples"        : "msaa",
+					"loadOp"         : "CLEAR",
+					"storeOp"        : "DONT_CARE",
+					"stencilLoadOp"  : "DONT_CARE",
+					"stencilStoreOp" : "DONT_CARE",
+					"initialLayout"  : "DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+					"finalLayout"    : "DEPTH_STENCIL_ATTACHMENT_OPTIMAL"
+				},
+				{
+					"name"           : "colorblend",
+					"format"         : "surface",
+					"samples"        : "msaa",
+					"loadOp"         : "DONT_CARE",
+					"storeOp"        : "DONT_CARE",
+					"stencilLoadOp"  : "DONT_CARE",
+					"stencilStoreOp" : "DONT_CARE",
+					"initialLayout"  : "UNDEFINED",
+					"finalLayout"    : "PRESENT_SRC_KHR"
+				}
+			],
+			"subpasses" : [
+				{
+					"name" : "out",
+					"colorAttachmentRefs" : [
+						{
+							"name" : "color",
+							"layout" : "COLOR_ATTACHMENT_OPTIMAL"
+						}
+					],
+					"depthAttachmentRefs" : [
+						{
+							"name" : "depth",
+							"layout" : "DEPTH_STENCIL_ATTACHMENT_OPTIMAL"
+						}
+					],
+					"resolveAttachmentRefs" : [
+						{
+							"name" : "colorblend",
+							"layout" : "COLOR_ATTACHMENT_OPTIMAL"
+						}
+					]
+				}
+			],
+			"dependencies" : [
+				"srcSubpass" : "extern",
+				"dstSubpass" : "out",
+				"srcStageMask" : ["COLOR_ATTACHMENT_OUTPUT_BIT"],
+				"dstStageMask" : ["COLOR_ATTACHMENT_OUTPUT_BIT"],
+				"srcAccessMask" : [],
+				"dstAccessMask" : ["COLOR_ATTACHMENT_READ_BIT", "COLOR_ATTACHMENT_WRITE_BIT"]
+			]
+		},
+		{
+			"name" : "default",
+			"type" : "compute"
+		}
+	],
+	"resources" : [
+		{
+			"name" : "blendImage",
+			"memoryUsage" : "gpuOnly",
+			"type" : "image",
+			"imageType" : "2D",
+			"format" : "surface",
+			"tiling" : "OPTIMAL",
+			"layout" : "UNDEFINED",
+			"samples" : "msaa"
+		},
+		{
+			"name" : "depthImage",
+			"memoryUsage" : "gpuOnly",
+			"type" : "image",
+			"imageType" : "2D",
+			"format" : "D16_UNORM_S8_UINT",
+			"tiling" : "OPTIMAL",
+			"layout" : "UNDEFINED",
+			"samples" : "msaa"
+		}
+	],
+	"resourceViews" : [
+		{
+			"name" : "blendImageView",
+			"resourceName" : "blendImage",
+			"type" : "image",
+			"aspectFlag" : "DEPTH_BIT",
+			"levelCount" : 1,
+			"layerCount" : 1
+		}
+	],
+	"passReferences" : [
+		{
+			"resourceName" : "depth",
+			"passName" : "default",
+			"passType" : "render",
+			"attachmentName" : "depth"
+		}
+	],
+	"framebuffers" : [
+		{
+			"renderpass" : "default"
+		}
+	]
+}

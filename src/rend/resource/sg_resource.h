@@ -8,6 +8,8 @@ typedef struct SgResourceCreateInfo {
 	void*               bytes;
 	uint32_t            size;
 	VkExtent3D          extent;
+	uint32_t            layerCount;
+	uint32_t            levelCount;
 
 	const char*         pName;
 } SgResourceCreateInfo;
@@ -52,6 +54,8 @@ typedef struct SgImageViewCreateInfo {
 	SgImage*               pImage;
 	VkImageViewType        type;
 	VkImageAspectFlags     aspectFlags;
+	uint32_t               levelCount;
+	uint32_t               layerCount;
 } SgImageViewCreateInfo;
 
 SgResult sgCreateImageView(const SgApp* pApp, const SgImageViewCreateInfo *pCreateInfo, SgImageView *pImageView);

@@ -1,30 +1,56 @@
 #include "sg_base.h"
-#include "stdlib.h"
-#include "stdio.h"
-#include "log.h"
+#include <stdlib.h>
+#include <stdio.h>
+
+#ifdef __unix__
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <errno.h>
+#include <string.h>
+
+uint32_t fsize(const char* path) {
+	struct stat st;
+    if (stat(path, &st) == 0)
+        return st.st_size;
+    sgLogError("[Base]: Cannot determine size of %s: %s", path, strerror(errno));
+    return -1;
+}
+#else
+#ifdef _WIN32
+uint32_t fsize(const char* path) {
+    sgLogWarning("[Base]: File handling on Windows is not fully supported yet");
+	fseek(fp, 0L, SEEK_END);
+    int sz=ftell(fp);
+    fseek(fp,prev,SEEK_SET); //go back to where we were
+    return sz;
+}
+}
+#endif
+#endif
+
 
 SgResult sgOpenFile(const char* path, SgFile **ppFile) {
 	FILE *file = fopen(path, "rb");
 	if (!file) {
-		log_warn("[Base]: On path < %s > file not found", path);
+		sgLogWarn("[Base]: On path < %s > file not found", path);
 		return 1;
 	}
-	fseek(file, 0, SEEK_END);
-	uint32_t length = ftell(file);
-	fseek(file, 0, SEEK_SET);
+	uint32_t length = fsize(path);
 
 	char* buffer;
-	SG_MALLOC_NUM(buffer, length);
+	SG_CALLOC_NUM(buffer, length);
 	if (!buffer) {
-		log_error("[Base]: File allocation failure");
+		sgLogError("[Base]: File allocation failure");
 		return -1;
 	}
-	size_t rc = fread(buffer, sizeof(char), length, file);
+	size_t rc = fread(buffer, sizeof(buffer[0]), length, file);
 	if (rc != (size_t)length) {
-		log_warn("[Base]: File read failure");
+		sgLogWarn("[Base]: File read failure");
 	}
 	fclose(file);
-	SgFile *pFile = malloc(sizeof(pFile[0]));
+
+	SgFile* pFile;
+	SG_CALLOC_NUM(pFile, 1);
 	pFile->pBytes = (uint32_t*) buffer;
 	pFile->size   = length;
 	*ppFile = pFile;
@@ -35,7 +61,7 @@ SgResult sgOpenFile(const char* path, SgFile **ppFile) {
 SgResult sgWriteFile(const char* path, SgFile *pFile) {
 	FILE *file = fopen(path, "wb");
 	if (!file) {
-		log_warn("[Base]: On path < %s > file could not be created/opened", path);
+		sgLogWarn("[Base]: On path < %s > file could not be created/opened", path);
 		return 1;
 	}
 	fwrite(pFile->pBytes, sizeof(char), pFile->size, file);
