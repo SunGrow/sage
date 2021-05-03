@@ -1,0 +1,950 @@
+[
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Iextern/libvolk.a.p -Iextern -I../extern -I../extern/volk -I../extern/Vulkan-Headers/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libvolk.a.p/volk_volk.c.obj -MF extern/libvolk.a.p/volk_volk.c.obj.d -o extern/libvolk.a.p/volk_volk.c.obj -c ../extern/volk/volk.c",
+    "file": "../extern/volk/volk.c",
+    "output": "extern/libvolk.a.p/volk_volk.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libvma.a.p -Iextern -I../extern -I../extern/VulkanMemoryAllocator/src -I../extern/Vulkan-Headers/include -I../extern/volk -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libvma.a.p/vma_implement.cpp.obj -MF extern/libvma.a.p/vma_implement.cpp.obj.d -o extern/libvma.a.p/vma_implement.cpp.obj -c ../extern/vma_implement.cpp",
+    "file": "../extern/vma_implement.cpp",
+    "output": "extern/libvma.a.p/vma_implement.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Iextern/liblog.a.p -Iextern -I../extern -I../extern/log.c/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -DLOG_USE_COLOR -MD -MQ extern/liblog.a.p/log.c_src_log.c.obj -MF extern/liblog.a.p/log.c_src_log.c.obj.d -o extern/liblog.a.p/log.c_src_log.c.obj -c ../extern/log.c/src/log.c",
+    "file": "../extern/log.c/src/log.c",
+    "output": "extern/liblog.a.p/log.c_src_log.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Iextern/libhashmapc.a.p -Iextern -I../extern -I../extern/hashmap.c -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libhashmapc.a.p/hashmap.c_hashmap.c.obj -MF extern/libhashmapc.a.p/hashmap.c_hashmap.c.obj.d -o extern/libhashmapc.a.p/hashmap.c_hashmap.c.obj -c ../extern/hashmap.c/hashmap.c",
+    "file": "../extern/hashmap.c/hashmap.c",
+    "output": "extern/libhashmapc.a.p/hashmap.c_hashmap.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Iextern/libjson.a.p -Iextern -I../extern -I../extern/cJSON -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libjson.a.p/cJSON_cJSON.c.obj -MF extern/libjson.a.p/cJSON_cJSON.c.obj.d -o extern/libjson.a.p/cJSON_cJSON.c.obj -c ../extern/cJSON/cJSON.c",
+    "file": "../extern/cJSON/cJSON.c",
+    "output": "extern/libjson.a.p/cJSON_cJSON.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_allocator.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_allocator.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_allocator.cpp.obj -c ../extern/meshoptimizer/src/allocator.cpp",
+    "file": "../extern/meshoptimizer/src/allocator.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_allocator.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_clusterizer.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_clusterizer.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_clusterizer.cpp.obj -c ../extern/meshoptimizer/src/clusterizer.cpp",
+    "file": "../extern/meshoptimizer/src/clusterizer.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_clusterizer.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_indexcodec.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_indexcodec.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_indexcodec.cpp.obj -c ../extern/meshoptimizer/src/indexcodec.cpp",
+    "file": "../extern/meshoptimizer/src/indexcodec.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_indexcodec.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_indexgenerator.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_indexgenerator.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_indexgenerator.cpp.obj -c ../extern/meshoptimizer/src/indexgenerator.cpp",
+    "file": "../extern/meshoptimizer/src/indexgenerator.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_indexgenerator.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_overdrawanalyzer.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_overdrawanalyzer.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_overdrawanalyzer.cpp.obj -c ../extern/meshoptimizer/src/overdrawanalyzer.cpp",
+    "file": "../extern/meshoptimizer/src/overdrawanalyzer.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_overdrawanalyzer.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_overdrawoptimizer.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_overdrawoptimizer.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_overdrawoptimizer.cpp.obj -c ../extern/meshoptimizer/src/overdrawoptimizer.cpp",
+    "file": "../extern/meshoptimizer/src/overdrawoptimizer.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_overdrawoptimizer.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_simplifier.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_simplifier.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_simplifier.cpp.obj -c ../extern/meshoptimizer/src/simplifier.cpp",
+    "file": "../extern/meshoptimizer/src/simplifier.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_simplifier.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_spatialorder.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_spatialorder.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_spatialorder.cpp.obj -c ../extern/meshoptimizer/src/spatialorder.cpp",
+    "file": "../extern/meshoptimizer/src/spatialorder.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_spatialorder.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_stripifier.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_stripifier.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_stripifier.cpp.obj -c ../extern/meshoptimizer/src/stripifier.cpp",
+    "file": "../extern/meshoptimizer/src/stripifier.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_stripifier.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_vcacheanalyzer.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_vcacheanalyzer.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_vcacheanalyzer.cpp.obj -c ../extern/meshoptimizer/src/vcacheanalyzer.cpp",
+    "file": "../extern/meshoptimizer/src/vcacheanalyzer.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_vcacheanalyzer.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_vcacheoptimizer.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_vcacheoptimizer.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_vcacheoptimizer.cpp.obj -c ../extern/meshoptimizer/src/vcacheoptimizer.cpp",
+    "file": "../extern/meshoptimizer/src/vcacheoptimizer.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_vcacheoptimizer.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_vertexcodec.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_vertexcodec.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_vertexcodec.cpp.obj -c ../extern/meshoptimizer/src/vertexcodec.cpp",
+    "file": "../extern/meshoptimizer/src/vertexcodec.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_vertexcodec.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_vertexfilter.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_vertexfilter.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_vertexfilter.cpp.obj -c ../extern/meshoptimizer/src/vertexfilter.cpp",
+    "file": "../extern/meshoptimizer/src/vertexfilter.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_vertexfilter.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_vfetchanalyzer.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_vfetchanalyzer.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_vfetchanalyzer.cpp.obj -c ../extern/meshoptimizer/src/vfetchanalyzer.cpp",
+    "file": "../extern/meshoptimizer/src/vfetchanalyzer.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_vfetchanalyzer.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-g++ -Iextern/libmeshoptimizer.a.p -Iextern -I../extern -I../extern/meshoptimizer/src -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -g -static -static-libstdc++ -static-libgcc -MD -MQ extern/libmeshoptimizer.a.p/meshoptimizer_src_vfetchoptimizer.cpp.obj -MF extern/libmeshoptimizer.a.p/meshoptimizer_src_vfetchoptimizer.cpp.obj.d -o extern/libmeshoptimizer.a.p/meshoptimizer_src_vfetchoptimizer.cpp.obj -c ../extern/meshoptimizer/src/vfetchoptimizer.cpp",
+    "file": "../extern/meshoptimizer/src/vfetchoptimizer.cpp",
+    "output": "extern/libmeshoptimizer.a.p/meshoptimizer_src_vfetchoptimizer.cpp.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_vector.c.obj -MF subprojects/flecs/libflecs.a.p/src_vector.c.obj.d -o subprojects/flecs/libflecs.a.p/src_vector.c.obj -c ../subprojects/flecs/src/vector.c",
+    "file": "../subprojects/flecs/src/vector.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_vector.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_log.c.obj -MF subprojects/flecs/libflecs.a.p/src_log.c.obj.d -o subprojects/flecs/libflecs.a.p/src_log.c.obj -c ../subprojects/flecs/src/log.c",
+    "file": "../subprojects/flecs/src/log.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_log.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_misc.c.obj -MF subprojects/flecs/libflecs.a.p/src_misc.c.obj.d -o subprojects/flecs/libflecs.a.p/src_misc.c.obj -c ../subprojects/flecs/src/misc.c",
+    "file": "../subprojects/flecs/src/misc.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_misc.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_os_api.c.obj -MF subprojects/flecs/libflecs.a.p/src_os_api.c.obj.d -o subprojects/flecs/libflecs.a.p/src_os_api.c.obj -c ../subprojects/flecs/src/os_api.c",
+    "file": "../subprojects/flecs/src/os_api.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_os_api.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_type.c.obj -MF subprojects/flecs/libflecs.a.p/src_type.c.obj.d -o subprojects/flecs/libflecs.a.p/src_type.c.obj -c ../subprojects/flecs/src/type.c",
+    "file": "../subprojects/flecs/src/type.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_type.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_sparse.c.obj -MF subprojects/flecs/libflecs.a.p/src_sparse.c.obj.d -o subprojects/flecs/libflecs.a.p/src_sparse.c.obj -c ../subprojects/flecs/src/sparse.c",
+    "file": "../subprojects/flecs/src/sparse.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_sparse.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_entity.c.obj -MF subprojects/flecs/libflecs.a.p/src_entity.c.obj.d -o subprojects/flecs/libflecs.a.p/src_entity.c.obj -c ../subprojects/flecs/src/entity.c",
+    "file": "../subprojects/flecs/src/entity.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_entity.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_strbuf.c.obj -MF subprojects/flecs/libflecs.a.p/src_strbuf.c.obj.d -o subprojects/flecs/libflecs.a.p/src_strbuf.c.obj -c ../subprojects/flecs/src/strbuf.c",
+    "file": "../subprojects/flecs/src/strbuf.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_strbuf.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_iter.c.obj -MF subprojects/flecs/libflecs.a.p/src_iter.c.obj.d -o subprojects/flecs/libflecs.a.p/src_iter.c.obj -c ../subprojects/flecs/src/iter.c",
+    "file": "../subprojects/flecs/src/iter.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_iter.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_addons_bulk.c.obj -MF subprojects/flecs/libflecs.a.p/src_addons_bulk.c.obj.d -o subprojects/flecs/libflecs.a.p/src_addons_bulk.c.obj -c ../subprojects/flecs/src/addons/bulk.c",
+    "file": "../subprojects/flecs/src/addons/bulk.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_addons_bulk.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_addons_dbg.c.obj -MF subprojects/flecs/libflecs.a.p/src_addons_dbg.c.obj.d -o subprojects/flecs/libflecs.a.p/src_addons_dbg.c.obj -c ../subprojects/flecs/src/addons/dbg.c",
+    "file": "../subprojects/flecs/src/addons/dbg.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_addons_dbg.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_hierarchy.c.obj -MF subprojects/flecs/libflecs.a.p/src_hierarchy.c.obj.d -o subprojects/flecs/libflecs.a.p/src_hierarchy.c.obj -c ../subprojects/flecs/src/hierarchy.c",
+    "file": "../subprojects/flecs/src/hierarchy.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_hierarchy.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_addons_direct_access.c.obj -MF subprojects/flecs/libflecs.a.p/src_addons_direct_access.c.obj.d -o subprojects/flecs/libflecs.a.p/src_addons_direct_access.c.obj -c ../subprojects/flecs/src/addons/direct_access.c",
+    "file": "../subprojects/flecs/src/addons/direct_access.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_addons_direct_access.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_addons_module.c.obj -MF subprojects/flecs/libflecs.a.p/src_addons_module.c.obj.d -o subprojects/flecs/libflecs.a.p/src_addons_module.c.obj -c ../subprojects/flecs/src/addons/module.c",
+    "file": "../subprojects/flecs/src/addons/module.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_addons_module.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_addons_queue.c.obj -MF subprojects/flecs/libflecs.a.p/src_addons_queue.c.obj.d -o subprojects/flecs/libflecs.a.p/src_addons_queue.c.obj -c ../subprojects/flecs/src/addons/queue.c",
+    "file": "../subprojects/flecs/src/addons/queue.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_addons_queue.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_addons_reader.c.obj -MF subprojects/flecs/libflecs.a.p/src_addons_reader.c.obj.d -o subprojects/flecs/libflecs.a.p/src_addons_reader.c.obj -c ../subprojects/flecs/src/addons/reader.c",
+    "file": "../subprojects/flecs/src/addons/reader.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_addons_reader.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_addons_snapshot.c.obj -MF subprojects/flecs/libflecs.a.p/src_addons_snapshot.c.obj.d -o subprojects/flecs/libflecs.a.p/src_addons_snapshot.c.obj -c ../subprojects/flecs/src/addons/snapshot.c",
+    "file": "../subprojects/flecs/src/addons/snapshot.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_addons_snapshot.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_addons_writer.c.obj -MF subprojects/flecs/libflecs.a.p/src_addons_writer.c.obj.d -o subprojects/flecs/libflecs.a.p/src_addons_writer.c.obj -c ../subprojects/flecs/src/addons/writer.c",
+    "file": "../subprojects/flecs/src/addons/writer.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_addons_writer.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_table.c.obj -MF subprojects/flecs/libflecs.a.p/src_table.c.obj.d -o subprojects/flecs/libflecs.a.p/src_table.c.obj -c ../subprojects/flecs/src/table.c",
+    "file": "../subprojects/flecs/src/table.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_table.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_signature.c.obj -MF subprojects/flecs/libflecs.a.p/src_signature.c.obj.d -o subprojects/flecs/libflecs.a.p/src_signature.c.obj -c ../subprojects/flecs/src/signature.c",
+    "file": "../subprojects/flecs/src/signature.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_signature.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_switch_list.c.obj -MF subprojects/flecs/libflecs.a.p/src_switch_list.c.obj.d -o subprojects/flecs/libflecs.a.p/src_switch_list.c.obj -c ../subprojects/flecs/src/switch_list.c",
+    "file": "../subprojects/flecs/src/switch_list.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_switch_list.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_world.c.obj -MF subprojects/flecs/libflecs.a.p/src_world.c.obj.d -o subprojects/flecs/libflecs.a.p/src_world.c.obj -c ../subprojects/flecs/src/world.c",
+    "file": "../subprojects/flecs/src/world.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_world.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_stage.c.obj -MF subprojects/flecs/libflecs.a.p/src_stage.c.obj.d -o subprojects/flecs/libflecs.a.p/src_stage.c.obj -c ../subprojects/flecs/src/stage.c",
+    "file": "../subprojects/flecs/src/stage.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_stage.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_bootstrap.c.obj -MF subprojects/flecs/libflecs.a.p/src_bootstrap.c.obj.d -o subprojects/flecs/libflecs.a.p/src_bootstrap.c.obj -c ../subprojects/flecs/src/bootstrap.c",
+    "file": "../subprojects/flecs/src/bootstrap.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_bootstrap.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_map.c.obj -MF subprojects/flecs/libflecs.a.p/src_map.c.obj.d -o subprojects/flecs/libflecs.a.p/src_map.c.obj -c ../subprojects/flecs/src/map.c",
+    "file": "../subprojects/flecs/src/map.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_map.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_filter.c.obj -MF subprojects/flecs/libflecs.a.p/src_filter.c.obj.d -o subprojects/flecs/libflecs.a.p/src_filter.c.obj -c ../subprojects/flecs/src/filter.c",
+    "file": "../subprojects/flecs/src/filter.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_filter.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_query.c.obj -MF subprojects/flecs/libflecs.a.p/src_query.c.obj.d -o subprojects/flecs/libflecs.a.p/src_query.c.obj -c ../subprojects/flecs/src/query.c",
+    "file": "../subprojects/flecs/src/query.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_query.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_api_support.c.obj -MF subprojects/flecs/libflecs.a.p/src_api_support.c.obj.d -o subprojects/flecs/libflecs.a.p/src_api_support.c.obj -c ../subprojects/flecs/src/api_support.c",
+    "file": "../subprojects/flecs/src/api_support.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_api_support.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_modules_stats.c.obj -MF subprojects/flecs/libflecs.a.p/src_modules_stats.c.obj.d -o subprojects/flecs/libflecs.a.p/src_modules_stats.c.obj -c ../subprojects/flecs/src/modules/stats.c",
+    "file": "../subprojects/flecs/src/modules/stats.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_modules_stats.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_modules_pipeline_pipeline.c.obj -MF subprojects/flecs/libflecs.a.p/src_modules_pipeline_pipeline.c.obj.d -o subprojects/flecs/libflecs.a.p/src_modules_pipeline_pipeline.c.obj -c ../subprojects/flecs/src/modules/pipeline/pipeline.c",
+    "file": "../subprojects/flecs/src/modules/pipeline/pipeline.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_modules_pipeline_pipeline.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_modules_pipeline_worker.c.obj -MF subprojects/flecs/libflecs.a.p/src_modules_pipeline_worker.c.obj.d -o subprojects/flecs/libflecs.a.p/src_modules_pipeline_worker.c.obj -c ../subprojects/flecs/src/modules/pipeline/worker.c",
+    "file": "../subprojects/flecs/src/modules/pipeline/worker.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_modules_pipeline_worker.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_modules_system_system.c.obj -MF subprojects/flecs/libflecs.a.p/src_modules_system_system.c.obj.d -o subprojects/flecs/libflecs.a.p/src_modules_system_system.c.obj -c ../subprojects/flecs/src/modules/system/system.c",
+    "file": "../subprojects/flecs/src/modules/system/system.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_modules_system_system.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_modules_system_system_dbg.c.obj -MF subprojects/flecs/libflecs.a.p/src_modules_system_system_dbg.c.obj.d -o subprojects/flecs/libflecs.a.p/src_modules_system_system_dbg.c.obj -c ../subprojects/flecs/src/modules/system/system_dbg.c",
+    "file": "../subprojects/flecs/src/modules/system/system_dbg.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_modules_system_system_dbg.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_modules_timer.c.obj -MF subprojects/flecs/libflecs.a.p/src_modules_timer.c.obj.d -o subprojects/flecs/libflecs.a.p/src_modules_timer.c.obj -c ../subprojects/flecs/src/modules/timer.c",
+    "file": "../subprojects/flecs/src/modules/timer.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_modules_timer.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/libflecs.a.p -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_EXPORTS -Dflecs_STATIC -MD -MQ subprojects/flecs/libflecs.a.p/src_table_graph.c.obj -MF subprojects/flecs/libflecs.a.p/src_table_graph.c.obj.d -o subprojects/flecs/libflecs.a.p/src_table_graph.c.obj -c ../subprojects/flecs/src/table_graph.c",
+    "file": "../subprojects/flecs/src/table_graph.c",
+    "output": "subprojects/flecs/libflecs.a.p/src_table_graph.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/flecs/helloworld.exe.p -I../subprojects/flecs/examples/c/01_helloworld/include -I../subprojects/flecs/include -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ subprojects/flecs/helloworld.exe.p/examples_c_01_helloworld_src_main.c.obj -MF subprojects/flecs/helloworld.exe.p/examples_c_01_helloworld_src_main.c.obj.d -o subprojects/flecs/helloworld.exe.p/examples_c_01_helloworld_src_main.c.obj -c ../subprojects/flecs/examples/c/01_helloworld/src/main.c",
+    "file": "../subprojects/flecs/examples/c/01_helloworld/src/main.c",
+    "output": "subprojects/flecs/helloworld.exe.p/examples_c_01_helloworld_src_main.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_context.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_context.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_context.c.obj -c ../subprojects/glfw/src/context.c",
+    "file": "../subprojects/glfw/src/context.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_context.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_init.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_init.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_init.c.obj -c ../subprojects/glfw/src/init.c",
+    "file": "../subprojects/glfw/src/init.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_init.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_input.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_input.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_input.c.obj -c ../subprojects/glfw/src/input.c",
+    "file": "../subprojects/glfw/src/input.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_input.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_monitor.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_monitor.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_monitor.c.obj -c ../subprojects/glfw/src/monitor.c",
+    "file": "../subprojects/glfw/src/monitor.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_monitor.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_vulkan.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_vulkan.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_vulkan.c.obj -c ../subprojects/glfw/src/vulkan.c",
+    "file": "../subprojects/glfw/src/vulkan.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_vulkan.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_window.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_window.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_window.c.obj -c ../subprojects/glfw/src/window.c",
+    "file": "../subprojects/glfw/src/window.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_window.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_win32_init.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_win32_init.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_win32_init.c.obj -c ../subprojects/glfw/src/win32_init.c",
+    "file": "../subprojects/glfw/src/win32_init.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_win32_init.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_win32_joystick.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_win32_joystick.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_win32_joystick.c.obj -c ../subprojects/glfw/src/win32_joystick.c",
+    "file": "../subprojects/glfw/src/win32_joystick.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_win32_joystick.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_win32_monitor.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_win32_monitor.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_win32_monitor.c.obj -c ../subprojects/glfw/src/win32_monitor.c",
+    "file": "../subprojects/glfw/src/win32_monitor.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_win32_monitor.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_win32_time.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_win32_time.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_win32_time.c.obj -c ../subprojects/glfw/src/win32_time.c",
+    "file": "../subprojects/glfw/src/win32_time.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_win32_time.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_win32_thread.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_win32_thread.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_win32_thread.c.obj -c ../subprojects/glfw/src/win32_thread.c",
+    "file": "../subprojects/glfw/src/win32_thread.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_win32_thread.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_win32_window.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_win32_window.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_win32_window.c.obj -c ../subprojects/glfw/src/win32_window.c",
+    "file": "../subprojects/glfw/src/win32_window.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_win32_window.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_wgl_context.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_wgl_context.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_wgl_context.c.obj -c ../subprojects/glfw/src/wgl_context.c",
+    "file": "../subprojects/glfw/src/wgl_context.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_wgl_context.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_egl_context.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_egl_context.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_egl_context.c.obj -c ../subprojects/glfw/src/egl_context.c",
+    "file": "../subprojects/glfw/src/egl_context.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_egl_context.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/libcm_glfw.a.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=c99 -g -static -static-libstdc++ -static-libgcc -Wdeclaration-after-statement -DUNICODE -DWINVER=0x0501 -D_GLFW_USE_CONFIG_H -D_UNICODE -MD -MQ subprojects/glfw/libcm_glfw.a.p/src_osmesa_context.c.obj -MF subprojects/glfw/libcm_glfw.a.p/src_osmesa_context.c.obj.d -o subprojects/glfw/libcm_glfw.a.p/src_osmesa_context.c.obj -c ../subprojects/glfw/src/osmesa_context.c",
+    "file": "../subprojects/glfw/src/osmesa_context.c",
+    "output": "subprojects/glfw/libcm_glfw.a.p/src_osmesa_context.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_boing.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_boing.exe.p/examples_boing.c.obj -MF subprojects/glfw/cm_boing.exe.p/examples_boing.c.obj.d -o subprojects/glfw/cm_boing.exe.p/examples_boing.c.obj -c ../subprojects/glfw/examples/boing.c",
+    "file": "../subprojects/glfw/examples/boing.c",
+    "output": "subprojects/glfw/cm_boing.exe.p/examples_boing.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_boing.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_boing.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_boing.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_boing.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_boing.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_clipboard.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_clipboard.exe.p/tests_clipboard.c.obj -MF subprojects/glfw/cm_clipboard.exe.p/tests_clipboard.c.obj.d -o subprojects/glfw/cm_clipboard.exe.p/tests_clipboard.c.obj -c ../subprojects/glfw/tests/clipboard.c",
+    "file": "../subprojects/glfw/tests/clipboard.c",
+    "output": "subprojects/glfw/cm_clipboard.exe.p/tests_clipboard.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_clipboard.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_clipboard.exe.p/deps_getopt.c.obj -MF subprojects/glfw/cm_clipboard.exe.p/deps_getopt.c.obj.d -o subprojects/glfw/cm_clipboard.exe.p/deps_getopt.c.obj -c ../subprojects/glfw/deps/getopt.c",
+    "file": "../subprojects/glfw/deps/getopt.c",
+    "output": "subprojects/glfw/cm_clipboard.exe.p/deps_getopt.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_clipboard.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_clipboard.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_clipboard.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_clipboard.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_clipboard.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_cursor.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_cursor.exe.p/tests_cursor.c.obj -MF subprojects/glfw/cm_cursor.exe.p/tests_cursor.c.obj.d -o subprojects/glfw/cm_cursor.exe.p/tests_cursor.c.obj -c ../subprojects/glfw/tests/cursor.c",
+    "file": "../subprojects/glfw/tests/cursor.c",
+    "output": "subprojects/glfw/cm_cursor.exe.p/tests_cursor.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_cursor.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_cursor.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_cursor.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_cursor.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_cursor.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_empty.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_empty.exe.p/tests_empty.c.obj -MF subprojects/glfw/cm_empty.exe.p/tests_empty.c.obj.d -o subprojects/glfw/cm_empty.exe.p/tests_empty.c.obj -c ../subprojects/glfw/tests/empty.c",
+    "file": "../subprojects/glfw/tests/empty.c",
+    "output": "subprojects/glfw/cm_empty.exe.p/tests_empty.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_empty.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_empty.exe.p/deps_tinycthread.c.obj -MF subprojects/glfw/cm_empty.exe.p/deps_tinycthread.c.obj.d -o subprojects/glfw/cm_empty.exe.p/deps_tinycthread.c.obj -c ../subprojects/glfw/deps/tinycthread.c",
+    "file": "../subprojects/glfw/deps/tinycthread.c",
+    "output": "subprojects/glfw/cm_empty.exe.p/deps_tinycthread.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_empty.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_empty.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_empty.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_empty.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_empty.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_events.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_events.exe.p/tests_events.c.obj -MF subprojects/glfw/cm_events.exe.p/tests_events.c.obj.d -o subprojects/glfw/cm_events.exe.p/tests_events.c.obj -c ../subprojects/glfw/tests/events.c",
+    "file": "../subprojects/glfw/tests/events.c",
+    "output": "subprojects/glfw/cm_events.exe.p/tests_events.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_events.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_events.exe.p/deps_getopt.c.obj -MF subprojects/glfw/cm_events.exe.p/deps_getopt.c.obj.d -o subprojects/glfw/cm_events.exe.p/deps_getopt.c.obj -c ../subprojects/glfw/deps/getopt.c",
+    "file": "../subprojects/glfw/deps/getopt.c",
+    "output": "subprojects/glfw/cm_events.exe.p/deps_getopt.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_events.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_events.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_events.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_events.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_events.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_gamma.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_gamma.exe.p/tests_gamma.c.obj -MF subprojects/glfw/cm_gamma.exe.p/tests_gamma.c.obj.d -o subprojects/glfw/cm_gamma.exe.p/tests_gamma.c.obj -c ../subprojects/glfw/tests/gamma.c",
+    "file": "../subprojects/glfw/tests/gamma.c",
+    "output": "subprojects/glfw/cm_gamma.exe.p/tests_gamma.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_gamma.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_gamma.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_gamma.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_gamma.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_gamma.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_gears.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_gears.exe.p/examples_gears.c.obj -MF subprojects/glfw/cm_gears.exe.p/examples_gears.c.obj.d -o subprojects/glfw/cm_gears.exe.p/examples_gears.c.obj -c ../subprojects/glfw/examples/gears.c",
+    "file": "../subprojects/glfw/examples/gears.c",
+    "output": "subprojects/glfw/cm_gears.exe.p/examples_gears.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_gears.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_gears.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_gears.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_gears.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_gears.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_glfwinfo.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_glfwinfo.exe.p/tests_glfwinfo.c.obj -MF subprojects/glfw/cm_glfwinfo.exe.p/tests_glfwinfo.c.obj.d -o subprojects/glfw/cm_glfwinfo.exe.p/tests_glfwinfo.c.obj -c ../subprojects/glfw/tests/glfwinfo.c",
+    "file": "../subprojects/glfw/tests/glfwinfo.c",
+    "output": "subprojects/glfw/cm_glfwinfo.exe.p/tests_glfwinfo.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_glfwinfo.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_glfwinfo.exe.p/deps_getopt.c.obj -MF subprojects/glfw/cm_glfwinfo.exe.p/deps_getopt.c.obj.d -o subprojects/glfw/cm_glfwinfo.exe.p/deps_getopt.c.obj -c ../subprojects/glfw/deps/getopt.c",
+    "file": "../subprojects/glfw/deps/getopt.c",
+    "output": "subprojects/glfw/cm_glfwinfo.exe.p/deps_getopt.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_glfwinfo.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_glfwinfo.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_glfwinfo.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_glfwinfo.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_glfwinfo.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_glfwinfo.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_glfwinfo.exe.p/deps_glad_vulkan.c.obj -MF subprojects/glfw/cm_glfwinfo.exe.p/deps_glad_vulkan.c.obj.d -o subprojects/glfw/cm_glfwinfo.exe.p/deps_glad_vulkan.c.obj -c ../subprojects/glfw/deps/glad_vulkan.c",
+    "file": "../subprojects/glfw/deps/glad_vulkan.c",
+    "output": "subprojects/glfw/cm_glfwinfo.exe.p/deps_glad_vulkan.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_heightmap.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_heightmap.exe.p/examples_heightmap.c.obj -MF subprojects/glfw/cm_heightmap.exe.p/examples_heightmap.c.obj.d -o subprojects/glfw/cm_heightmap.exe.p/examples_heightmap.c.obj -c ../subprojects/glfw/examples/heightmap.c",
+    "file": "../subprojects/glfw/examples/heightmap.c",
+    "output": "subprojects/glfw/cm_heightmap.exe.p/examples_heightmap.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_heightmap.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_heightmap.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_heightmap.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_heightmap.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_heightmap.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_icon.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_icon.exe.p/tests_icon.c.obj -MF subprojects/glfw/cm_icon.exe.p/tests_icon.c.obj.d -o subprojects/glfw/cm_icon.exe.p/tests_icon.c.obj -c ../subprojects/glfw/tests/icon.c",
+    "file": "../subprojects/glfw/tests/icon.c",
+    "output": "subprojects/glfw/cm_icon.exe.p/tests_icon.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_icon.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_icon.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_icon.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_icon.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_icon.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_iconify.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_iconify.exe.p/tests_iconify.c.obj -MF subprojects/glfw/cm_iconify.exe.p/tests_iconify.c.obj.d -o subprojects/glfw/cm_iconify.exe.p/tests_iconify.c.obj -c ../subprojects/glfw/tests/iconify.c",
+    "file": "../subprojects/glfw/tests/iconify.c",
+    "output": "subprojects/glfw/cm_iconify.exe.p/tests_iconify.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_iconify.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_iconify.exe.p/deps_getopt.c.obj -MF subprojects/glfw/cm_iconify.exe.p/deps_getopt.c.obj.d -o subprojects/glfw/cm_iconify.exe.p/deps_getopt.c.obj -c ../subprojects/glfw/deps/getopt.c",
+    "file": "../subprojects/glfw/deps/getopt.c",
+    "output": "subprojects/glfw/cm_iconify.exe.p/deps_getopt.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_iconify.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_iconify.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_iconify.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_iconify.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_iconify.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_inputlag.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_inputlag.exe.p/tests_inputlag.c.obj -MF subprojects/glfw/cm_inputlag.exe.p/tests_inputlag.c.obj.d -o subprojects/glfw/cm_inputlag.exe.p/tests_inputlag.c.obj -c ../subprojects/glfw/tests/inputlag.c",
+    "file": "../subprojects/glfw/tests/inputlag.c",
+    "output": "subprojects/glfw/cm_inputlag.exe.p/tests_inputlag.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_inputlag.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_inputlag.exe.p/deps_getopt.c.obj -MF subprojects/glfw/cm_inputlag.exe.p/deps_getopt.c.obj.d -o subprojects/glfw/cm_inputlag.exe.p/deps_getopt.c.obj -c ../subprojects/glfw/deps/getopt.c",
+    "file": "../subprojects/glfw/deps/getopt.c",
+    "output": "subprojects/glfw/cm_inputlag.exe.p/deps_getopt.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_inputlag.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_inputlag.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_inputlag.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_inputlag.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_inputlag.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_joysticks.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_joysticks.exe.p/tests_joysticks.c.obj -MF subprojects/glfw/cm_joysticks.exe.p/tests_joysticks.c.obj.d -o subprojects/glfw/cm_joysticks.exe.p/tests_joysticks.c.obj -c ../subprojects/glfw/tests/joysticks.c",
+    "file": "../subprojects/glfw/tests/joysticks.c",
+    "output": "subprojects/glfw/cm_joysticks.exe.p/tests_joysticks.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_joysticks.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_joysticks.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_joysticks.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_joysticks.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_joysticks.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_monitors.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_monitors.exe.p/tests_monitors.c.obj -MF subprojects/glfw/cm_monitors.exe.p/tests_monitors.c.obj.d -o subprojects/glfw/cm_monitors.exe.p/tests_monitors.c.obj -c ../subprojects/glfw/tests/monitors.c",
+    "file": "../subprojects/glfw/tests/monitors.c",
+    "output": "subprojects/glfw/cm_monitors.exe.p/tests_monitors.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_monitors.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_monitors.exe.p/deps_getopt.c.obj -MF subprojects/glfw/cm_monitors.exe.p/deps_getopt.c.obj.d -o subprojects/glfw/cm_monitors.exe.p/deps_getopt.c.obj -c ../subprojects/glfw/deps/getopt.c",
+    "file": "../subprojects/glfw/deps/getopt.c",
+    "output": "subprojects/glfw/cm_monitors.exe.p/deps_getopt.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_monitors.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_monitors.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_monitors.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_monitors.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_monitors.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_msaa.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_msaa.exe.p/tests_msaa.c.obj -MF subprojects/glfw/cm_msaa.exe.p/tests_msaa.c.obj.d -o subprojects/glfw/cm_msaa.exe.p/tests_msaa.c.obj -c ../subprojects/glfw/tests/msaa.c",
+    "file": "../subprojects/glfw/tests/msaa.c",
+    "output": "subprojects/glfw/cm_msaa.exe.p/tests_msaa.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_msaa.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_msaa.exe.p/deps_getopt.c.obj -MF subprojects/glfw/cm_msaa.exe.p/deps_getopt.c.obj.d -o subprojects/glfw/cm_msaa.exe.p/deps_getopt.c.obj -c ../subprojects/glfw/deps/getopt.c",
+    "file": "../subprojects/glfw/deps/getopt.c",
+    "output": "subprojects/glfw/cm_msaa.exe.p/deps_getopt.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_msaa.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_msaa.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_msaa.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_msaa.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_msaa.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_offscreen.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_offscreen.exe.p/examples_offscreen.c.obj -MF subprojects/glfw/cm_offscreen.exe.p/examples_offscreen.c.obj.d -o subprojects/glfw/cm_offscreen.exe.p/examples_offscreen.c.obj -c ../subprojects/glfw/examples/offscreen.c",
+    "file": "../subprojects/glfw/examples/offscreen.c",
+    "output": "subprojects/glfw/cm_offscreen.exe.p/examples_offscreen.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_offscreen.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_offscreen.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_offscreen.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_offscreen.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_offscreen.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_particles.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_particles.exe.p/examples_particles.c.obj -MF subprojects/glfw/cm_particles.exe.p/examples_particles.c.obj.d -o subprojects/glfw/cm_particles.exe.p/examples_particles.c.obj -c ../subprojects/glfw/examples/particles.c",
+    "file": "../subprojects/glfw/examples/particles.c",
+    "output": "subprojects/glfw/cm_particles.exe.p/examples_particles.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_particles.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_particles.exe.p/deps_tinycthread.c.obj -MF subprojects/glfw/cm_particles.exe.p/deps_tinycthread.c.obj.d -o subprojects/glfw/cm_particles.exe.p/deps_tinycthread.c.obj -c ../subprojects/glfw/deps/tinycthread.c",
+    "file": "../subprojects/glfw/deps/tinycthread.c",
+    "output": "subprojects/glfw/cm_particles.exe.p/deps_tinycthread.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_particles.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_particles.exe.p/deps_getopt.c.obj -MF subprojects/glfw/cm_particles.exe.p/deps_getopt.c.obj.d -o subprojects/glfw/cm_particles.exe.p/deps_getopt.c.obj -c ../subprojects/glfw/deps/getopt.c",
+    "file": "../subprojects/glfw/deps/getopt.c",
+    "output": "subprojects/glfw/cm_particles.exe.p/deps_getopt.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_particles.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_particles.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_particles.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_particles.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_particles.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_reopen.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_reopen.exe.p/tests_reopen.c.obj -MF subprojects/glfw/cm_reopen.exe.p/tests_reopen.c.obj.d -o subprojects/glfw/cm_reopen.exe.p/tests_reopen.c.obj -c ../subprojects/glfw/tests/reopen.c",
+    "file": "../subprojects/glfw/tests/reopen.c",
+    "output": "subprojects/glfw/cm_reopen.exe.p/tests_reopen.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_reopen.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_reopen.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_reopen.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_reopen.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_reopen.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_sharing.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_sharing.exe.p/examples_sharing.c.obj -MF subprojects/glfw/cm_sharing.exe.p/examples_sharing.c.obj.d -o subprojects/glfw/cm_sharing.exe.p/examples_sharing.c.obj -c ../subprojects/glfw/examples/sharing.c",
+    "file": "../subprojects/glfw/examples/sharing.c",
+    "output": "subprojects/glfw/cm_sharing.exe.p/examples_sharing.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_sharing.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_sharing.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_sharing.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_sharing.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_sharing.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_splitview.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_splitview.exe.p/examples_splitview.c.obj -MF subprojects/glfw/cm_splitview.exe.p/examples_splitview.c.obj.d -o subprojects/glfw/cm_splitview.exe.p/examples_splitview.c.obj -c ../subprojects/glfw/examples/splitview.c",
+    "file": "../subprojects/glfw/examples/splitview.c",
+    "output": "subprojects/glfw/cm_splitview.exe.p/examples_splitview.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_splitview.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_splitview.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_splitview.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_splitview.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_splitview.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_tearing.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_tearing.exe.p/tests_tearing.c.obj -MF subprojects/glfw/cm_tearing.exe.p/tests_tearing.c.obj.d -o subprojects/glfw/cm_tearing.exe.p/tests_tearing.c.obj -c ../subprojects/glfw/tests/tearing.c",
+    "file": "../subprojects/glfw/tests/tearing.c",
+    "output": "subprojects/glfw/cm_tearing.exe.p/tests_tearing.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_tearing.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_tearing.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_tearing.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_tearing.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_tearing.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_threads.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_threads.exe.p/tests_threads.c.obj -MF subprojects/glfw/cm_threads.exe.p/tests_threads.c.obj.d -o subprojects/glfw/cm_threads.exe.p/tests_threads.c.obj -c ../subprojects/glfw/tests/threads.c",
+    "file": "../subprojects/glfw/tests/threads.c",
+    "output": "subprojects/glfw/cm_threads.exe.p/tests_threads.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_threads.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_threads.exe.p/deps_tinycthread.c.obj -MF subprojects/glfw/cm_threads.exe.p/deps_tinycthread.c.obj.d -o subprojects/glfw/cm_threads.exe.p/deps_tinycthread.c.obj -c ../subprojects/glfw/deps/tinycthread.c",
+    "file": "../subprojects/glfw/deps/tinycthread.c",
+    "output": "subprojects/glfw/cm_threads.exe.p/deps_tinycthread.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_threads.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_threads.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_threads.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_threads.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_threads.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_timeout.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_timeout.exe.p/tests_timeout.c.obj -MF subprojects/glfw/cm_timeout.exe.p/tests_timeout.c.obj.d -o subprojects/glfw/cm_timeout.exe.p/tests_timeout.c.obj -c ../subprojects/glfw/tests/timeout.c",
+    "file": "../subprojects/glfw/tests/timeout.c",
+    "output": "subprojects/glfw/cm_timeout.exe.p/tests_timeout.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_timeout.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_timeout.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_timeout.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_timeout.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_timeout.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_title.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_title.exe.p/tests_title.c.obj -MF subprojects/glfw/cm_title.exe.p/tests_title.c.obj.d -o subprojects/glfw/cm_title.exe.p/tests_title.c.obj -c ../subprojects/glfw/tests/title.c",
+    "file": "../subprojects/glfw/tests/title.c",
+    "output": "subprojects/glfw/cm_title.exe.p/tests_title.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_title.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_title.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_title.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_title.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_title.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_triangle_opengl.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_triangle_opengl.exe.p/examples_triangle-opengl.c.obj -MF subprojects/glfw/cm_triangle_opengl.exe.p/examples_triangle-opengl.c.obj.d -o subprojects/glfw/cm_triangle_opengl.exe.p/examples_triangle-opengl.c.obj -c ../subprojects/glfw/examples/triangle-opengl.c",
+    "file": "../subprojects/glfw/examples/triangle-opengl.c",
+    "output": "subprojects/glfw/cm_triangle_opengl.exe.p/examples_triangle-opengl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_triangle_opengl.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_triangle_opengl.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_triangle_opengl.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_triangle_opengl.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_triangle_opengl.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_triangle_vulkan.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_triangle_vulkan.exe.p/tests_triangle-vulkan.c.obj -MF subprojects/glfw/cm_triangle_vulkan.exe.p/tests_triangle-vulkan.c.obj.d -o subprojects/glfw/cm_triangle_vulkan.exe.p/tests_triangle-vulkan.c.obj -c ../subprojects/glfw/tests/triangle-vulkan.c",
+    "file": "../subprojects/glfw/tests/triangle-vulkan.c",
+    "output": "subprojects/glfw/cm_triangle_vulkan.exe.p/tests_triangle-vulkan.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_triangle_vulkan.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_triangle_vulkan.exe.p/deps_glad_vulkan.c.obj -MF subprojects/glfw/cm_triangle_vulkan.exe.p/deps_glad_vulkan.c.obj.d -o subprojects/glfw/cm_triangle_vulkan.exe.p/deps_glad_vulkan.c.obj -c ../subprojects/glfw/deps/glad_vulkan.c",
+    "file": "../subprojects/glfw/deps/glad_vulkan.c",
+    "output": "subprojects/glfw/cm_triangle_vulkan.exe.p/deps_glad_vulkan.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_wave.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_wave.exe.p/examples_wave.c.obj -MF subprojects/glfw/cm_wave.exe.p/examples_wave.c.obj.d -o subprojects/glfw/cm_wave.exe.p/examples_wave.c.obj -c ../subprojects/glfw/examples/wave.c",
+    "file": "../subprojects/glfw/examples/wave.c",
+    "output": "subprojects/glfw/cm_wave.exe.p/examples_wave.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_wave.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_wave.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_wave.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_wave.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_wave.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_window.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_window.exe.p/tests_window.c.obj -MF subprojects/glfw/cm_window.exe.p/tests_window.c.obj.d -o subprojects/glfw/cm_window.exe.p/tests_window.c.obj -c ../subprojects/glfw/tests/window.c",
+    "file": "../subprojects/glfw/tests/window.c",
+    "output": "subprojects/glfw/cm_window.exe.p/tests_window.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_window.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_window.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_window.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_window.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_window.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_windows.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_windows.exe.p/examples_windows.c.obj -MF subprojects/glfw/cm_windows.exe.p/examples_windows.c.obj.d -o subprojects/glfw/cm_windows.exe.p/examples_windows.c.obj -c ../subprojects/glfw/examples/windows.c",
+    "file": "../subprojects/glfw/examples/windows.c",
+    "output": "subprojects/glfw/cm_windows.exe.p/examples_windows.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isubprojects/glfw/cm_windows.exe.p -Isubprojects/glfw -I../subprojects/glfw -I../subprojects/glfw/deps -I../subprojects/glfw/include -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -std=gnu99 -g -static -static-libstdc++ -static-libgcc -MD -MQ subprojects/glfw/cm_windows.exe.p/deps_glad_gl.c.obj -MF subprojects/glfw/cm_windows.exe.p/deps_glad_gl.c.obj.d -o subprojects/glfw/cm_windows.exe.p/deps_glad_gl.c.obj -c ../subprojects/glfw/deps/glad_gl.c",
+    "file": "../subprojects/glfw/deps/glad_gl.c",
+    "output": "subprojects/glfw/cm_windows.exe.p/deps_glad_gl.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/log/libsg_log.a.p -Isrc/log -I../src/log -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/log/libsg_log.a.p/sg_log.c.obj -MF src/log/libsg_log.a.p/sg_log.c.obj.d -o src/log/libsg_log.a.p/sg_log.c.obj -c ../src/log/sg_log.c",
+    "file": "../src/log/sg_log.c",
+    "output": "src/log/libsg_log.a.p/sg_log.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/base/libsg_base.a.p -Isrc/base -I../src/base -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -Isrc/log -I../src/log -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/base/libsg_base.a.p/sg_base.c.obj -MF src/base/libsg_base.a.p/sg_base.c.obj.d -o src/base/libsg_base.a.p/sg_base.c.obj -c ../src/base/sg_base.c",
+    "file": "../src/base/sg_base.c",
+    "output": "src/base/libsg_base.a.p/sg_base.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/math/libsg_math.a.p -Isrc/math -I../src/math -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/math/libsg_math.a.p/sg_math.c.obj -MF src/math/libsg_math.a.p/sg_math.c.obj.d -o src/math/libsg_math.a.p/sg_math.c.obj -c ../src/math/sg_math.c",
+    "file": "../src/math/sg_math.c",
+    "output": "src/math/libsg_math.a.p/sg_math.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/res/libsg_res.a.p -Isrc/res -I../src/res -Isrc/base -I../src/base -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -Isrc/math -I../src/math -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/res/libsg_res.a.p/sg_mesh.c.obj -MF src/res/libsg_res.a.p/sg_mesh.c.obj.d -o src/res/libsg_res.a.p/sg_mesh.c.obj -c ../src/res/sg_mesh.c",
+    "file": "../src/res/sg_mesh.c",
+    "output": "src/res/libsg_res.a.p/sg_mesh.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/res/libsg_res.a.p -Isrc/res -I../src/res -Isrc/base -I../src/base -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -Isrc/math -I../src/math -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/res/libsg_res.a.p/sg_material.c.obj -MF src/res/libsg_res.a.p/sg_material.c.obj.d -o src/res/libsg_res.a.p/sg_material.c.obj -c ../src/res/sg_material.c",
+    "file": "../src/res/sg_material.c",
+    "output": "src/res/libsg_res.a.p/sg_material.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/rend/libsg_rend.a.p -Isrc/rend -I../src/rend -Isrc/base -I../src/base -Isrc/math -I../src/math -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/rend/libsg_rend.a.p/sg_rend.c.obj -MF src/rend/libsg_rend.a.p/sg_rend.c.obj.d -o src/rend/libsg_rend.a.p/sg_rend.c.obj -c ../src/rend/sg_rend.c",
+    "file": "../src/rend/sg_rend.c",
+    "output": "src/rend/libsg_rend.a.p/sg_rend.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/rend/libsg_rend.a.p -Isrc/rend -I../src/rend -Isrc/base -I../src/base -Isrc/math -I../src/math -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/rend/libsg_rend.a.p/debug_sg_rend_debug.c.obj -MF src/rend/libsg_rend.a.p/debug_sg_rend_debug.c.obj.d -o src/rend/libsg_rend.a.p/debug_sg_rend_debug.c.obj -c ../src/rend/debug/sg_rend_debug.c",
+    "file": "../src/rend/debug/sg_rend_debug.c",
+    "output": "src/rend/libsg_rend.a.p/debug_sg_rend_debug.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/rend/libsg_rend.a.p -Isrc/rend -I../src/rend -Isrc/base -I../src/base -Isrc/math -I../src/math -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/rend/libsg_rend.a.p/device_sg_rend_device.c.obj -MF src/rend/libsg_rend.a.p/device_sg_rend_device.c.obj.d -o src/rend/libsg_rend.a.p/device_sg_rend_device.c.obj -c ../src/rend/device/sg_rend_device.c",
+    "file": "../src/rend/device/sg_rend_device.c",
+    "output": "src/rend/libsg_rend.a.p/device_sg_rend_device.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/rend/libsg_rend.a.p -Isrc/rend -I../src/rend -Isrc/base -I../src/base -Isrc/math -I../src/math -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/rend/libsg_rend.a.p/surface_sg_rend_surface.c.obj -MF src/rend/libsg_rend.a.p/surface_sg_rend_surface.c.obj.d -o src/rend/libsg_rend.a.p/surface_sg_rend_surface.c.obj -c ../src/rend/surface/sg_rend_surface.c",
+    "file": "../src/rend/surface/sg_rend_surface.c",
+    "output": "src/rend/libsg_rend.a.p/surface_sg_rend_surface.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/rend/libsg_rend.a.p -Isrc/rend -I../src/rend -Isrc/base -I../src/base -Isrc/math -I../src/math -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/rend/libsg_rend.a.p/allocator_sg_rend_allocator.c.obj -MF src/rend/libsg_rend.a.p/allocator_sg_rend_allocator.c.obj.d -o src/rend/libsg_rend.a.p/allocator_sg_rend_allocator.c.obj -c ../src/rend/allocator/sg_rend_allocator.c",
+    "file": "../src/rend/allocator/sg_rend_allocator.c",
+    "output": "src/rend/libsg_rend.a.p/allocator_sg_rend_allocator.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/rend/libsg_rend.a.p -Isrc/rend -I../src/rend -Isrc/base -I../src/base -Isrc/math -I../src/math -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/rend/libsg_rend.a.p/command_sg_rend_command.c.obj -MF src/rend/libsg_rend.a.p/command_sg_rend_command.c.obj.d -o src/rend/libsg_rend.a.p/command_sg_rend_command.c.obj -c ../src/rend/command/sg_rend_command.c",
+    "file": "../src/rend/command/sg_rend_command.c",
+    "output": "src/rend/libsg_rend.a.p/command_sg_rend_command.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/rend/libsg_rend.a.p -Isrc/rend -I../src/rend -Isrc/base -I../src/base -Isrc/math -I../src/math -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/rend/libsg_rend.a.p/resource_sg_resource.c.obj -MF src/rend/libsg_rend.a.p/resource_sg_resource.c.obj.d -o src/rend/libsg_rend.a.p/resource_sg_resource.c.obj -c ../src/rend/resource/sg_resource.c",
+    "file": "../src/rend/resource/sg_resource.c",
+    "output": "src/rend/libsg_rend.a.p/resource_sg_resource.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/scene/libsg_scene.a.p -Isrc/scene -I../src/scene -Isrc/base -I../src/base -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -Isrc/math -I../src/math -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/scene/libsg_scene.a.p/sg_scene.c.obj -MF src/scene/libsg_scene.a.p/sg_scene.c.obj.d -o src/scene/libsg_scene.a.p/sg_scene.c.obj -c ../src/scene/sg_scene.c",
+    "file": "../src/scene/sg_scene.c",
+    "output": "src/scene/libsg_scene.a.p/sg_scene.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/input/libsg_input.a.p -Isrc/input -I../src/input -Isrc/base -I../src/base -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/input/libsg_input.a.p/sg_input.c.obj -MF src/input/libsg_input.a.p/sg_input.c.obj.d -o src/input/libsg_input.a.p/sg_input.c.obj -c ../src/input/sg_input.c",
+    "file": "../src/input/sg_input.c",
+    "output": "src/input/libsg_input.a.p/sg_input.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Isrc/window/libsg_window.a.p -Isrc/window -I../src/window -Isrc/base -I../src/base -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ src/window/libsg_window.a.p/sg_window.c.obj -MF src/window/libsg_window.a.p/sg_window.c.obj.d -o src/window/libsg_window.a.p/sg_window.c.obj -c ../src/window/sg_window.c",
+    "file": "../src/window/sg_window.c",
+    "output": "src/window/libsg_window.a.p/sg_window.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Iapp/demoapp.exe.p -Iapp -I../app -I../include -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -Isrc/log -I../src/log -Isrc/base -I../src/base -Isrc/math -I../src/math -Isrc/res -I../src/res -Isrc/rend -I../src/rend -Isrc/scene -I../src/scene -Isrc/input -I../src/input -Isrc/window -I../src/window -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ app/demoapp.exe.p/main.c.obj -MF app/demoapp.exe.p/main.c.obj.d -o app/demoapp.exe.p/main.c.obj -c ../app/main.c",
+    "file": "../app/main.c",
+    "output": "app/demoapp.exe.p/main.c.obj"
+  },
+  {
+    "directory": "/home/sungrow/Projects/sage/build_windows",
+    "command": "x86_64-w64-mingw32-gcc -Iapp/demoapp.exe.p -Iapp -I../app -I../include -I../extern/Vulkan-Headers/include -I../extern/cgltf -I../extern/fast_obj -I../extern/volk -I../extern/VulkanMemoryAllocator/src -I../extern/log.c/src -I../extern/hashmap.c -I../extern/cJSON -I../extern/meshoptimizer/src -I../extern/stb -Isrc/log -I../src/log -Isrc/base -I../src/base -Isrc/math -I../src/math -Isrc/res -I../src/res -Isrc/rend -I../src/rend -Isrc/scene -I../src/scene -Isrc/input -I../src/input -Isrc/window -I../src/window -I../subprojects/flecs/include -I../subprojects/glfw/include -I../subprojects/glfw/src -Isubprojects/glfw/__CMake_build/src -I../subprojects/glfw/__CMake_build/src -Isubprojects/glfw/__CMake_build -I../subprojects/glfw/__CMake_build -Isubprojects/glfw -I../subprojects/glfw -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -g -static -static-libstdc++ -static-libgcc -pthread -Dflecs_STATIC -MD -MQ app/demoapp.exe.p/inputFuncs.c.obj -MF app/demoapp.exe.p/inputFuncs.c.obj.d -o app/demoapp.exe.p/inputFuncs.c.obj -c ../app/inputFuncs.c",
+    "file": "../app/inputFuncs.c",
+    "output": "app/demoapp.exe.p/inputFuncs.c.obj"
+  }
+]

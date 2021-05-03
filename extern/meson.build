@@ -1,8 +1,8 @@
-mathrun_lib = meson.get_compiler('c').find_library('m', required: false)
-crun_lib = meson.get_compiler('c').find_library('c', required: false)
-pthreadrun_lib = meson.get_compiler('c').find_library('pthread', required: false)
+mathrun_lib = meson.get_compiler('c').find_library('m', required: false, static: true)
+crun_lib = meson.get_compiler('c').find_library('c', required: false, static: true)
+pthreadrun_lib = meson.get_compiler('c').find_library('pthread', required: false, static: true)
 
-dl_lib = meson.get_compiler('c').find_library('dl', required: false)
+dl_lib = meson.get_compiler('c').find_library('dl', required: false, static: true)
 extern_deps += [mathrun_lib, crun_lib, pthreadrun_lib, dl_lib]
 
 vk_inc = include_directories('Vulkan-Headers/include')

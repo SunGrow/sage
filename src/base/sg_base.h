@@ -1,6 +1,6 @@
 #ifndef SAGE_BASE
 #define SAGE_BASE
-#define _DEBUG
+//#define _DEBUG
 
 #include <stddef.h>
 #include <stdint.h>
@@ -36,10 +36,10 @@
 		SG_REALLOC_NUM(object, num, error);     \
 	}
 
-typedef enum {
+typedef enum SgResult {
 	SG_SUCCESS = 0,
 } SgResult;
-enum {
+enum SgBool {
 	SG_FALSE = 0,
 	SG_TRUE = 1,
 };
@@ -254,10 +254,22 @@ typedef struct SgData {
 	size_t size;
 } SgData;
 
+#ifdef __unix__
 typedef struct SgFile {
 	uint32_t* pBytes;
 	size_t size;
 } SgFile;
+#else
+#ifdef _WIN32
+#include <windows.h>
+typedef struct SgFile {
+	HANDLE hFile;
+	LPVOID pBytes;
+	LARGE_INTEGER sizeLI;
+	LONGLONG size;
+} SgFile;
+#endif
+#endif
 
 SgResult sgOpenFile(const char* path, SgFile** ppFile);
 SgResult sgWriteFile(const char* path, SgFile* pFile);
