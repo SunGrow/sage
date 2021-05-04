@@ -136,7 +136,7 @@ uint32_t sgLoadMesh(const char* pPath, SgMeshSet** ppMesh) {
 	// MeshLoad
 	//
 	// DEBUG
-	if (1) {
+	if (0) {
 		uint32_t totalVertices = totalIndices;
 		SG_STRETCHALLOC(pMesh->pVertices, pMesh->vertexCount + totalVertices,
 		                "[ALLOC]");
@@ -146,7 +146,7 @@ uint32_t sgLoadMesh(const char* pPath, SgMeshSet** ppMesh) {
 		       totalVertices * sizeof(*pMesh->pVertices));
 		free(pVertices);
 		for (uint32_t i = 0; i < totalIndices; ++i) {
-			pMesh->pIndices[i + pMesh->indexCount] = i + pMesh->vertexCount;
+			pMesh->pIndices[i + pMesh->indexCount] = i;
 		}
 
 		pMesh->pIndexSizes[pMesh->meshCount] = totalIndices;

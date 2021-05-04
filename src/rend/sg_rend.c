@@ -350,7 +350,7 @@ _Bool renderPassBindRenderObjects(const void* item, void* udata) {
 		//
 		vkCmdDrawIndexed(*pInfo->pCommandBuffer,
 		                 pInfo->pMeshSet->pIndexSizes[meshID],
-		                 pRenderObjects->pRenderObjects[i].instanceCount, 0,
+		                 pRenderObjects->pRenderObjects[i].instanceCount, pInfo->pMeshSet->pIndexOffsets[meshID],
 		                 pInfo->pMeshSet->pVertexOffsets[meshID], 0);
 	}
 
