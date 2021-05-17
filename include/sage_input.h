@@ -6,7 +6,7 @@
 
 SG_DEFINE_HANDLE(SgActiveContexts);
 typedef void* SgActor;
-typedef void (*SgInputAction)(/* State */ uint32_t,
+typedef void (*SgInputAction)(/* State */ SgBool,
                               /* rangeX */ double,
                               /* rangeY */ double,
                               SgActor,

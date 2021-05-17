@@ -21,12 +21,6 @@ void sgInitTransformUniform(const SgCamera* pCamera,
 				pTransformUniform->model[i][j] = 0;
 		}
 	}
-
-	v3 at;
-	v3_add(at, pCamera->position, pCamera->front);
-	lookat(pTransformUniform->view, pCamera->position, at, pCamera->up);
-	perspective(pTransformUniform->projection, pCamera->fov, pCamera->aspectRatio,
-	            0.1f, 10.0f);
 }
 
 void sgUpdateTransformUniform(const SgCamera* pCamera,

@@ -1,6 +1,7 @@
 project('sage', 'c', 'cpp',
   version: '0.1.0',
-  license: 'MIT')
+  license: 'MIT',
+  default_options: ['warning_level=3', 'c_std=c17'])
  
 base_inc = include_directories('include')
 
@@ -10,7 +11,6 @@ extern_incs = []
 
 subdir('extern')
 
-flecs_inc = include_directories('subprojects/flecs/include')
 flecs_dep = dependency('flecs', fallback : ['flecs', 'flecs_dep'])
 extern_deps += flecs_dep
 
@@ -41,4 +41,5 @@ run_command('python', postinstallcopy, projshader_dir, buildshader_dir)
 subdir('src')
 subdir('lib')
 subdir('app')
+subdir('assetsys')
 

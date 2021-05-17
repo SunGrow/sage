@@ -63,7 +63,7 @@ static uint32_t loadOBJ(const char* pPath, SgVertex** ppVertices) {
 		totalIndices += 3 * (pObj->face_vertices[i] - 2);
 	}
 	SgVertex* pVertices;
-	SG_MALLOC_NUM(pVertices, totalIndices);
+	SG_CALLOC_NUM(pVertices, totalIndices + 1);
 	uint32_t vertexOffset = 0;
 	uint32_t indexOffset = 0;
 	for (uint32_t i = 0; i < pObj->face_count; ++i) {
@@ -176,12 +176,13 @@ uint32_t sgLoadMesh(const char* pPath, SgMeshSet** ppMesh) {
 	                          totalIndices, sizeof(*pMesh->pVertices), premap);
 	meshopt_remapIndexBuffer(&pMesh->pIndices[pMesh->indexCount], NULL,
 	                         totalIndices, premap);
-	// meshopt_optimizeVertexCache(&pMesh->pIndices[pMesh->indexCount],
-	// &pMesh->pIndices[pMesh->indexCount], totalIndices, totalVertices);
-	// meshopt_optimizeVertexFetch(&pMesh->pVertices[pMesh->vertexCount],
-	// &pMesh->pIndices[pMesh->indexCount], totalIndices,
-	// &pMesh->pVertices[pMesh->vertexCount], totalVertices,
-	// sizeof(*pMesh->pVertices));
+	meshopt_optimizeVertexCache(&pMesh->pIndices[pMesh->indexCount],
+	                            &pMesh->pIndices[pMesh->indexCount], totalIndices,
+	                            totalVertices);
+	meshopt_optimizeVertexFetch(&pMesh->pVertices[pMesh->vertexCount],
+	                            &pMesh->pIndices[pMesh->indexCount], totalIndices,
+	                            &pMesh->pVertices[pMesh->vertexCount],
+	                            totalVertices, sizeof(*pMesh->pVertices));
 
 	pMesh->pIndexOffsets[pMesh->meshCount] = pMesh->indexCount;
 	pMesh->pVertexOffsets[pMesh->meshCount] = pMesh->vertexCount;
@@ -192,7 +193,7 @@ uint32_t sgLoadMesh(const char* pPath, SgMeshSet** ppMesh) {
 	pMesh->meshCount += 1;
 	*ppMesh = pMesh;
 	free(pVertices);
-	sgLogInfo("[Res]: Mesh Read Successfull");
+	sgLogInfo_Debug("[Res]: Mesh Read Successfull");
 
 	free(premap);
 	return pMesh->meshCount - 1;

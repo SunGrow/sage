@@ -49,8 +49,8 @@ static uint64_t keyHash(const void* item, uint64_t seed0, uint64_t seed1) {
 
 static bool keyIter(const void* item, void* udata) {
 	const SgInputKey* key = item;
-	log_info("[JSON]: hashmap item is [key: %d, mods: %d, type: %d, id: %d]",
-	         key->key, key->mods, key->type, key->id);
+	sgLogInfo("[JSON]: hashmap item is [key: %d, mods: %d, type: %d, id: %d]",
+	          key->key, key->mods, key->type, key->id);
 	return true;
 }
 
@@ -200,25 +200,25 @@ void sgUpdateContext(const SgActiveContextsCreateInfo* pCreateInfo,
 
 SgResult sgLoadContexts(const SgActiveContextsCreateInfo* pCreateInfo,
                         SgActiveContexts** ppContexts) {
-	const char* error_ptr;
-	cJSON* contexts_json =
-	    cJSON_ParseWithOpts((char*)pCreateInfo->pFile->pBytes, &error_ptr, 1);
-	if (contexts_json == NULL) {
-		if (error_ptr != NULL) {
-			log_error("[JSON]: Error before: %s\n", error_ptr);
+	const char* pError;
+	cJSON* contextsJson =
+	    cJSON_ParseWithOpts((char*)pCreateInfo->pFile->pBytes, &pError, 1);
+	if (contextsJson == NULL) {
+		if (pError != NULL) {
+			sgLogError("[JSON]: Error before: %s\n", pError);
 			return -1;
 		}
 	}
-	cJSON* contexts = cJSON_GetObjectItem(contexts_json, "contexts");
+	cJSON* contexts = cJSON_GetObjectItem(contextsJson, "contexts");
 
 	SgActiveContexts* pActiveContexts;
 	SG_CALLOC_NUM(pActiveContexts, 1);
 	pActiveContexts->contextCount = cJSON_GetArraySize(contexts);
 	if (pActiveContexts->contextCount == 0) {
-		log_warn("[JSON]: Active context is empty");
+		sgLogWarn("[JSON]: Active context is empty");
 		return -1;
 	}
-	pActiveContexts->contextsJSON = contexts_json;
+	pActiveContexts->contextsJSON = contextsJson;
 
 	sgUpdateContext(pCreateInfo, &pActiveContexts);
 	*ppContexts = pActiveContexts;

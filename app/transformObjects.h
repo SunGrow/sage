@@ -66,7 +66,7 @@ struct SgObjectInfo kittenObjects[] = {
     },
 };
 
-struct SgObjectInfo sphereObjects[] = {
+struct SgObjectInfo lightingObjects[] = {
     {
         .transform = {{1.0, 0.0, 0.0, 0.0},
                       {0.0, 1.0, 0.0, 0.0},

@@ -1,6 +1,6 @@
 #ifndef SAGE_BASE
 #define SAGE_BASE
-//#define _DEBUG
+#define _DEBUG
 
 #include <stddef.h>
 #include <stdint.h>
@@ -9,8 +9,9 @@
 #define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
 #include "vk_mem_alloc.h"
-// TODO: Thread wrapper to easily change out apis when needed
+
 #include <pthread.h>
+#include <stdlib.h>
 
 #include "../log/sg_log.h"
 #include "cJSON.h"  // TODO: wrapper
@@ -43,7 +44,7 @@ enum SgBool {
 	SG_FALSE = 0,
 	SG_TRUE = 1,
 };
-typedef uint32_t SgBool;
+typedef uint_fast8_t SgBool;
 typedef uint32_t SgFlags;
 
 typedef struct SurfaceAttributes {
@@ -256,8 +257,8 @@ typedef struct SgData {
 
 #ifdef __unix__
 typedef struct SgFile {
-	uint32_t* pBytes;
-	size_t size;
+	char* pBytes;
+	unsigned long long size;
 } SgFile;
 #else
 #ifdef _WIN32

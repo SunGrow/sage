@@ -52,7 +52,6 @@ static SgResult getAppConfig(const SgFile* pFile, SgAppConfig* pAppConfig) {
 	{
 		cJSON* msaa = cJSON_GetObjectItem(graphics, "msaa");
 		pAppConfig->graphicsConfig.mssa = cJSON_GetNumberValue(msaa);
-		cJSON* vsync = cJSON_GetObjectItem(graphics, "vsync");
 	}
 	pAppConfig->configJSON = configJSON;
 
@@ -350,7 +349,8 @@ _Bool renderPassBindRenderObjects(const void* item, void* udata) {
 		//
 		vkCmdDrawIndexed(*pInfo->pCommandBuffer,
 		                 pInfo->pMeshSet->pIndexSizes[meshID],
-		                 pRenderObjects->pRenderObjects[i].instanceCount, pInfo->pMeshSet->pIndexOffsets[meshID],
+		                 pRenderObjects->pRenderObjects[i].instanceCount,
+		                 pInfo->pMeshSet->pIndexOffsets[meshID],
 		                 pInfo->pMeshSet->pVertexOffsets[meshID], 0);
 	}
 

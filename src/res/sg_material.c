@@ -306,7 +306,7 @@ SgResult sgCreateSwapchain(SgApp* pApp,
 	return SG_SUCCESS;
 }
 
-SgResult sgCreateMaterialMap(const SgApp* pApp,
+SgResult sgCreateMaterialMap(SgApp* pApp,
                              const SgMaterialMapCreateInfo* pCreateInfo,
                              SgMaterialMap** ppMaterialMap) {
 	SgMaterialMap* pMaterialMap = *ppMaterialMap;

@@ -111,7 +111,7 @@ typedef struct SgMaterialMapCreateInfo {
 	uint32_t materailCount;
 } SgMaterialMapCreateInfo;
 
-SgResult sgCreateMaterialMap(const SgApp* pApp,
+SgResult sgCreateMaterialMap(SgApp* pApp,
                              const SgMaterialMapCreateInfo* pCreateInfo,
                              SgMaterialMap** ppMaterialMap);
 SgMaterial* sgAddMaterial(const SgMaterialCreateInfo* pCreateInfo,

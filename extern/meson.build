@@ -82,4 +82,15 @@ extern_deps += meshopt_dep
 
 stb_inc = include_directories('stb')
 extern_incs += stb_inc
+
+lz4_inc = include_directories('lz4/lib')
+lz4_files = files(['lz4/lib/lz4.c', 'lz4/lib/lz4frame.c', 'lz4/lib/lz4hc.c', 'lz4/lib/xxhash.c'])
+lz4_lib = static_library('lz4',
+						  sources: lz4_files,
+						  include_directories: lz4_inc,
+						  )
+lz4_dep = declare_dependency(link_with : lz4_lib,
+                                 include_directories: lz4_inc)
+extern_incs += lz4_inc
+extern_deps += lz4_dep
  

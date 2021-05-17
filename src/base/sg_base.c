@@ -24,7 +24,7 @@ SgResult sgOpenFile(const char* path, SgFile** ppFile) {
 		sgLogWarn("[Base]: On path < %s > file not found", path);
 		return 1;
 	}
-	uint32_t length = fsize(file, path);
+	uint64_t length = fsize(file, path);
 
 	char* buffer;
 	SG_CALLOC_NUM(buffer, length + 1);
@@ -40,7 +40,7 @@ SgResult sgOpenFile(const char* path, SgFile** ppFile) {
 
 	SgFile* pFile;
 	SG_CALLOC_NUM(pFile, 1);
-	pFile->pBytes = (uint32_t*)buffer;
+	pFile->pBytes = buffer;
 	pFile->size = length;
 	*ppFile = pFile;
 

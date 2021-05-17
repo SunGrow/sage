@@ -30,7 +30,10 @@
 	url = https://github.com/tidwall/hashmap.c
 [submodule "extern/cJSON"]
 	path = extern/cJSON
-	url = https://github.com/DaveGamble/cJSON
+	url = https://github.com/SunGrow/cJSON
 [submodule "extern/stb"]
 	path = extern/stb
 	url = https://github.com/nothings/stb
+[submodule "extern/lz4"]
+	path = extern/lz4
+	url = https://github.com/lz4/lz4

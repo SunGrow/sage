@@ -14,7 +14,8 @@ layout(set = 0, binding = 2) uniform sampler2D u_NormalSampler;
 void main() {
 	vec4 depth = vec4(gl_FragCoord.z,gl_FragCoord.z,gl_FragCoord.z, 1.0);
 	vec4 bodyTex = texture(u_BodySampler, v_TexCoord);
-	vec4 normTex = texture(u_NormalSampler, v_TexCoord);
+	vec3 normTex = texture(u_NormalSampler, v_TexCoord).rgb;
+	normTex = normalize(normTex * 2.0 - 1.0);
 	float lighted = dot(v_Normal, v_ToLight);
 	lighted = min(max(lighted, 0.2), 1.0);
 	// No transfer on tex coord and normal

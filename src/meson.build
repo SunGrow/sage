@@ -25,8 +25,10 @@ sage_libs += sginput_lib
 subdir('window')
 sage_incs += sgwindow_inc
 sage_libs += sgwindow_lib
+subdir('jobs')
+sage_incs += sgjobs_inc
+sage_libs += sgjobs_lib
 # entt_src = 
-# jobs_src =
 
 
 # phys_src =

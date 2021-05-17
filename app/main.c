@@ -288,7 +288,7 @@ int main() {
 	uint32_t kittenMeshID = sgAddMesh("res/kitten.obj", &pMesh);
 	uint32_t chaletMeshID = sgAddMesh("res/chalet.obj", &pMesh);
 	uint32_t myriamMeshID = sgAddMesh("res/myriam.obj", &pMesh);
-	uint32_t sphereMeshID = sgAddMesh("res/sphere.obj", &pMesh);
+	uint32_t lightSourceMeshID = sgAddMesh("res/sphere.obj", &pMesh);
 
 	/* Resource Init */
 	SgResourceCreateInfo meshResourceCreateInfo = {
@@ -505,11 +505,11 @@ int main() {
 	sgAddResource(app, &kittenTransformMatricesCreateInfo, &resourceMap);
 
 	SgResourceCreateInfo sphereTransformMatricesCreateInfo = {
-	    .bytes = sphereObjects,
-	    .size = sizeof(sphereObjects),
+	    .bytes = lightingObjects,
+	    .size = sizeof(lightingObjects),
 	    .type = SG_RESOURCE_TYPE_MESH,
 
-	    .pName = "sphereTransformMatrices",
+	    .pName = "lightingTransformMatrices",
 	};
 	sgAddResource(app, &sphereTransformMatricesCreateInfo, &resourceMap);
 	sgInitResourceMap(app, &resourceMap);
@@ -535,23 +535,23 @@ int main() {
 	};
 	sgAddMaterialRenderObjects(&kittenRenderObject, &materialMap);
 
-	const char* materialSphereResourceNames[] = {
+	const char* materialLightSourceResourceNames[] = {
 	    meshResourceCreateInfo.pName, sphereTransformMatricesCreateInfo.pName,
 	    lightingResourceCreateInfo.pName, cameraResourceCreateInfo.pName};
 
-	SgRenderObject sphereRenderObjects[] = {
+	SgRenderObject lightSourceRenderObjects[] = {
 	    {
-	        .meshID = sphereMeshID,
-	        .instanceCount = NUMOF(sphereObjects),
+	        .meshID = lightSourceMeshID,
+	        .instanceCount = NUMOF(lightingObjects),
 	    },
 	};
 	SgRenderObjectCreateInfo sphereRenderObject = {
 	    .materialName = "materialLighting",
-	    .pName = "sphereMesh",
-	    .pRenderObjects = sphereRenderObjects,
-	    .renderObjectCount = NUMOF(sphereRenderObjects),
-	    .ppResourceNames = materialSphereResourceNames,
-	    .resourceCount = NUMOF(materialSphereResourceNames),
+	    .pName = "lightSourceMesh",
+	    .pRenderObjects = lightSourceRenderObjects,
+	    .renderObjectCount = NUMOF(lightSourceRenderObjects),
+	    .ppResourceNames = materialLightSourceResourceNames,
+	    .resourceCount = NUMOF(materialLightSourceResourceNames),
 	};
 	sgAddMaterialRenderObjects(&sphereRenderObject, &materialMap);
 
@@ -590,13 +590,13 @@ int main() {
 		    .bytes = &lighting,
 		    .size = sizeof(lighting),
 		};
-		sphereObjects[0].position[0] = lighting.position[0];
-		sphereObjects[0].position[1] = lighting.position[1];
-		sphereObjects[0].position[2] = lighting.position[2];
-		sphereObjects[0].position[3] = lighting.position[3];
+		lightingObjects[0].position[0] = lighting.position[0];
+		lightingObjects[0].position[1] = lighting.position[1];
+		lightingObjects[0].position[2] = lighting.position[2];
+		lightingObjects[0].position[3] = lighting.position[3];
 		SgData sphereData = {
-		    .bytes = &sphereObjects,
-		    .size = sizeof(sphereObjects),
+		    .bytes = &lightingObjects,
+		    .size = sizeof(lightingObjects),
 		};
 		sgUpdateResource(app, resourceMap, &cameraData,
 		                 cameraResourceCreateInfo.pName);
