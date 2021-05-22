@@ -5,7 +5,7 @@ SgResult sgCreateSemaphore(SgSemaphoreCreateInfo* pCreateInfo,
 	SgSemaphore* pSemaphore = *ppSemaphore;
 	SG_CALLOC_NUM(pSemaphore, 1);
 	pSemaphore->pName = pCreateInfo->pName;
-	*ppSemaphore = pSemaphore;
+	*ppSemaphore      = pSemaphore;
 	return SG_SUCCESS;
 }
 
@@ -18,9 +18,9 @@ void sgDestroySemaphore(SgSemaphore** ppSemaphore) {
 
 void* signalingCommandFunc(void* pData) {
 	SgSignalingCommand* pSignalingCommand = pData;
-	const void* pInput = pSignalingCommand->pCommand->input;
-	void* pObject = pSignalingCommand->pCommand->object;
-	void* pOutput = pSignalingCommand->pCommand->output;
+	const void* pInput                    = pSignalingCommand->pCommand->input;
+	void* pObject                         = pSignalingCommand->pCommand->object;
+	void* pOutput                         = pSignalingCommand->pCommand->output;
 	pSignalingCommand->pCommand->func(pInput, pObject, pOutput);
 	pSignalingCommand->pSemaphore->semaphore = 1;
 	return NULL;
@@ -28,13 +28,13 @@ void* signalingCommandFunc(void* pData) {
 
 SgResult sgExecuteJobBuffer(SgJobBuffer* pJobBuffer, pthread_t* pThread) {
 	SgBool isReady = 1;
-	for (uint32_t i = 0; i < pJobBuffer->pDependencyLayer->semaphoreCount; ++i) {
+	for (SgSize i = 0; i < pJobBuffer->pDependencyLayer->semaphoreCount; ++i) {
 		isReady &= (pJobBuffer->pDependencyLayer->ppSemaphores[i])->semaphore;
 	}
 	if (isReady) {
-		for (uint32_t i = 0; i < pJobBuffer->commandCount; ++i) {
+		for (SgSize i = 0; i < pJobBuffer->commandCount; ++i) {
 			SgSignalingCommand signaligCommand = {
-			    .pCommand = &pJobBuffer->pCommands[i],
+			    .pCommand   = &pJobBuffer->pCommands[i],
 			    .pSemaphore = &pJobBuffer->pCommandSemaphores[i],
 			};
 			pthread_create(pThread, NULL, signalingCommandFunc, &signaligCommand);
@@ -46,7 +46,7 @@ SgResult sgExecuteJobBuffer(SgJobBuffer* pJobBuffer, pthread_t* pThread) {
 
 SgResult sgJobBufferUpdateSemaphore(SgJobBuffer* pJobBuffer) {
 	SgBool isReady = 1;
-	for (uint32_t i = 0; i < pJobBuffer->commandCount; ++i) {
+	for (SgSize i = 0; i < pJobBuffer->commandCount; ++i) {
 		isReady &= pJobBuffer->pCommandSemaphores[i].semaphore;
 	}
 	if (isReady) {
@@ -57,10 +57,10 @@ SgResult sgJobBufferUpdateSemaphore(SgJobBuffer* pJobBuffer) {
 
 SgResult sgJobQueueSubmit(const SgJobQueue* pJobQueue,
                           const SgJobQueueSubmitInfo* pSubmitInfo) {
-	for (uint32_t i = 0; i < pSubmitInfo->jobBufferCount; ++i) {
+	for (SgSize i = 0; i < pSubmitInfo->jobBufferCount; ++i) {
 		sgJobBufferUpdateSemaphore(&pSubmitInfo->pJobBuffers[i]);
 	}
-	for (uint32_t i = 0; i < pSubmitInfo->jobBufferCount; ++i) {
+	for (SgSize i = 0; i < pSubmitInfo->jobBufferCount; ++i) {
 		sgExecuteJobBuffer(&pSubmitInfo->pJobBuffers[i],
 		                   &pJobQueue->pThreads[i % pJobQueue->threadCount]);
 	}

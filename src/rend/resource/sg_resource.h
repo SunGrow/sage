@@ -6,10 +6,10 @@
 typedef struct SgResourceCreateInfo {
 	SgResourceTypeFlags type;
 	void* bytes;
-	uint32_t size;
+	SgSize size;
 	VkExtent3D extent;
-	uint32_t layerCount;
-	uint32_t levelCount;
+	SgSize layerCount;
+	SgSize levelCount;
 
 	const char* pName;
 } SgResourceCreateInfo;
@@ -27,7 +27,7 @@ SgResult sgUpdateResource(const SgApp* pApp,
                           const char* pName);
 SgResult sgUpdateResources(const SgApp* pApp,
                            SgResourceMap* pResourceMap,
-                           const uint32_t resourceCount,
+                           const SgSize resourceCount,
                            const SgData** ppData,
                            const char** ppNames);
 // Update resources with last assigned data (the pointer is stored, so you
@@ -36,7 +36,7 @@ SgResult sgUpdateAllResources(const SgApp* pApp, SgResourceMap* pResourceMap);
 
 typedef struct SgBufferCreateInfo {
 	void* bytes;
-	uint32_t size;
+	SgSize size;
 	SgResourceTypeFlags type;
 } SgBufferCreateInfo;
 
@@ -44,7 +44,7 @@ void sgDestroyResource(const SgApp* pApp, SgResource** ppResource);
 
 SgResult sgCreateBuffer(const SgApp* pApp,
                         SgBufferCreateInfo* pCreateInfo,
-                        SgBuffer* ppBuffer);
+                        SgBufferData* ppBuffer);
 
 typedef struct SgImageCreateInfo {
 	VkExtent3D extent;
@@ -55,20 +55,20 @@ typedef struct SgImageCreateInfo {
 	VkImageUsageFlags usage;
 	VmaMemoryUsage memoryUsage;
 	void* bytes;
-	uint32_t size;
+	SgSize size;
 	VkSampleCountFlags samples;
 } SgImageCreateInfo;
 
 SgResult sgCreateImage(const SgApp* pApp,
                        SgImageCreateInfo* pCreateInfo,
-                       SgImage* pImage);
+                       SgImageData* pImage);
 
 typedef struct SgImageViewCreateInfo {
-	SgImage* pImage;
+	SgImageData* pImage;
 	VkImageViewType type;
 	VkImageAspectFlags aspectFlags;
-	uint32_t levelCount;
-	uint32_t layerCount;
+	SgSize levelCount;
+	SgSize layerCount;
 } SgImageViewCreateInfo;
 
 SgResult sgCreateImageView(const SgApp* pApp,

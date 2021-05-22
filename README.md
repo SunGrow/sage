@@ -23,11 +23,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ### 0.1 Release
 
-* [ ] - Job system
-* [ ] - Rendering state load from json 
 * [ ] - Basic Asset system (Asset app and Asset app output reader in lib)
-* [ ] - Compute shaders <!-- Wow. I still haven't implemented them. -->
+* [ ] - Rendering state load from json 
 * [ ] - GLTF support
+* [ ] - Default PBR pipeline
+* [ ] - Job system
+* [ ] - Compute shaders <!-- Wow. I still haven't implemented them. -->
 * [ ] - Demo apps
 
 ### 0.2 Release
@@ -35,6 +36,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 * [ ] - Rendering state GUI editor
 * [ ] - Job system node-like dependency GUI editor
 * [ ] - Testing pipeline
+* [ ] - Documentation
 
 ### 0.3 Release
 

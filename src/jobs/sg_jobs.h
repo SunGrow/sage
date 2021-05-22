@@ -31,15 +31,15 @@ void sgDestroySemaphore(SgSemaphore** ppSemaphore);
 
 typedef struct SgDependencyLayer {
 	SgSemaphore** ppSemaphores;
-	uint32_t semaphoreCount;
+	SgSize semaphoreCount;
 } SgDependencyLayer;
 
 typedef struct SgJobBuffer {
 	SgCommand* pCommands;
 	SgSemaphore* pCommandSemaphores;
-	uint32_t commandCount;
+	SgSize commandCount;
 	SgDependencyLayer* pDependencyLayer;
-	uint32_t dependencyLayerSemaphoreCount;
+	SgSize dependencyLayerSemaphoreCount;
 	SgSemaphore* pSemaphore;
 } SgJobBuffer;
 
@@ -50,12 +50,12 @@ typedef SgFlags SgJobPoolCreateFlags;
 
 typedef struct SgJobPoolCreateInfo {
 	SgJobPoolCreateFlags flags;
-	uint32_t jobBufferCount;
+	SgSize jobBufferCount;
 } SgJobPoolCreateInfo;
 
 typedef struct SgJobPool {
 	SgJobBuffer* pBuffers;
-	uint32_t bufferCount;
+	SgSize bufferCount;
 } SgJobPool;
 
 SgResult sgCreateJobPool(SgJobPoolCreateInfo* pCreateInfo,
@@ -69,7 +69,7 @@ typedef SgFlags SgJobAllocFlags;
 typedef struct SgJobBufferAllocInfo {
 	SgJobPool* pJobPool;
 	SgJobAllocFlags allocFlags;
-	uint32_t commandCount;
+	SgSize commandCount;
 } SgJobBufferAllocInfo;
 SgResult sgAllocateJobBuffers(SgJobBufferAllocInfo* pAllocInfo,
                               SgJobBuffer* pJobBuffer);
@@ -83,19 +83,19 @@ SgResult sgExecuteJobBuffer(SgJobBuffer* pJobBuffer, pthread_t* pThread);
 SgResult sgJobBufferUpdateSemaphore(SgJobBuffer* pJobBuffer);
 
 typedef struct SgJobQueueInitInfo {
-	uint32_t threadCount;
+	SgSize threadCount;
 } SgJobQueueInitInfo;
 
 typedef struct SgJobQueue {
 	pthread_t* pThreads;
-	uint32_t threadCount;
+	SgSize threadCount;
 } SgJobQueue;
 
 SgResult sgJobQueueInit(SgJobQueueInitInfo* pInitInfo, SgJobQueue** ppJobQueue);
 
 typedef struct SgJobQueueSubmitInfo {
 	SgJobBuffer* pJobBuffers;
-	uint32_t jobBufferCount;
+	SgSize jobBufferCount;
 } SgJobQueueSubmitInfo;
 
 SgResult sgJobQueueSubmit(const SgJobQueue* pJobQueue,

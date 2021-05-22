@@ -31,7 +31,7 @@ SgResult sgCreateResourceMap(const SgApp* pApp, SgResourceMap** ppResourceMap) {
 	vkCreateFence(pApp->device, &fenceCreateInfo, VK_NULL_HANDLE,
 	              &pResourceMap->fence);
 	VkCommandPoolCreateInfo commandPoolCreateInfo = {
-	    .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+	    .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
 	    .queueFamilyIndex = pApp->graphicsQueueFamilyIdx,
 	};
 	VkResult vulkRes =
@@ -47,8 +47,8 @@ SgResult sgCreateResourceMap(const SgApp* pApp, SgResourceMap** ppResourceMap) {
 static SgResult sgCreateResource(const SgApp* pApp,
                                  const SgResourceCreateInfo* pCreateInfo,
                                  SgResource* pResource) {
-	pResource->type = pCreateInfo->type;
-	pResource->dataBuffer.size = pCreateInfo->size;
+	pResource->type               = pCreateInfo->type;
+	pResource->dataBuffer.size    = pCreateInfo->size;
 	pResource->stagingBuffer.size = pCreateInfo->size;
 
 	// Allocate resource buffer
@@ -61,17 +61,17 @@ static SgResult sgCreateResource(const SgApp* pApp,
 		sgCreateBuffer(pApp, &stagingBufferCreateInfo, &pResource->stagingBuffer);
 		vmaMapMemory(pApp->allocator, pResource->stagingBuffer.allocation, &data);
 		memcpy(data, pCreateInfo->bytes, pCreateInfo->size);
-		pResource->stagingBuffer.bytes = data;
+		pResource->stagingBuffer.bytes    = data;
 		SgImageCreateInfo imageCreateInfo = {
-		    .bytes = pCreateInfo->bytes,
-		    .size = pCreateInfo->size,
-		    .type = VK_IMAGE_TYPE_2D,
-		    .layout = VK_IMAGE_LAYOUT_UNDEFINED,
-		    .format = VK_FORMAT_R8G8B8A8_SRGB,
-		    .tiling = VK_IMAGE_TILING_OPTIMAL,
-		    .extent = pCreateInfo->extent,
+		    .bytes   = pCreateInfo->bytes,
+		    .size    = pCreateInfo->size,
+		    .type    = VK_IMAGE_TYPE_2D,
+		    .layout  = VK_IMAGE_LAYOUT_UNDEFINED,
+		    .format  = VK_FORMAT_R8G8B8A8_SRGB,
+		    .tiling  = VK_IMAGE_TILING_OPTIMAL,
+		    .extent  = pCreateInfo->extent,
 		    .samples = VK_SAMPLE_COUNT_1_BIT,
-		    .usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+		    .usage   = VK_IMAGE_USAGE_TRANSFER_SRC_BIT
 		             | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
 		    .memoryUsage = VMA_MEMORY_USAGE_GPU_ONLY,
 		};
@@ -79,40 +79,40 @@ static SgResult sgCreateResource(const SgApp* pApp,
 
 		SgImageView imageView;
 		SgImageViewCreateInfo imageViewCreateInfo = {
-		    .pImage = &pResource->image,
-		    .type = pCreateInfo->type,
+		    .pImage      = &pResource->image,
+		    .type        = pCreateInfo->type,
 		    .aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
-		    .levelCount = pCreateInfo->levelCount,
-		    .layerCount = pCreateInfo->layerCount,
+		    .levelCount  = pCreateInfo->levelCount,
+		    .layerCount  = pCreateInfo->layerCount,
 		};
 		sgCreateImageView(pApp, &imageViewCreateInfo, &imageView);
 		pResource->imageView = imageView.imageView;
 		// TODO: in a function
 		VkSamplerCreateInfo samplerInfo = {
-		    .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-		    .magFilter = VK_FILTER_LINEAR,
-		    .minFilter = VK_FILTER_LINEAR,
+		    .sType            = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+		    .magFilter        = VK_FILTER_LINEAR,
+		    .minFilter        = VK_FILTER_LINEAR,
 		    .anisotropyEnable = VK_FALSE,
-		    .borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+		    .borderColor      = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
 		};
 		vkCreateSampler(pApp->device, &samplerInfo, VK_NULL_HANDLE,
 		                &pResource->imageSampler);
 		/* Transition image */
 		{
 			SgImageTransferInfo transferInfo = {
-			    .image = pResource->image,
-			    .srcImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-			    .dstImageLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-			    .srcQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
-			    .dstQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
-			    .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+			    .image                         = pResource->image,
+			    .srcImageLayout                = VK_IMAGE_LAYOUT_UNDEFINED,
+			    .dstImageLayout                = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			    .srcQueueFamilyID              = VK_QUEUE_FAMILY_IGNORED,
+			    .dstQueueFamilyID              = VK_QUEUE_FAMILY_IGNORED,
+			    .subresourceRange.aspectMask   = VK_IMAGE_ASPECT_COLOR_BIT,
 			    .subresourceRange.baseMipLevel = 0,
-			    .subresourceRange.layerCount = 1,
-			    .subresourceRange.levelCount = 1,
+			    .subresourceRange.layerCount   = 1,
+			    .subresourceRange.levelCount   = 1,
 			    .subresourceRange.baseArrayLayer = 0,
-			    .srcAccessMask = 0,
-			    .dstAccessMask = 0,
-			    .srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+			    .srcAccessMask                   = 0,
+			    .dstAccessMask                   = 0,
+			    .srcStageMask                    = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 			    .dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 			};
 			sgTransferImage(pApp, &transferInfo);
@@ -120,19 +120,19 @@ static SgResult sgCreateResource(const SgApp* pApp,
 
 		{
 			SgImageTransferInfo transferInfo = {
-			    .image = pResource->image,
-			    .srcImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-			    .dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			    .image            = pResource->image,
+			    .srcImageLayout   = VK_IMAGE_LAYOUT_UNDEFINED,
+			    .dstImageLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			    .srcQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
 			    .dstQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
-			    .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-			    .subresourceRange.baseMipLevel = 0,
-			    .subresourceRange.layerCount = 1,
-			    .subresourceRange.levelCount = 1,
+			    .subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,
+			    .subresourceRange.baseMipLevel   = 0,
+			    .subresourceRange.layerCount     = 1,
+			    .subresourceRange.levelCount     = 1,
 			    .subresourceRange.baseArrayLayer = 0,
-			    .srcAccessMask = 0,
-			    .dstAccessMask = 0,
-			    .srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+			    .srcAccessMask                   = 0,
+			    .dstAccessMask                   = 0,
+			    .srcStageMask                    = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 			    .dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 			};
 			sgTransferImage(pApp, &transferInfo);
@@ -171,9 +171,9 @@ SgResult sgAddResource(const SgApp* pApp,
                        const SgResourceCreateInfo* pCreateInfo,
                        SgResourceMap** ppResourceMap) {
 	SgResourceMap* pResourceMap = *ppResourceMap;
-	SgResource resource = {
-	    .pName = pCreateInfo->pName,
-	};
+	SgResource resource         = {
+      .pName = pCreateInfo->pName,
+  };
 	SgResource* pResource = hashmap_get(pResourceMap->pResourceMap, &resource);
 	if (pResource) {
 		sgLogDebug_Debug("Resource under the name \"%s\" is already in a map",
@@ -182,7 +182,7 @@ SgResult sgAddResource(const SgApp* pApp,
 	}
 	sgCreateResource(pApp, pCreateInfo, &resource);
 	resource.lastBytes = pCreateInfo->bytes;
-	resource.lastSize = pCreateInfo->size;
+	resource.lastSize  = pCreateInfo->size;
 	hashmap_set(pResourceMap->pResourceMap, &resource);
 
 	*ppResourceMap = pResourceMap;
@@ -193,27 +193,27 @@ SgResult sgAddResource(const SgApp* pApp,
 struct SgResourceIterInfo {
 	const SgApp* pApp;
 	SgResourceMap* pResourceMap;
-	uint32_t iter;
+	SgSize iter;
 };
 
 _Bool sgImagesToTransferResourcesIter(const void* item, void* data) {
-	const SgResource* pResource = item;
+	const SgResource* pResource         = item;
 	struct SgResourceIterInfo* iterInfo = data;
 	if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
 		SgImageTransferInfo transferInfo = {
-		    .image = pResource->image,
-		    .srcImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		    .dstImageLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		    .srcQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
-		    .dstQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
-		    .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-		    .subresourceRange.baseMipLevel = 0,
-		    .subresourceRange.layerCount = 1,
-		    .subresourceRange.levelCount = 1,
+		    .image                           = pResource->image,
+		    .srcImageLayout                  = VK_IMAGE_LAYOUT_UNDEFINED,
+		    .dstImageLayout                  = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		    .srcQueueFamilyID                = VK_QUEUE_FAMILY_IGNORED,
+		    .dstQueueFamilyID                = VK_QUEUE_FAMILY_IGNORED,
+		    .subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,
+		    .subresourceRange.baseMipLevel   = 0,
+		    .subresourceRange.layerCount     = 1,
+		    .subresourceRange.levelCount     = 1,
 		    .subresourceRange.baseArrayLayer = 0,
-		    .srcAccessMask = 0,
-		    .dstAccessMask = 0,
-		    .srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+		    .srcAccessMask                   = 0,
+		    .dstAccessMask                   = 0,
+		    .srcStageMask                    = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 		    .dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 		};
 		sgTransferImage(iterInfo->pApp, &transferInfo);
@@ -222,23 +222,23 @@ _Bool sgImagesToTransferResourcesIter(const void* item, void* data) {
 }
 
 _Bool sgImagesToRenderResourcesIter(const void* item, void* data) {
-	const SgResource* pResource = item;
+	const SgResource* pResource         = item;
 	struct SgResourceIterInfo* iterInfo = data;
 	if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
 		SgImageTransferInfo transferInfo = {
-		    .image = pResource->image,
-		    .srcImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		    .dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-		    .srcQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
-		    .dstQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
+		    .image                       = pResource->image,
+		    .srcImageLayout              = VK_IMAGE_LAYOUT_UNDEFINED,
+		    .dstImageLayout              = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+		    .srcQueueFamilyID            = VK_QUEUE_FAMILY_IGNORED,
+		    .dstQueueFamilyID            = VK_QUEUE_FAMILY_IGNORED,
 		    .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-		    .subresourceRange.baseMipLevel = 0,
-		    .subresourceRange.layerCount = 1,
-		    .subresourceRange.levelCount = 1,
+		    .subresourceRange.baseMipLevel   = 0,
+		    .subresourceRange.layerCount     = 1,
+		    .subresourceRange.levelCount     = 1,
 		    .subresourceRange.baseArrayLayer = 0,
-		    .srcAccessMask = 0,
-		    .dstAccessMask = 0,
-		    .srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+		    .srcAccessMask                   = 0,
+		    .dstAccessMask                   = 0,
+		    .srcStageMask                    = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 		    .dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 		};
 		sgTransferImage(iterInfo->pApp, &transferInfo);
@@ -247,9 +247,9 @@ _Bool sgImagesToRenderResourcesIter(const void* item, void* data) {
 }
 
 _Bool sgInitResourcesIter(const void* item, void* data) {
-	const SgResource* pResource = item;
+	const SgResource* pResource         = item;
 	struct SgResourceIterInfo* iterInfo = data;
-	*pResource->pCommandBufferID = iterInfo->iter;
+	*pResource->pCommandBufferID        = iterInfo->iter;
 	VkCommandBuffer* pCommandBuffer =
 	    &iterInfo->pResourceMap->pCommadBuffers[iterInfo->iter];
 
@@ -261,7 +261,7 @@ _Bool sgInitResourcesIter(const void* item, void* data) {
 		VkBufferImageCopy region = {
 		    .imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
 		    .imageSubresource.layerCount = 1,
-		    .imageExtent = pResource->image.extent,
+		    .imageExtent                 = pResource->image.extent,
 		};
 
 		vkCmdCopyBufferToImage(*pCommandBuffer, pResource->stagingBuffer.buffer,
@@ -284,16 +284,16 @@ _Bool sgInitResourcesIter(const void* item, void* data) {
 SgResult sgInitResourceMap(const SgApp* pApp, SgResourceMap** ppResourceMap) {
 	SgResourceMap* pResourceMap = *ppResourceMap;
 
-	uint32_t resourceCount = hashmap_count(pResourceMap->pResourceMap);
+	SgSize resourceCount = hashmap_count(pResourceMap->pResourceMap);
 
 	SG_CALLOC_NUM(pResourceMap->pCommadBuffers, resourceCount);
 	SG_CALLOC_NUM(pResourceMap->pCommadBuffersForSpecificUpdate, resourceCount);
 
 	VkCommandBufferAllocateInfo allocInfo = {
-	    .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-	    .commandPool = pResourceMap->commandPool,
+	    .sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+	    .commandPool        = pResourceMap->commandPool,
 	    .commandBufferCount = resourceCount,
-	    .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+	    .level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
 	};
 	vkAllocateCommandBuffers(pApp->device, &allocInfo,
 	                         pResourceMap->pCommadBuffers);
@@ -307,7 +307,7 @@ SgResult sgInitResourceMap(const SgApp* pApp, SgResourceMap** ppResourceMap) {
 
 _Bool sgDestroyResourceIter(const void* item, void* data) {
 	SgResource* pResource = item;
-	SgApp* pApp = data;
+	SgApp* pApp           = data;
 	sgDestroyResource(pApp, &pResource);
 	return 1;
 }
@@ -329,16 +329,16 @@ SgResult sgDestroyResourceMap(const SgApp* pApp,
 
 SgResult sgCreateBuffer(const SgApp* pApp,
                         SgBufferCreateInfo* pCreateInfo,
-                        SgBuffer* pBuffer) {
+                        SgBufferData* pBuffer) {
 	VkBufferCreateInfo bufferCreateInfo = {
 	    .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-	    .size = pCreateInfo->size,
+	    .size  = pCreateInfo->size,
 	};
-	pBuffer->size = pCreateInfo->size;
+	pBuffer->size                          = pCreateInfo->size;
 	VmaAllocationCreateInfo allocationInfo = {0};
 	switch (pCreateInfo->type) {
 		case (SG_RESOURCE_TYPE_STAGING):
-			bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+			bufferCreateInfo.usage       = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 			allocationInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
 			                               | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 			allocationInfo.preferredFlags = VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
@@ -349,7 +349,7 @@ SgResult sgCreateBuffer(const SgApp* pApp,
 			allocationInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 			break;
 		case (SG_RESOURCE_TYPE_UNIFORM):
-			bufferCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+			bufferCreateInfo.usage       = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 			allocationInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
 			                               | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 			allocationInfo.preferredFlags = VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
@@ -372,20 +372,20 @@ SgResult sgCreateBuffer(const SgApp* pApp,
 
 SgResult sgCreateImage(const SgApp* pApp,
                        SgImageCreateInfo* pCreateInfo,
-                       SgImage* pImage) {
+                       SgImageData* pImage) {
 	VkImageCreateInfo createinfo = {
-	    .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-	    .usage = pCreateInfo->usage,
-	    .imageType = VK_IMAGE_TYPE_2D,
-	    .format = pCreateInfo->format,
-	    .extent = pCreateInfo->extent,
-	    .tiling = pCreateInfo->tiling,
-	    .flags = 0,
-	    .mipLevels = 1,
+	    .sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+	    .usage         = pCreateInfo->usage,
+	    .imageType     = VK_IMAGE_TYPE_2D,
+	    .format        = pCreateInfo->format,
+	    .extent        = pCreateInfo->extent,
+	    .tiling        = pCreateInfo->tiling,
+	    .flags         = 0,
+	    .mipLevels     = 1,
 	    .initialLayout = pCreateInfo->layout,
-	    .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-	    .arrayLayers = 1,
-	    .samples = pCreateInfo->samples,
+	    .sharingMode   = VK_SHARING_MODE_EXCLUSIVE,
+	    .arrayLayers   = 1,
+	    .samples       = pCreateInfo->samples,
 	};
 
 	VmaAllocationCreateInfo allocationInfo = {
@@ -394,8 +394,8 @@ SgResult sgCreateImage(const SgApp* pApp,
 
 	vmaCreateImage(pApp->allocator, &createinfo, &allocationInfo, &pImage->image,
 	               &pImage->allocation, NULL);
-	pImage->size = pCreateInfo->size;
-	pImage->bytes = pCreateInfo->bytes;
+	pImage->size   = pCreateInfo->size;
+	pImage->bytes  = pCreateInfo->bytes;
 	pImage->format = pCreateInfo->format;
 	pImage->extent = pCreateInfo->extent;
 	return SG_SUCCESS;
@@ -405,10 +405,10 @@ SgResult sgCreateImageView(const SgApp* pApp,
                            const SgImageViewCreateInfo* pCreateInfo,
                            SgImageView* pImageView) {
 	VkImageViewCreateInfo createinfo = {
-	    .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-	    .image = pCreateInfo->pImage->image,
-	    .viewType = pCreateInfo->type,
-	    .format = pCreateInfo->pImage->format,
+	    .sType                       = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+	    .image                       = pCreateInfo->pImage->image,
+	    .viewType                    = pCreateInfo->type,
+	    .format                      = pCreateInfo->pImage->format,
 	    .subresourceRange.aspectMask = pCreateInfo->aspectFlags,
 	    .subresourceRange.levelCount = pCreateInfo->levelCount,
 	    .subresourceRange.layerCount = pCreateInfo->layerCount,
@@ -447,26 +447,26 @@ SgResult sgUpdateResource(const SgApp* pApp,
 
 	if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
 		SgImageTransferInfo transferInfo = {
-		    .image = pResource->image,
-		    .srcImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		    .dstImageLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		    .srcQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
-		    .dstQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
-		    .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-		    .subresourceRange.baseMipLevel = 0,
-		    .subresourceRange.layerCount = 1,
-		    .subresourceRange.levelCount = 1,
+		    .image                           = pResource->image,
+		    .srcImageLayout                  = VK_IMAGE_LAYOUT_UNDEFINED,
+		    .dstImageLayout                  = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		    .srcQueueFamilyID                = VK_QUEUE_FAMILY_IGNORED,
+		    .dstQueueFamilyID                = VK_QUEUE_FAMILY_IGNORED,
+		    .subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,
+		    .subresourceRange.baseMipLevel   = 0,
+		    .subresourceRange.layerCount     = 1,
+		    .subresourceRange.levelCount     = 1,
 		    .subresourceRange.baseArrayLayer = 0,
-		    .srcAccessMask = 0,
-		    .dstAccessMask = 0,
-		    .srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+		    .srcAccessMask                   = 0,
+		    .dstAccessMask                   = 0,
+		    .srcStageMask                    = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 		    .dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 		};
 		sgTransferImage(pApp, &transferInfo);
 	}
 
 	VkSubmitInfo submitInfo = {
-	    .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+	    .sType              = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 	    .commandBufferCount = 1,
 	    .pCommandBuffers =
 	        &pResourceMap->pCommadBuffers[*pResource->pCommandBufferID],
@@ -477,19 +477,19 @@ SgResult sgUpdateResource(const SgApp* pApp,
 	vkResetFences(pApp->device, 1, &pResourceMap->fence);
 	if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
 		SgImageTransferInfo transferInfo = {
-		    .image = pResource->image,
-		    .srcImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		    .dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-		    .srcQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
-		    .dstQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
+		    .image                       = pResource->image,
+		    .srcImageLayout              = VK_IMAGE_LAYOUT_UNDEFINED,
+		    .dstImageLayout              = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+		    .srcQueueFamilyID            = VK_QUEUE_FAMILY_IGNORED,
+		    .dstQueueFamilyID            = VK_QUEUE_FAMILY_IGNORED,
 		    .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-		    .subresourceRange.baseMipLevel = 0,
-		    .subresourceRange.layerCount = 1,
-		    .subresourceRange.levelCount = 1,
+		    .subresourceRange.baseMipLevel   = 0,
+		    .subresourceRange.layerCount     = 1,
+		    .subresourceRange.levelCount     = 1,
 		    .subresourceRange.baseArrayLayer = 0,
-		    .srcAccessMask = 0,
-		    .dstAccessMask = 0,
-		    .srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+		    .srcAccessMask                   = 0,
+		    .dstAccessMask                   = 0,
+		    .srcStageMask                    = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 		    .dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 		};
 		sgTransferImage(pApp, &transferInfo);
@@ -517,19 +517,19 @@ SgResult sgMemcpyToResource(const SgData* pData, const SgResource* pResource) {
 
 _Bool sgUpdateResourceIter(const void* item, void* data) {
 	const SgResource* pResource = item;
-	SgData resData = {
-	    .bytes = pResource->lastBytes,
-	    .size = pResource->lastSize,
-	};
+	SgData resData              = {
+      .bytes = pResource->lastBytes,
+      .size  = pResource->lastSize,
+  };
 	return sgMemcpyToResource(&resData, pResource);
 }
 
 SgResult sgUpdateResources(const SgApp* pApp,
                            SgResourceMap* pResourceMap,
-                           const uint32_t resourceCount,
+                           const SgSize resourceCount,
                            const SgData** ppData,
                            const char** ppNames) {
-	for (uint32_t i = 0; i < resourceCount; ++i) {
+	for (SgSize i = 0; i < resourceCount; ++i) {
 		SgResource findResource = {
 		    .pName = ppNames[i],
 		};
@@ -542,10 +542,10 @@ SgResult sgUpdateResources(const SgApp* pApp,
 		SgData resData;
 		if (ppData[i] == NULL) {
 			resData.bytes = pResource->lastBytes;
-			resData.size = pResource->lastSize;
+			resData.size  = pResource->lastSize;
 		} else {
 			resData.bytes = ppData[i]->bytes;
-			resData.size = ppData[i]->size;
+			resData.size  = ppData[i]->size;
 		}
 		sgMemcpyToResource(&resData, pResource);
 		pResourceMap->pCommadBuffersForSpecificUpdate[i] =
@@ -553,33 +553,33 @@ SgResult sgUpdateResources(const SgApp* pApp,
 
 		if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
 			SgImageTransferInfo transferInfo = {
-			    .image = pResource->image,
-			    .srcImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-			    .dstImageLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-			    .srcQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
-			    .dstQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
-			    .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+			    .image                         = pResource->image,
+			    .srcImageLayout                = VK_IMAGE_LAYOUT_UNDEFINED,
+			    .dstImageLayout                = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			    .srcQueueFamilyID              = VK_QUEUE_FAMILY_IGNORED,
+			    .dstQueueFamilyID              = VK_QUEUE_FAMILY_IGNORED,
+			    .subresourceRange.aspectMask   = VK_IMAGE_ASPECT_COLOR_BIT,
 			    .subresourceRange.baseMipLevel = 0,
-			    .subresourceRange.layerCount = 1,
-			    .subresourceRange.levelCount = 1,
+			    .subresourceRange.layerCount   = 1,
+			    .subresourceRange.levelCount   = 1,
 			    .subresourceRange.baseArrayLayer = 0,
-			    .srcAccessMask = 0,
-			    .dstAccessMask = 0,
-			    .srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+			    .srcAccessMask                   = 0,
+			    .dstAccessMask                   = 0,
+			    .srcStageMask                    = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 			    .dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 			};
 			sgTransferImage(pApp, &transferInfo);
 		}
 	}
 	VkSubmitInfo submitInfo = {
-	    .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+	    .sType              = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 	    .commandBufferCount = resourceCount,
-	    .pCommandBuffers = pResourceMap->pCommadBuffersForSpecificUpdate,
+	    .pCommandBuffers    = pResourceMap->pCommadBuffersForSpecificUpdate,
 	};
 	vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, pResourceMap->fence);
 	vkWaitForFences(pApp->device, 1, &pResourceMap->fence, VK_TRUE, UINT64_MAX);
 	vkResetFences(pApp->device, 1, &pResourceMap->fence);
-	for (uint32_t i = 0; i < resourceCount; ++i) {
+	for (SgSize i = 0; i < resourceCount; ++i) {
 		SgResource findResource = {
 		    .pName = ppNames[i],
 		};
@@ -591,19 +591,19 @@ SgResult sgUpdateResources(const SgApp* pApp,
 		}
 		if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
 			SgImageTransferInfo transferInfo = {
-			    .image = pResource->image,
-			    .srcImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-			    .dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			    .image            = pResource->image,
+			    .srcImageLayout   = VK_IMAGE_LAYOUT_UNDEFINED,
+			    .dstImageLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			    .srcQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
 			    .dstQueueFamilyID = VK_QUEUE_FAMILY_IGNORED,
-			    .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-			    .subresourceRange.baseMipLevel = 0,
-			    .subresourceRange.layerCount = 1,
-			    .subresourceRange.levelCount = 1,
+			    .subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,
+			    .subresourceRange.baseMipLevel   = 0,
+			    .subresourceRange.layerCount     = 1,
+			    .subresourceRange.levelCount     = 1,
 			    .subresourceRange.baseArrayLayer = 0,
-			    .srcAccessMask = 0,
-			    .dstAccessMask = 0,
-			    .srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+			    .srcAccessMask                   = 0,
+			    .dstAccessMask                   = 0,
+			    .srcStageMask                    = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 			    .dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 			};
 			sgTransferImage(pApp, &transferInfo);
@@ -619,9 +619,9 @@ SgResult sgUpdateAllResources(const SgApp* pApp, SgResourceMap* pResourceMap) {
 	             &iterInfo);
 	hashmap_scan(pResourceMap->pResourceMap, sgUpdateResourceIter, NULL);
 	VkSubmitInfo submitInfo = {
-	    .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+	    .sType              = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 	    .commandBufferCount = hashmap_count(pResourceMap->pResourceMap),
-	    .pCommandBuffers = pResourceMap->pCommadBuffers,
+	    .pCommandBuffers    = pResourceMap->pCommadBuffers,
 	};
 	vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, pResourceMap->fence);
 	vkWaitForFences(pApp->device, 1, &pResourceMap->fence, VK_TRUE, UINT64_MAX);

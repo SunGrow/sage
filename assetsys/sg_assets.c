@@ -5,9 +5,94 @@
 
 #define FAST_OBJ_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
+#define CGLTF_IMPLEMENTATION
 #include "fast_obj.h"
 #include "meshoptimizer.h"
 #include "stb_image.h"
+#include "cgltf.h"
+
+SgResult sgFillProjectLayout(cJSON* projectJson, SgProjectLayout* pProjectLayout) {
+		cJSON* generalSettingsPath = cJSON_GetObjectItem(projectJson, "generalSettingsPath");
+		if (generalSettingsPath == NULL) {
+			sgLogWarn("General settings path not found");
+			return -1;
+		}
+		pProjectLayout->generalSettingsPath = cJSON_GetStringValue(generalSettingsPath);
+		if (pProjectLayout->generalSettingsPath == NULL) {
+			sgLogWarn("No general settings path string provided");
+		}
+
+		cJSON* keyContextsPath = cJSON_GetObjectItem(projectJson, "keyContextsPath");
+		if (keyContextsPath == NULL) {
+			sgLogWarn("Key contexts path not found");
+			return -1;
+		}
+		pProjectLayout->keyContextsPath = cJSON_GetStringValue(keyContextsPath);
+		if (pProjectLayout->keyContextsPath == NULL) {
+			sgLogWarn("No key contexts path string provided");
+		}
+
+		cJSON* filesPath = cJSON_GetObjectItem(projectJson, "filesPath");
+		if (filesPath == NULL) {
+			sgLogWarn("Files path not found");
+			return -1;
+		}
+		pProjectLayout->filesPath = cJSON_GetStringValue(filesPath);
+		if (pProjectLayout->filesPath == NULL) {
+			sgLogWarn("No files path string provided");
+		}
+
+		cJSON* scenesPath = cJSON_GetObjectItem(projectJson, "scenesPath");
+		if (scenesPath == NULL) {
+			sgLogWarn("Scenes path not found");
+			return -1;
+		}
+		pProjectLayout->scenesPath = cJSON_GetStringValue(scenesPath);
+		if (pProjectLayout->scenesPath == NULL) {
+			sgLogWarn("Scenes path string provided");
+		}
+
+		cJSON* dataPath = cJSON_GetObjectItem(projectJson, "dataPath");
+		if (dataPath == NULL) {
+			sgLogWarn("Data path not found");
+			return -1;
+		}
+		pProjectLayout->dataPath = cJSON_GetStringValue(dataPath);
+		if (pProjectLayout->dataPath == NULL) {
+			sgLogWarn("Data path string provided");
+		}
+
+		cJSON* buildDir = cJSON_GetObjectItem(projectJson, "buildDir");
+		if (buildDir == NULL) {
+			sgLogWarn("Build path not found");
+			return -1;
+		}
+		pProjectLayout->buildDir = cJSON_GetStringValue(buildDir);
+		if (pProjectLayout->buildDir == NULL) {
+			sgLogWarn("Build path string provided");
+		}
+		//char pFullPath[32768];
+		//snprintf(pFullPath, sizeof(pFullPath), "%s/%s", pTargetPath, pPath);
+
+	return SG_SUCCESS;
+}
+
+SgResult sgLoadProjectLayout(const char* pPath, SgProjectLayout* pProjectLayout) {
+	SgFile* pFile;
+	sgOpenFile(pPath, &pFile);
+	const char* pError;
+	cJSON* projectJson = cJSON_ParseWithOpts((char*)pFile->pBytes, &pError, 1);
+	if (projectJson == NULL) {
+		if (pError != NULL) {
+			sgLogError("[JSON]: Error before: %s\n", pError);
+			return -1;
+		}
+	}
+	sgFillProjectLayout(projectJson, pProjectLayout);
+	pProjectLayout->projectJson = projectJson;
+
+	return SG_SUCCESS;
+}
 
 const char* getExt(const char* pPath) {
 	const char* pExt = strrchr(pPath, '.');
@@ -19,10 +104,10 @@ const char* getExt(const char* pPath) {
 
 static SgResult sgReadJpg(const char* pPath,
                           char** ppBytes,
-                          unsigned long long* pWidth,
-                          unsigned long long* pHeight,
-                          unsigned long long* pChannels,
-                          unsigned long long* pSize) {
+                          SgSize* pWidth,
+                          SgSize* pHeight,
+                          SgSize* pChannels,
+                          SgSize* pSize) {
 	*ppBytes = stbi_load(pPath, pWidth, pHeight, pChannels, STBI_rgb_alpha);
 	if (!*ppBytes) {
 		fprintf(stderr, "[Warning]: Texture on path < %s > not found\n", pPath);
@@ -35,10 +120,10 @@ static SgResult sgReadJpg(const char* pPath,
 
 static SgResult sgReadTexture(const char* pPath,
                               char** ppBytes,
-                              unsigned long long* pWidth,
-                              unsigned long long* pHeight,
-                              unsigned long long* pChannels,
-                              unsigned long long* pSize) {
+                              SgSize* pWidth,
+                              SgSize* pHeight,
+                              SgSize* pChannels,
+                              SgSize* pSize) {
 	const char* pExt = getExt(pPath);
 	if (strcmp(pExt, "jpg") == 0 || strcmp(pExt, "jpeg") == 0
 	    || strcmp(pExt, "jpe") == 0 || strcmp(pExt, "jfif") == 0) {
@@ -48,18 +133,19 @@ static SgResult sgReadTexture(const char* pPath,
 	return SG_SUCCESS;
 }
 
-static unsigned long long sgLoadOBJ(const char* pPath, SgObjVertex** ppVertices) {
-	fastObjMesh* pObj = fast_obj_read(pPath);
-	uint32_t totalIndices = 0;
-	for (uint32_t i = 0; i < pObj->face_count; ++i) {
+static SgSize sgLoadOBJ(const char* pPath,
+                                    SgObjVertex** ppVertices) {
+	fastObjMesh* pObj   = fast_obj_read(pPath);
+	SgSize totalIndices = 0;
+	for (SgSize i = 0; i < pObj->face_count; ++i) {
 		totalIndices += 3 * (pObj->face_vertices[i] - 2);
 	}
 	SgObjVertex* pVertices;
 	SG_CALLOC_NUM(pVertices, totalIndices + 1);
-	uint32_t vertexOffset = 0;
-	uint32_t indexOffset = 0;
-	for (uint32_t i = 0; i < pObj->face_count; ++i) {
-		for (uint32_t j = 0; j < pObj->face_vertices[i]; ++j) {
+	SgSize vertexOffset = 0;
+	SgSize indexOffset  = 0;
+	for (SgSize i = 0; i < pObj->face_count; ++i) {
+		for (SgSize j = 0; j < pObj->face_vertices[i]; ++j) {
 			fastObjIndex gi = pObj->indices[indexOffset + j];
 
 			SgObjVertex v = {
@@ -99,19 +185,19 @@ static unsigned long long sgLoadOBJ(const char* pPath, SgObjVertex** ppVertices)
 
 static SgResult sgReadObj(const char* pPath,
                           char** ppBytes,
-                          unsigned long long* pVertexBufferSize,
-                          unsigned long long* pIndexBufferSize,
+                          SgSize* pVertexBufferSize,
+                          SgSize* pIndexBufferSize,
                           unsigned* pVertexSize) {
 	SgObjVertex* pVertices;
-	unsigned long long totalIndices = sgLoadOBJ(pPath, &pVertices);
-	uint32_t* premap;
+	SgSize totalIndices = sgLoadOBJ(pPath, &pVertices);
+	SgSize* premap;
 	SG_MALLOC_NUM(premap, totalIndices);
 
-	uint32_t totalVertices = meshopt_generateVertexRemap(
+	SgSize totalVertices = meshopt_generateVertexRemap(
 	    premap, NULL, totalIndices, pVertices, totalIndices, sizeof(*pVertices));
 
 	// Return value fillup
-	uint32_t* pIndices;
+	SgSize* pIndices;
 	SgObjVertex* pTargetVertices;
 	SG_CALLOC_NUM(pIndices, totalIndices);
 	SG_CALLOC_NUM(pTargetVertices, totalVertices);
@@ -124,9 +210,9 @@ static SgResult sgReadObj(const char* pPath,
 	                            pTargetVertices, totalVertices,
 	                            sizeof(*pTargetVertices));
 
-	*pVertexSize = sizeof(*pVertices);
+	*pVertexSize       = sizeof(*pVertices);
 	*pVertexBufferSize = sizeof(*pTargetVertices) * totalVertices;
-	*pIndexBufferSize = sizeof(*pIndices) * totalIndices;
+	*pIndexBufferSize  = sizeof(*pIndices) * totalIndices;
 	SG_CALLOC_NUM(*ppBytes, *pVertexBufferSize + *pIndexBufferSize);
 	memcpy(*ppBytes, pTargetVertices, *pVertexBufferSize);
 	memcpy(*ppBytes + *pVertexBufferSize, pIndices, *pIndexBufferSize);
@@ -136,8 +222,8 @@ static SgResult sgReadObj(const char* pPath,
 
 static SgResult sgReadMesh(const char* pPath,
                            char** ppBytes,
-                           unsigned long long* pVertexBufferSize,
-                           unsigned long long* pIndexBufferSize,
+                           SgSize* pVertexBufferSize,
+                           SgSize* pIndexBufferSize,
                            unsigned* pVertexSize) {
 	const char* pExt = getExt(pPath);
 	if (strcmp(pExt, "obj") == 0) {
@@ -150,7 +236,7 @@ static SgResult sgReadMesh(const char* pPath,
 static SgResult sgAssetsMeshessRead(const char* pTargetPath,
                                     cJSON* meshArray,
                                     SgAssets* pAssets) {
-	uint32_t meshArraySize = cJSON_GetArraySize(meshArray);
+	SgSize meshArraySize = cJSON_GetArraySize(meshArray);
 	char pFullPath[32768];
 	pAssets->meshAssets.count = meshArraySize;
 	SG_CALLOC_NUM(pAssets->meshAssets.ppNamesArray, meshArraySize);
@@ -159,7 +245,7 @@ static SgResult sgAssetsMeshessRead(const char* pTargetPath,
 	SG_CALLOC_NUM(pAssets->meshAssets.pVertexSizes, meshArraySize);
 	SG_CALLOC_NUM(pAssets->meshAssets.ppBytesArray, meshArraySize);
 	// TODO: Use Job system to load (once it is implemented)
-	for (uint32_t i = 0; i < meshArraySize; ++i) {
+	for (SgSize i = 0; i < meshArraySize; ++i) {
 		cJSON* mesh = cJSON_GetArrayItem(meshArray, i);
 		if (mesh == NULL) {
 			sgLogError(
@@ -214,7 +300,7 @@ static SgResult sgAssetsMeshessRead(const char* pTargetPath,
 static SgResult sgAssetsTexturesRead(const char* pTargetPath,
                                      cJSON* textureArray,
                                      SgAssets* pAssets) {
-	uint32_t textureArraySize = cJSON_GetArraySize(textureArray);
+	SgSize textureArraySize = cJSON_GetArraySize(textureArray);
 	char pFullPath[32768];
 	pAssets->textureAssets.count = textureArraySize;
 	SG_CALLOC_NUM(pAssets->textureAssets.ppNamesArray, textureArraySize);
@@ -224,7 +310,7 @@ static SgResult sgAssetsTexturesRead(const char* pTargetPath,
 	SG_CALLOC_NUM(pAssets->textureAssets.pHeightsArray, textureArraySize);
 	SG_CALLOC_NUM(pAssets->textureAssets.pChannelsArray, textureArraySize);
 	// TODO: Use Job system to load (once it is implemented)
-	for (uint32_t i = 0; i < textureArraySize; ++i) {
+	for (SgSize i = 0; i < textureArraySize; ++i) {
 		cJSON* texture = cJSON_GetArrayItem(textureArray, i);
 		if (texture == NULL) {
 			sgLogError(
@@ -277,7 +363,7 @@ static SgResult sgAssetsTexturesRead(const char* pTargetPath,
 	return SG_SUCCESS;
 }
 
-SgResult sgAssetsRead(const char* pPath,
+SgResult sgFilesRead(const char* pPath,
                       const char* pTargetPath,
                       SgAssets* pAssets) {
 	SgFile* pFile;
@@ -291,7 +377,7 @@ SgResult sgAssetsRead(const char* pPath,
 		}
 	}
 	cJSON* textureArray = cJSON_GetObjectItem(assetsJson, "textures");
-	cJSON* meshArray = cJSON_GetObjectItem(assetsJson, "meshes");
+	cJSON* meshArray    = cJSON_GetObjectItem(assetsJson, "meshes");
 	sgAssetsTexturesRead(pTargetPath, textureArray, pAssets);
 	sgAssetsMeshessRead(pTargetPath, meshArray, pAssets);
 	pAssets->pAssetsJson = assetsJson;
@@ -315,7 +401,7 @@ static SgResult sgTexturesCompress(SgAssets* pInAssets, SgAssets* pOutAssets) {
 	SG_CALLOC_NUM(pOutAssets->textureAssets.pChannelsArray,
 	              pInAssets->textureAssets.count);
 	// TODO: Paralellize
-	for (uint32_t i = 0; i < pInAssets->textureAssets.count; ++i) {
+	for (SgSize i = 0; i < pInAssets->textureAssets.count; ++i) {
 		pOutAssets->textureAssets.pChannelsArray[i] =
 		    pInAssets->textureAssets.pChannelsArray[i];
 		pOutAssets->textureAssets.pHeightsArray[i] =
@@ -331,7 +417,7 @@ static SgResult sgTexturesCompress(SgAssets* pInAssets, SgAssets* pOutAssets) {
 		    LZ4_compressBound(pInAssets->textureAssets.pSizesArray[i]);
 		SG_CALLOC_NUM(pOutAssets->textureAssets.ppBytesArray[i], compressBound);
 
-		unsigned long long compressedSize = LZ4_compress_default(
+		SgSize compressedSize = LZ4_compress_default(
 		    pInAssets->textureAssets.ppBytesArray[i],
 		    pOutAssets->textureAssets.ppBytesArray[i],
 		    pInAssets->textureAssets.pSizesArray[i], compressBound);
@@ -358,7 +444,7 @@ static SgResult sgMeshCompress(SgAssets* pInAssets, SgAssets* pOutAssets) {
 	SG_CALLOC_NUM(pOutAssets->meshAssets.pCompressedSizesArray,
 	              pOutAssets->meshAssets.count);
 	// TODO: Paralellize
-	for (uint32_t i = 0; i < pInAssets->textureAssets.count; ++i) {
+	for (SgSize i = 0; i < pInAssets->textureAssets.count; ++i) {
 		pOutAssets->meshAssets.pIndexBufferSizes[i] =
 		    pInAssets->meshAssets.pIndexBufferSizes[i];
 		pOutAssets->meshAssets.pVertexBufferSizes[i] =
@@ -373,7 +459,7 @@ static SgResult sgMeshCompress(SgAssets* pInAssets, SgAssets* pOutAssets) {
 		                      + pInAssets->meshAssets.pIndexBufferSizes[i]);
 		SG_CALLOC_NUM(pOutAssets->meshAssets.ppBytesArray[i], compressBound);
 
-		unsigned long long compressedSize = LZ4_compress_default(
+		SgSize compressedSize = LZ4_compress_default(
 		    pInAssets->meshAssets.ppBytesArray[i],
 		    pOutAssets->meshAssets.ppBytesArray[i],
 		    pInAssets->meshAssets.pVertexBufferSizes[i]
@@ -389,21 +475,21 @@ static SgResult sgMeshCompress(SgAssets* pInAssets, SgAssets* pOutAssets) {
 	return SG_SUCCESS;
 }
 
-SgResult sgAssetsCompress(SgAssets* pInAssets, SgAssets* pOutAssets) {
+SgResult sgFilesCompress(SgAssets* pInAssets, SgAssets* pOutAssets) {
 	sgMeshCompress(pInAssets, pOutAssets);
 	sgTexturesCompress(pInAssets, pOutAssets);
 	return SG_SUCCESS;
 }
 
-SgResult sgAssetsWrite(SgAssets* pAssets, const char* pOutPath) {
+SgResult sgFilesWrite(SgAssets* pAssets, const char* pOutPath) {
 	char pFullPath[32768];
 	cJSON* assets = cJSON_CreateObject();
 	cJSON *textureArray, *meshArray;
 	textureArray = cJSON_CreateArray();
-	meshArray = cJSON_CreateArray();
+	meshArray    = cJSON_CreateArray();
 	cJSON_AddItemToObject(assets, "textures", textureArray);
 	cJSON_AddItemToObject(assets, "meshes", meshArray);
-	for (uint32_t i = 0; i < pAssets->textureAssets.count; ++i) {
+	for (SgSize i = 0; i < pAssets->textureAssets.count; ++i) {
 		cJSON* texture = cJSON_CreateObject();
 		cJSON_AddStringToObject(texture, "name",
 		                        pAssets->textureAssets.ppNamesArray[i]);
@@ -422,7 +508,7 @@ SgResult sgAssetsWrite(SgAssets* pAssets, const char* pOutPath) {
 		                        pAssets->textureAssets.compression);
 		cJSON_AddItemToArray(textureArray, texture);
 	}
-	for (uint32_t i = 0; i < pAssets->meshAssets.count; ++i) {
+	for (SgSize i = 0; i < pAssets->meshAssets.count; ++i) {
 		cJSON* mesh = cJSON_CreateObject();
 		cJSON_AddStringToObject(mesh, "name", pAssets->meshAssets.ppNamesArray[i]);
 		cJSON_AddByteStringToObject(mesh, "bytes",
@@ -445,6 +531,6 @@ SgResult sgAssetsWrite(SgAssets* pAssets, const char* pOutPath) {
 	return SG_SUCCESS;
 }
 
-SgResult sgAssetsClear(SgAssets* pAssets) {
+SgResult sgFilesClear(SgAssets* pAssets) {
 	return SG_SUCCESS;
 }

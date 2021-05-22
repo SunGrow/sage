@@ -7,9 +7,9 @@ SgResult createAllocator(const VkPhysicalDevice* pPhysicalDevice,
                          const VkInstance* pInstance,
                          VmaAllocator* pAllocator) {
 	VmaAllocatorCreateInfo allocatorInfo = {
-	    .physicalDevice = *pPhysicalDevice,
-	    .device = *pDevice,
-	    .instance = *pInstance,
+	    .physicalDevice   = *pPhysicalDevice,
+	    .device           = *pDevice,
+	    .instance         = *pInstance,
 	    .vulkanApiVersion = VK_API_VERSION_1_2,
 	};
 

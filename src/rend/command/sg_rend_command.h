@@ -7,10 +7,10 @@ typedef struct SgCommandPoolsCreateInfo {
 } SgCommandPoolsCreateInfo;
 
 SgResult createCommandPools(const VkDevice* pDevice,
-                            const uint32_t queueFamilyID,
+                            const SgSize queueFamilyID,
                             pthread_t* pThreads,
                             VkCommandPool* pCommandPools,
-                            uint32_t commandPoolCount);
+                            SgSize commandPoolCount);
 
 typedef struct SgCommandBufferBeginEndInfo {
 	const VkCommandPool* pCommandPool;
@@ -25,9 +25,9 @@ SgResult sgBeginCommandBuffer(const SgApp* pApp,
 SgResult sgEndCommandBuffer(const SgApp* pApp,
                             SgCommandBufferBeginEndInfo* pBeginEndInfo);
 typedef struct SgImageTransferInfo {
-	SgImage image;
-	uint32_t srcQueueFamilyID;
-	uint32_t dstQueueFamilyID;
+	SgImageData image;
+	SgSize srcQueueFamilyID;
+	SgSize dstQueueFamilyID;
 	VkImageLayout srcImageLayout;
 	VkImageLayout dstImageLayout;
 	VkAccessFlags srcAccessMask;

@@ -72,7 +72,7 @@ void keyPressForward(SgBool isPressed,
                      SgActor actor,
                      SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*)actor;
-	transformInfo->moveDirectionPos[0] = isPressed ? 1.0f : 0.0f;
+	transformInfo->moveDirectionPos[0]   = isPressed ? 1.0f : 0.0f;
 	return;
 }
 void keyPressUp(SgBool isPressed,
@@ -81,7 +81,7 @@ void keyPressUp(SgBool isPressed,
                 SgActor actor,
                 SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*)actor;
-	transformInfo->moveDirectionPos[1] = isPressed ? 1.0f : 0.0f;
+	transformInfo->moveDirectionPos[1]   = isPressed ? 1.0f : 0.0f;
 	return;
 }
 void keyPressLeft(SgBool isPressed,
@@ -90,7 +90,7 @@ void keyPressLeft(SgBool isPressed,
                   SgActor actor,
                   SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*)actor;
-	transformInfo->moveDirectionNeg[2] = isPressed ? 1.0f : 0.0f;
+	transformInfo->moveDirectionNeg[2]   = isPressed ? 1.0f : 0.0f;
 	return;
 }
 void keyPressRight(SgBool isPressed,
@@ -99,7 +99,7 @@ void keyPressRight(SgBool isPressed,
                    SgActor actor,
                    SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*)actor;
-	transformInfo->moveDirectionPos[2] = isPressed ? 1.0f : 0.0f;
+	transformInfo->moveDirectionPos[2]   = isPressed ? 1.0f : 0.0f;
 	return;
 }
 void keyPressDown(SgBool isPressed,
@@ -108,7 +108,7 @@ void keyPressDown(SgBool isPressed,
                   SgActor actor,
                   SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*)actor;
-	transformInfo->moveDirectionNeg[1] = isPressed ? 1.0f : 0.0f;
+	transformInfo->moveDirectionNeg[1]   = isPressed ? 1.0f : 0.0f;
 	return;
 }
 void keyPressBack(SgBool isPressed,
@@ -117,7 +117,7 @@ void keyPressBack(SgBool isPressed,
                   SgActor actor,
                   SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*)actor;
-	transformInfo->moveDirectionNeg[0] = isPressed ? 1.0f : 0.0f;
+	transformInfo->moveDirectionNeg[0]   = isPressed ? 1.0f : 0.0f;
 	return;
 }
 

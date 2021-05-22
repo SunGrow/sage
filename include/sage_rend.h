@@ -26,10 +26,10 @@ SgWindow sgGetWindow(SgApp app);
 /**/
 
 typedef enum SgShaderStageFlagBits {
-	SG_SHADER_STAGE_VERTEX_BIT = VK_SHADER_STAGE_VERTEX_BIT,
+	SG_SHADER_STAGE_VERTEX_BIT   = VK_SHADER_STAGE_VERTEX_BIT,
 	SG_SHADER_STAGE_GEOMETRY_BIT = VK_SHADER_STAGE_GEOMETRY_BIT,
 	SG_SHADER_STAGE_FRAGMENT_BIT = VK_SHADER_STAGE_FRAGMENT_BIT,
-	SG_SHADER_STAGE_COMPUTE_BIT = VK_SHADER_STAGE_COMPUTE_BIT,
+	SG_SHADER_STAGE_COMPUTE_BIT  = VK_SHADER_STAGE_COMPUTE_BIT,
 } SgShaderStageFlagBits;
 typedef SgFlags SgShaderStageFlags;
 typedef struct SgShaderCreateInfo {
@@ -44,19 +44,19 @@ SgResult sgCreateShader(const SgApp app,
 
 typedef enum SgResourceTypeFlagBits {
 	SG_RESOURCE_TYPE_TEXTURE_2D = BIT(0),
-	SG_RESOURCE_TYPE_MESH = BIT(1),
-	SG_RESOURCE_TYPE_UNIFORM = BIT(2),
-	SG_RESOURCE_TYPE_INDICES = BIT(3),
+	SG_RESOURCE_TYPE_MESH       = BIT(1),
+	SG_RESOURCE_TYPE_UNIFORM    = BIT(2),
+	SG_RESOURCE_TYPE_INDICES    = BIT(3),
 } SgResourceTypeFlagBits;
 typedef SgFlags SgResourceTypeFlags;
 
 typedef struct SgResourceCreateInfo {
 	SgResourceTypeFlags type;
 	void* bytes;
-	uint32_t size;
+	SgSize size;
 	VkExtent3D extent;
-	uint32_t layerCount;
-	uint32_t levelCount;
+	SgSize layerCount;
+	SgSize levelCount;
 
 	const char* pName;
 } SgResourceCreateInfo;
@@ -78,28 +78,28 @@ typedef struct SgVertex {
 
 typedef struct SgMeshSet {
 	SgVertex* pVertices;
-	uint32_t vertexCount;
-	uint32_t* pVertexOffsets;
-	uint32_t* pIndexSizes;
-	uint32_t* pVertexSizes;
-	uint32_t* pIndices;
-	uint32_t indexCount;
-	uint32_t* pIndexOffsets;
-	uint32_t meshCount;
+	SgSize vertexCount;
+	SgSize* pVertexOffsets;
+	SgSize* pIndexSizes;
+	SgSize* pVertexSizes;
+	SgSize* pIndices;
+	SgSize indexCount;
+	SgSize* pIndexOffsets;
+	SgSize meshCount;
 	struct hashmap* meshMap;  // Return an offset id
 
 	const char* indicesResourceName;
 } SgMeshSet;
 
 SgResult sgCreateMeshSet(SgMeshSet** ppMeshArray);
-uint32_t sgAddMesh(const char* pPath, SgMeshSet** ppMeshArray);
+SgSize sgAddMesh(const char* pPath, SgMeshSet** ppMeshArray);
 
-uint32_t* sgGetMeshID(const char* pPath, const SgMeshSet* pMeshArray);
+SgSize* sgGetMeshID(const char* pPath, const SgMeshSet* pMeshArray);
 void sgUnloadMesh(SgMeshSet** ppMesh);
 
 typedef struct SgTexture {
 	int32_t width, height, channels;
-	uint32_t size;
+	SgSize size;
 	stbi_uc* pixels;
 } SgTexture;
 
@@ -109,22 +109,22 @@ void sgUnloadTexture(SgTexture** ppTexture);
 //////
 
 typedef struct SgRenderObject {
-	uint32_t meshID;  // ID to get a mesh from set
-	uint32_t instanceCount;
+	SgSize meshID;  // ID to get a mesh from set
+	SgSize instanceCount;
 } SgRenderObject;
 
 typedef struct SgResourceBinding {
 	SgResourceTypeFlags type;
 	SgShaderStageFlags stage;
-	uint32_t binding;
-	uint32_t setBinding;
+	SgSize binding;
+	SgSize setBinding;
 } SgResourceBinding;
 
 typedef struct SgRenderObjectCreateInfo {
 	SgRenderObject* pRenderObjects;
-	uint32_t renderObjectCount;
+	SgSize renderObjectCount;
 	const char** ppResourceNames;
-	uint32_t resourceCount;
+	SgSize resourceCount;
 
 	const char* materialName;
 	const char* pName;
@@ -135,16 +135,16 @@ SG_DEFINE_HANDLE(SgMaterialRenderObjects);
 typedef struct SgMaterialCreateInfo {
 	const char* pMaterialName;
 	SgResourceBinding* pResourceBindings;
-	uint32_t resourceBindingCount;
+	SgSize resourceBindingCount;
 	SgShader* pShaders;
-	uint32_t shaderCount;
+	SgSize shaderCount;
 
-	uint32_t renderObjectCount;
+	SgSize renderObjectCount;
 } SgMaterialCreateInfo;
 
 typedef struct SgSetLayouts {
 	VkDescriptorSetLayout* setLayouts;
-	uint32_t setLayoutCount;
+	SgSize setLayoutCount;
 } SgSetLayouts;
 
 SG_DEFINE_HANDLE(SgMaterial);
@@ -152,7 +152,7 @@ SG_DEFINE_HANDLE(SgMaterialMap);
 
 typedef struct SgMaterialMapCreateInfo {
 	const SgResourceMap resourceMap;
-	uint32_t materailCount;
+	SgSize materailCount;
 } SgMaterialMapCreateInfo;
 
 SgResult sgCreateMaterialMap(SgApp app,
@@ -167,7 +167,7 @@ SgResult sgAddMaterialRenderObjects(
     SgMaterialMap* pMaterialMap);
 typedef struct SgRenderObjectUpdateInfo {
 	SgRenderObject* pRenderObjects;
-	uint32_t renderObjectCount;
+	SgSize renderObjectCount;
 
 	const char* pName;
 } SgRenderObjectUpdateInfo;
@@ -190,7 +190,7 @@ SgResult sgUpdateResource(const SgApp app,
                           const char* pName);
 SgResult sgUpdateResources(const SgApp app,
                            SgResourceMap resourceMap,
-                           const uint32_t resourceCount,
+                           const SgSize resourceCount,
                            const SgData** ppData,
                            const char** ppNames);
 // Update resources with last assigned data (the pointer is stored, so you

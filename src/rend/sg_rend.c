@@ -50,7 +50,7 @@ static SgResult getAppConfig(const SgFile* pFile, SgAppConfig* pAppConfig) {
 	}
 	cJSON* graphics = cJSON_GetObjectItem(configJSON, "graphics");
 	{
-		cJSON* msaa = cJSON_GetObjectItem(graphics, "msaa");
+		cJSON* msaa                     = cJSON_GetObjectItem(graphics, "msaa");
 		pAppConfig->graphicsConfig.mssa = cJSON_GetNumberValue(msaa);
 	}
 	pAppConfig->configJSON = configJSON;
@@ -66,7 +66,7 @@ static SgResult createGLFWwindow(const SgAppConfig* pAppConfig,
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 	if (pAppConfig->windowConfig.createFlags & SG_APP_WINDOW_FULLSCREEN) {
-		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+		GLFWmonitor* monitor    = glfwGetPrimaryMonitor();
 		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
 		glfwWindowHint(GLFW_RED_BITS, mode->redBits);
@@ -98,47 +98,47 @@ static SgResult createGLFWwindow(const SgAppConfig* pAppConfig,
 static SgResult createVkInstance(const SgAppCreateInfo* pCreateInfo,
                                  VkInstance* pInstance) {
 	/* Instance */
-	uint32_t apiver = volkGetInstanceVersion();
+	SgSize apiver = volkGetInstanceVersion();
 	if (apiver >= VK_API_VERSION_1_2) {
 		sgLogInfo_Debug("[AppInit]: Vulkan API version 1.2 of newer found");
 	} else {
 		sgLogError("[AppInit]: Vulkan API version is too old");
 	}
 	VkApplicationInfo appInfo = {
-	    .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-	    .pApplicationName = pCreateInfo->pName,
-	    .pEngineName = "svkr",
+	    .sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+	    .pApplicationName   = pCreateInfo->pName,
+	    .pEngineName        = "svkr",
 	    .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-	    .engineVersion = VK_MAKE_VERSION(0, 0, 1),
-	    .apiVersion = VK_API_VERSION_1_2,
+	    .engineVersion      = VK_MAKE_VERSION(0, 0, 1),
+	    .apiVersion         = VK_API_VERSION_1_2,
 	};
 
-	uint32_t glfwExtCount = 0;
+	SgSize glfwExtCount = 0;
 	const char** glfwExt;
-	glfwExt = glfwGetRequiredInstanceExtensions(&glfwExtCount);
-	uint32_t extCount = NUMOF(SG_SURF_EXT) + glfwExtCount;
+	glfwExt           = glfwGetRequiredInstanceExtensions(&glfwExtCount);
+	SgSize extCount   = NUMOF(SG_SURF_EXT) + glfwExtCount;
 	const char** pExt = malloc(extCount * sizeof(*pExt));
-	for (uint32_t i = 0; i < glfwExtCount; ++i) {
+	for (SgSize i = 0; i < glfwExtCount; ++i) {
 		pExt[i] = glfwExt[i];
 	}
-	for (uint32_t i = glfwExtCount; i < extCount; ++i) {
+	for (SgSize i = glfwExtCount; i < extCount; ++i) {
 		pExt[i] = SG_SURF_EXT[i - glfwExtCount];
 	}
 
 	VkInstanceCreateInfo createInfo = {
-	    .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-	    .pNext = VK_NULL_HANDLE,
-	    .flags = 0,
-	    .pApplicationInfo = &appInfo,
+	    .sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+	    .pNext                   = VK_NULL_HANDLE,
+	    .flags                   = 0,
+	    .pApplicationInfo        = &appInfo,
 	    .ppEnabledExtensionNames = pExt,
-	    .enabledExtensionCount = extCount,
+	    .enabledExtensionCount   = extCount,
 	};
 #ifdef _DEBUG
 	const char* pdeblayers[] = {
 	    "VK_LAYER_KHRONOS_validation",
 	};
 	createInfo.ppEnabledLayerNames = pdeblayers;
-	createInfo.enabledLayerCount = NUMOF(pdeblayers);
+	createInfo.enabledLayerCount   = NUMOF(pdeblayers);
 #endif
 	VkResult vkRes = vkCreateInstance(&createInfo, VK_NULL_HANDLE, pInstance);
 	if (vkRes == VK_SUCCESS) {
@@ -189,10 +189,10 @@ void getSupportedDepthStencilFormats(const VkPhysicalDevice* pPhysicalDevice,
 	VkFormat formats[] = {VK_FORMAT_D16_UNORM_S8_UINT,
 	                      VK_FORMAT_D24_UNORM_S8_UINT,
 	                      VK_FORMAT_D32_SFLOAT_S8_UINT};
-	for (uint32_t i = 0; i < NUMOF(formats); ++i) {
+	for (SgSize i = 0; i < NUMOF(formats); ++i) {
 		vkGetPhysicalDeviceFormatProperties(*pPhysicalDevice, formats[i], &props);
 		if (props.optimalTilingFeatures && *pLowDepthStencil == 0) {
-			*pLowDepthStencil = formats[i];
+			*pLowDepthStencil  = formats[i];
 			*pHighDepthStencil = formats[i];
 		}
 	}
@@ -222,10 +222,10 @@ SgResult sgCreateApp(const SgAppCreateInfo* pCreateInfo, SgApp** ppApp) {
 	/* Vulkan Physical Device */
 	SgPhysicalDeviceGetInfo physicalDeviceGetInfo = {
 	    .pInstance = &pApp->instance,
-	    .pSurface = &pApp->surface,
+	    .pSurface  = &pApp->surface,
 	};
 	getPhysicalDevice(&physicalDeviceGetInfo, &pApp->physicalDevice);
-	pApp->graphicsQueueFamilyIdx = getGraphicsFamilyIndex(pApp->physicalDevice);
+	pApp->graphicsQueueFamilyIdx  = getGraphicsFamilyIndex(pApp->physicalDevice);
 	VkSampleCountFlags maxSamples = getMaxUsableSampleCount(pApp->physicalDevice);
 	pApp->msaaSampleCount = (pApp->appConfig.graphicsConfig.mssa > maxSamples)
 	                            ? maxSamples
@@ -236,9 +236,9 @@ SgResult sgCreateApp(const SgAppCreateInfo* pCreateInfo, SgApp** ppApp) {
 	    .pQueueCreateInfos =
 	        (SgDeviceQueueCreateInfo[]){
 	            {
-	                .queueIndex = pApp->graphicsQueueFamilyIdx,
+	                .queueIndex       = pApp->graphicsQueueFamilyIdx,
 	                .pQueuePriorities = (float[]){1},
-	                .queueCount = 1,
+	                .queueCount       = 1,
 	            },
 	        },
 	    .physicalDevice = pApp->physicalDevice,
@@ -272,7 +272,7 @@ SgResult sgCreateApp(const SgAppCreateInfo* pCreateInfo, SgApp** ppApp) {
 	    .flags = VK_FENCE_CREATE_SIGNALED_BIT,
 	};
 	VkResult res = VK_SUCCESS;
-	for (uint32_t i = 0; i < SG_FRAME_QUEUE_LENGTH; ++i) {
+	for (SgSize i = 0; i < SG_FRAME_QUEUE_LENGTH; ++i) {
 		res |= vkCreateSemaphore(pApp->device, &semaphoreCreateInfo, VK_NULL_HANDLE,
 		                         &pApp->pFrameReadySemaphore[i]);
 		res |= vkCreateSemaphore(pApp->device, &semaphoreCreateInfo, VK_NULL_HANDLE,
@@ -302,11 +302,11 @@ SgResult sgCreateShader(const SgApp* pApp,
                         SgShader** ppShader) {
 	SgShader* pShader;
 	SG_CALLOC_NUM(pShader, 1);
-	SgFile* pFile = pCreateInfo->pFile;
+	SgFile* pFile                       = pCreateInfo->pFile;
 	VkShaderModuleCreateInfo createInfo = {
-	    .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+	    .sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
 	    .codeSize = pFile->size,
-	    .pCode = pFile->pBytes,
+	    .pCode    = pFile->pBytes,
 	};
 	VkResult res = vkCreateShaderModule(pApp->device, &createInfo, VK_NULL_HANDLE,
 	                                    &pShader->shader);
@@ -317,7 +317,7 @@ SgResult sgCreateShader(const SgApp* pApp,
 		sgLogError("[Shader]: Shader Module creation failure");
 	}
 	pShader->stage = pCreateInfo->stage;
-	*ppShader = pShader;
+	*ppShader      = pShader;
 	return SG_SUCCESS;
 }
 
@@ -329,7 +329,7 @@ struct bindRenderObjectInfo {
 
 _Bool renderPassBindRenderObjects(const void* item, void* udata) {
 	const SgMaterialRenderObjects* pRenderObjects = item;
-	struct bindRenderObjectInfo* pInfo = udata;
+	struct bindRenderObjectInfo* pInfo            = udata;
 
 	SgMaterial materialGet = {
 	    .pName = pRenderObjects->materialName,
@@ -344,8 +344,8 @@ _Bool renderPassBindRenderObjects(const void* item, void* udata) {
 	    *pInfo->pCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
 	    pMaterial->pipelineLayout, 0, pMaterial->descriptorSetCount,
 	    pRenderObjects->pDescriptorSets, 0, NULL);
-	for (uint32_t i = 0; i < pRenderObjects->renderObjectCount; ++i) {
-		uint32_t meshID = pRenderObjects->pRenderObjects[i].meshID;
+	for (SgSize i = 0; i < pRenderObjects->renderObjectCount; ++i) {
+		SgSize meshID = pRenderObjects->pRenderObjects[i].meshID;
 		//
 		vkCmdDrawIndexed(*pInfo->pCommandBuffer,
 		                 pInfo->pMeshSet->pIndexSizes[meshID],
@@ -369,11 +369,11 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo* pInitInfo,
 	                "Update Command Realloc Error");
 
 	VkCommandBufferAllocateInfo commandAllocInfo = {
-	    .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-	    .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-	    .commandPool = pInitInfo->pMaterialMap->pApp->pCommandPools[0],
+	    .sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+	    .level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+	    .commandPool        = pInitInfo->pMaterialMap->pApp->pCommandPools[0],
 	    .commandBufferCount = pInitInfo->pMaterialMap->swapchain.imageCount,
-	    .pNext = NULL,
+	    .pNext              = NULL,
 	};
 	vkAllocateCommandBuffers(pInitInfo->pMaterialMap->pApp->device,
 	                         &commandAllocInfo, pUpdateCommands->pCommandBuffers);
@@ -382,14 +382,14 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo* pInitInfo,
 	    {.color = {{0.04, 0.01, 0, 1}}},
 	    {.depthStencil = {1.0f, 0}},
 	};
-	for (uint32_t i = 0; i < pInitInfo->pMaterialMap->swapchain.imageCount; ++i) {
+	for (SgSize i = 0; i < pInitInfo->pMaterialMap->swapchain.imageCount; ++i) {
 		VkRenderPassBeginInfo renderPassBeginInfo = {
-		    .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+		    .sType       = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 		    .framebuffer = pInitInfo->pMaterialMap->swapchain.pFrameBuffers[i],
-		    .renderPass = pInitInfo->pMaterialMap->renderPass,
+		    .renderPass  = pInitInfo->pMaterialMap->renderPass,
 		    .renderArea.extent = pInitInfo->pMaterialMap->swapchain.extent,
-		    .clearValueCount = NUMOF(pClearValues),
-		    .pClearValues = pClearValues,
+		    .clearValueCount   = NUMOF(pClearValues),
+		    .pClearValues      = pClearValues,
 		};
 		*pInitInfo->pMaterialMap->pApp->pScissor = (VkRect2D){
 		    {
@@ -431,8 +431,8 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo* pInitInfo,
 		                     pResource->dataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
 
 		struct bindRenderObjectInfo renderObjectInfo = {
-		    .pMeshSet = pInitInfo->pMeshSet,
-		    .pMaterialMap = pInitInfo->pMaterialMap,
+		    .pMeshSet       = pInitInfo->pMeshSet,
+		    .pMaterialMap   = pInitInfo->pMaterialMap,
 		    .pCommandBuffer = &pUpdateCommands->pCommandBuffers[i],
 		};
 		hashmap_scan(pInitInfo->pMaterialMap->pMaterialRenderObjectMap,
@@ -446,7 +446,7 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo* pInitInfo,
 }
 
 SgBool sgAppUpdate(SgAppUpdateInfo* pUpdateInfo) {
-	SgApp* pApp = pUpdateInfo->pApp;
+	SgApp* pApp             = pUpdateInfo->pApp;
 	SgSwapchain* pSwapchain = &pUpdateInfo->pMaterialMap->swapchain;
 	if (glfwWindowShouldClose(pApp->pWindow))
 		return 0;
@@ -476,10 +476,10 @@ SgBool sgAppUpdate(SgAppUpdateInfo* pUpdateInfo) {
 	    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 
 	VkSubmitInfo submitInfo = {
-	    .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+	    .sType              = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 	    .waitSemaphoreCount = NUMOF(pWaitSemaphores),
-	    .pWaitSemaphores = pWaitSemaphores,
-	    .pWaitDstStageMask = pWaitStages,
+	    .pWaitSemaphores    = pWaitSemaphores,
+	    .pWaitDstStageMask  = pWaitStages,
 	    .commandBufferCount = 1,
 	    .pCommandBuffers =
 	        &pUpdateInfo->pUpdateCommands->pCommandBuffers[pApp->frameImageIndex],
@@ -495,18 +495,18 @@ SgBool sgAppUpdate(SgAppUpdateInfo* pUpdateInfo) {
 	}
 
 	VkPresentInfoKHR presentInfo = {
-	    .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-	    .swapchainCount = 1,
-	    .pSwapchains = &pSwapchain->swapchain,
-	    .pImageIndices = &pApp->frameImageIndex,
+	    .sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+	    .swapchainCount     = 1,
+	    .pSwapchains        = &pSwapchain->swapchain,
+	    .pImageIndices      = &pApp->frameImageIndex,
 	    .waitSemaphoreCount = 1,
-	    .pWaitSemaphores = &pApp->pFrameFinishedSemaphore[pApp->currentFrame],
+	    .pWaitSemaphores    = &pApp->pFrameFinishedSemaphore[pApp->currentFrame],
 	};
 	vkQueuePresentKHR(pApp->graphicsQueue, &presentInfo);
 	if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR) {
 		vkQueueWaitIdle(pApp->graphicsQueue);
 		SgSwapchainCreateInfo swapchainCreateInfo = {
-		    .renderPass = pUpdateInfo->pMaterialMap->renderPass,
+		    .renderPass   = pUpdateInfo->pMaterialMap->renderPass,
 		    .oldSwapchain = pUpdateInfo->pMaterialMap->swapchain.swapchain,
 		};
 		sgCleanupSwapchain(pApp, &pUpdateInfo->pMaterialMap->swapchain);
@@ -514,7 +514,7 @@ SgBool sgAppUpdate(SgAppUpdateInfo* pUpdateInfo) {
 		                  &pUpdateInfo->pMaterialMap->swapchain);
 		SgUpdateCommandsInitInfo updateCommandsInitInfo = {
 		    .pMaterialMap = pUpdateInfo->pMaterialMap,
-		    .pMeshSet = pUpdateInfo->pMeshSet,
+		    .pMeshSet     = pUpdateInfo->pMeshSet,
 		    .pResourceMap = pUpdateInfo->pUpdateCommands->pResourceMap,
 		};
 		sgInitUpdateCommands(&updateCommandsInitInfo,
@@ -580,11 +580,11 @@ void sgDestroyApp(SgApp** ppApp) {
 	SgApp* pApp = *ppApp;
 	vkDeviceWaitIdle(pApp->device);
 
-	for (uint32_t i = 0; i < pApp->commandPoolCount; ++i) {
+	for (SgSize i = 0; i < pApp->commandPoolCount; ++i) {
 		vkResetCommandPool(pApp->device, pApp->pCommandPools[i],
 		                   VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
 	}
-	for (uint32_t i = 0; i < SG_FRAME_QUEUE_LENGTH; ++i) {
+	for (SgSize i = 0; i < SG_FRAME_QUEUE_LENGTH; ++i) {
 		vkDestroySemaphore(pApp->device, pApp->pFrameReadySemaphore[i],
 		                   VK_NULL_HANDLE);
 		vkDestroySemaphore(pApp->device, pApp->pFrameFinishedSemaphore[i],
@@ -592,7 +592,7 @@ void sgDestroyApp(SgApp** ppApp) {
 		vkDestroyFence(pApp->device, pApp->pFrameFences[i], VK_NULL_HANDLE);
 	}
 
-	for (uint32_t i = 0; i < pApp->commandPoolCount; ++i) {
+	for (SgSize i = 0; i < pApp->commandPoolCount; ++i) {
 		vkDestroyCommandPool(pApp->device, pApp->pCommandPools[i], VK_NULL_HANDLE);
 	}
 

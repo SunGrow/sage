@@ -2,7 +2,20 @@
 #define SG_ASSETS_H 1
 #include "lz4.h"
 #include "sg_base.h"
-#include "sg_math.h"
+#include "sg_scene.h"
+
+typedef struct SgProjectLayout {
+	char*      generalSettingsPath;
+	char*      keyContextsPath;
+	char*      filesPath;
+	char*      scenesPath;
+	char*      dataPath;
+	char*      buildDir;
+
+	cJSON*     projectJson;
+} SgProjectLayout;
+
+SgResult sgLoadProjectLayout(const char* pPath, SgProjectLayout* pProjectLayout);
 
 // TODO: request vertex format from json
 typedef struct SgObjVertex {
@@ -11,28 +24,26 @@ typedef struct SgObjVertex {
 	v2 tex;
 } SgObjVertex;
 
-typedef enum SgAssetVersion { SG_ASSET_VERION_0_1 } SgAssetVersion;
-
 typedef enum SgAssetCompression { SG_ASSET_COMPRESSION_LZ4 } SgAssetCompression;
 
 typedef struct SgTextureAssets {
 	char** ppBytesArray;
-	unsigned long long *pWidthsArray, *pHeightsArray, *pChannelsArray,
+	SgSize *pWidthsArray, *pHeightsArray, *pChannelsArray,
 	    *pSizesArray;
 	const char** ppNamesArray;
-	unsigned long long count;
+	SgSize count;
 	SgAssetCompression compression;
 } SgTextureAssets;
 
 typedef struct SgMeshAssets {
 	const char** ppNamesArray;
-	unsigned long long* pVertexBufferSizes;
-	unsigned long long* pIndexBufferSizes;
-	unsigned long long* pCompressedSizesArray;
-	unsigned* pVertexSizes;
+	SgSize* pVertexBufferSizes;
+	SgSize* pIndexBufferSizes;
+	SgSize* pCompressedSizesArray;
+	u* pVertexSizes;
 	char** ppBytesArray;
 
-	unsigned long long count;
+	SgSize count;
 	SgAssetCompression compression;
 } SgMeshAssets;
 
@@ -44,10 +55,20 @@ typedef struct SgAssets {
 	cJSON* pAssetsJson;
 } SgAssets;
 
-SgResult sgAssetsRead(const char* pPath,
+SgResult sgFilesRead(const char* pPath,
                       const char* pTargetPath,
                       SgAssets* pAssets);
-SgResult sgAssetsCompress(SgAssets* pInAssets, SgAssets* pOutAssets);
-SgResult sgAssetsWrite(SgAssets* pAssets, const char* pOutPath);
-SgResult sgAssetsClear(SgAssets* pAssets);
+SgResult sgFilesCompress(SgAssets* pInAssets, SgAssets* pOutAssets);
+SgResult sgFilesWrite(SgAssets* pAssets, const char* pOutPath);
+SgResult sgFilesClear(SgAssets* pAssets);
+
+typedef struct SgProject {
+	SgProjectLayout*  pProjectLayout;
+	SgSceneAssets*    pSceneAssets;
+	SgAssets*         pAssets;
+} SgProject;
+
+SgResult sgProjectRead(SgProjectLayout* pProjectLayout, SgProject* pProject);
+SgResult sgProjectWrite(SgProject* pProject);
+
 #endif

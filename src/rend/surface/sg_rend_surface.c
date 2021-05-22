@@ -21,7 +21,7 @@ SgResult createWindowSurface(const VkInstance* pInstance,
 
 VkSurfaceFormatKHR getSurfaceFormat(VkPhysicalDevice physicalDevice,
                                     VkSurfaceKHR surface) {
-	uint32_t formatCount = 0;
+	SgSize formatCount = 0;
 	VkSurfaceFormatKHR format;
 	vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount,
 	                                     VK_NULL_HANDLE);
@@ -32,11 +32,11 @@ VkSurfaceFormatKHR getSurfaceFormat(VkPhysicalDevice physicalDevice,
 		free(pFormats);
 		sgLogInfo("[AppInit]: Surface Format not specified");
 		return (VkSurfaceFormatKHR){
-		    .format = VK_FORMAT_B8G8R8A8_UNORM,
+		    .format     = VK_FORMAT_B8G8R8A8_UNORM,
 		    .colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
 		};
 	}
-	for (uint32_t i = 0; i < formatCount; ++i) {
+	for (SgSize i = 0; i < formatCount; ++i) {
 		if (pFormats[i].format == VK_FORMAT_B8G8R8A8_UNORM
 		    && pFormats[i].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
 			format = pFormats[i];
@@ -53,14 +53,14 @@ VkSurfaceFormatKHR getSurfaceFormat(VkPhysicalDevice physicalDevice,
 
 VkPresentModeKHR getSurfacePresentMode(VkPhysicalDevice physicalDevice,
                                        VkSurfaceKHR surface) {
-	uint32_t modeCount = 0;
+	SgSize modeCount = 0;
 	VkPresentModeKHR result;
 	vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &modeCount,
 	                                          VK_NULL_HANDLE);
 	VkPresentModeKHR* pPresentModes = malloc(modeCount * sizeof(*pPresentModes));
 	vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &modeCount,
 	                                          pPresentModes);
-	for (uint32_t i = 0; i < modeCount; ++i) {
+	for (SgSize i = 0; i < modeCount; ++i) {
 		if (pPresentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR) {
 			result = pPresentModes[i];
 			free(pPresentModes);

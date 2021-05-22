@@ -57,11 +57,11 @@ void sgDestroySemaphore(SgSemaphore* pSemaphore);
 
 typedef struct SgJobSubmitInfo {
 	SgJobBuffer* pJobBuffers;
-	uint32_t jobBufferCount;
+	SgSize jobBufferCount;
 } SgJobSubmitInfo;
 
 typedef struct SgJobQueueCreateInfo {
-	uint32_t threadCount;
+	SgSize threadCount;
 } SgJobQueueCreateInfo;
 
 SG_DEFINE_HANDLE(SgJobQueue);
@@ -79,7 +79,7 @@ typedef SgFlags SgJobPoolCreateFlags;
 
 typedef struct SgJobPoolCreateInfo {
 	SgJobPoolCreateFlags flags;
-	uint32_t jobBufferCount;
+	SgSize jobBufferCount;
 } SgJobPoolCreateInfo;
 SG_DEFINE_HANDLE(SgJobPool);
 

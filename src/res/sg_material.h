@@ -8,15 +8,15 @@
 #include "sg_math.h"
 
 typedef struct SgRenderObject {
-	uint32_t meshID;  // ID to get a mesh from set
-	uint32_t instanceCount;
+	SgSize meshID;  // ID to get a mesh from set
+	SgSize instanceCount;
 } SgRenderObject;
 
 typedef struct SgRenderObjectCreateInfo {
 	SgRenderObject* pRenderObjects;
-	uint32_t renderObjectCount;
+	SgSize renderObjectCount;
 	const char** ppResourceNames;
-	uint32_t resourceCount;
+	SgSize resourceCount;
 
 	const char* materialName;
 	const char* pName;
@@ -24,19 +24,19 @@ typedef struct SgRenderObjectCreateInfo {
 
 typedef struct SgRenderObjectUpdateInfo {
 	SgRenderObject* pRenderObjects;
-	uint32_t renderObjectCount;
+	SgSize renderObjectCount;
 
 	const char* pName;
 } SgRenderObjectUpdateInfo;
 
 typedef struct SgMaterialRenderObjects {
 	SgRenderObject* pRenderObjects;
-	uint32_t renderObjectCount;
+	SgSize renderObjectCount;
 	const char** ppResourceNames;
-	uint32_t resourceCount;
+	SgSize resourceCount;
 
 	VkDescriptorSet* pDescriptorSets;
-	uint32_t descriptorSetCount;
+	SgSize descriptorSetCount;
 
 	VkWriteDescriptorSet* pWriteDescriptorSets;
 	const char* materialName;
@@ -46,38 +46,38 @@ typedef struct SgMaterialRenderObjects {
 typedef struct SgMaterialCreateInfo {
 	const char* pMaterialName;
 	SgResourceBinding* pResourceBindings;
-	uint32_t resourceBindingCount;
+	SgSize resourceBindingCount;
 	SgShader** ppShaders;
-	uint32_t shaderCount;
+	SgSize shaderCount;
 
-	uint32_t renderObjectCount;
+	SgSize renderObjectCount;
 } SgMaterialCreateInfo;
 
 typedef struct SgSetLayouts {
 	VkDescriptorSetLayout* pSetLayouts;
-	uint32_t setLayoutCount;
+	SgSize setLayoutCount;
 } SgSetLayouts;
 
 typedef struct SgMaterial {
 	VkPipeline pipeline;
 	VkPipelineLayout pipelineLayout;
 	SgSetLayouts setLayouts;
-	uint32_t descriptorSetCount;
+	SgSize descriptorSetCount;
 
-	uint32_t renderObjectCount;
+	SgSize renderObjectCount;
 
 	SgShader** ppShaders;
-	uint32_t shaderCount;
+	SgSize shaderCount;
 	const char* pName;
 
-	uint32_t resourceBindingCount;
+	SgSize resourceBindingCount;
 	SgResourceBinding* pResourceBindings;
 } SgMaterial;
 
 typedef struct SgMaterialMap {
 	struct hashmap* pMaterialRenderObjectMap;
 	struct hashmap* pMaterialMap;
-	uint32_t materialCount;
+	SgSize materialCount;
 
 	VkDescriptorPool descriptorPool;
 
@@ -108,7 +108,7 @@ SgResult sgBuildComputePipeline(const SgApp* pApp,
 
 typedef struct SgMaterialMapCreateInfo {
 	const SgResourceMap* pResourceMap;
-	uint32_t materailCount;
+	SgSize materailCount;
 } SgMaterialMapCreateInfo;
 
 SgResult sgCreateMaterialMap(SgApp* pApp,

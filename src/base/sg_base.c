@@ -41,8 +41,8 @@ SgResult sgOpenFile(const char* path, SgFile** ppFile) {
 	SgFile* pFile;
 	SG_CALLOC_NUM(pFile, 1);
 	pFile->pBytes = buffer;
-	pFile->size = length;
-	*ppFile = pFile;
+	pFile->size   = length;
+	*ppFile       = pFile;
 
 	return SG_SUCCESS;
 }

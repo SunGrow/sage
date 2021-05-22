@@ -1,0 +1,8 @@
+{
+	"generalSettingsPath" : "cfg/app.json",
+	"keyContextsPath"     : "cfg/contexts.json",
+	"filesPath"           : "cfg/files.json",
+	"scenesPath"          : "cfg/scenes.json",
+	"dataPath"            : "data",
+	"buildDir"            : "../build/app/data"
+}

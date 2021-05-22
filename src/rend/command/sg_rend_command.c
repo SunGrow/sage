@@ -2,10 +2,10 @@
 
 typedef struct ThreadCommandPoolCreateInfo {
 	const VkDevice* pDevice;
-	uint32_t queueFamilyID;
+	SgSize queueFamilyID;
 	VkCommandPool* pCommandPools;
-	uint32_t commandPoolCount;
-	uint32_t threadIndex;
+	SgSize commandPoolCount;
+	SgSize threadIndex;
 } ThreadCommandPoolCreateInfo;
 
 static void* createCommandPool(void* threadCommandPoolInfo) {
@@ -13,11 +13,11 @@ static void* createCommandPool(void* threadCommandPoolInfo) {
 	VkCommandPool commandpool = 0;
 	ThreadCommandPoolCreateInfo* info =
 	    (ThreadCommandPoolCreateInfo*)threadCommandPoolInfo;
-	uint32_t index = info->threadIndex;
+	SgSize index = info->threadIndex;
 
 	VkCommandPoolCreateInfo createInfo = {
-	    .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-	    .flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
+	    .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+	    .flags            = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
 	    .queueFamilyIndex = info->queueFamilyID,
 	};
 
@@ -32,22 +32,22 @@ static void* createCommandPool(void* threadCommandPoolInfo) {
 }
 
 SgResult createCommandPools(const VkDevice* pDevice,
-                            const uint32_t queueFamilyID,
+                            const SgSize queueFamilyID,
                             pthread_t* pThreads,
                             VkCommandPool* pCommandPools,
-                            uint32_t commandPoolCount) {
+                            SgSize commandPoolCount) {
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
 	// Submit pool create commands
-	for (uint32_t i = 0; i < commandPoolCount; ++i) {
+	for (SgSize i = 0; i < commandPoolCount; ++i) {
 		ThreadCommandPoolCreateInfo info = {
 		    .commandPoolCount = commandPoolCount,
-		    .pCommandPools = pCommandPools,
-		    .pDevice = pDevice,
-		    .queueFamilyID = queueFamilyID,
-		    .threadIndex = i,
+		    .pCommandPools    = pCommandPools,
+		    .pDevice          = pDevice,
+		    .queueFamilyID    = queueFamilyID,
+		    .threadIndex      = i,
 		};
 		pthread_create(&pThreads[i], &attr, createCommandPool, &info);
 		int rc = pthread_join(pThreads[i], NULL);
@@ -55,7 +55,7 @@ SgResult createCommandPools(const VkDevice* pDevice,
 			sgLogError("[AppInit]: Return code from pthread_join() is %d\n", rc);
 		}
 	}
-	for (uint32_t i = 0; i < commandPoolCount; ++i) {
+	for (SgSize i = 0; i < commandPoolCount; ++i) {
 		if (pCommandPools[i] == VK_NULL_HANDLE) {
 			sgLogWarn("[AppInit]: CommandPool %d not initialized", i);
 		}
@@ -67,9 +67,9 @@ SgResult createCommandPools(const VkDevice* pDevice,
 SgResult sgBeginCommandBuffer(const SgApp* pApp,
                               SgCommandBufferBeginEndInfo* pBeginEndInfo) {
 	VkCommandBufferAllocateInfo allocInfo = {
-	    .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-	    .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-	    .commandPool = *pBeginEndInfo->pCommandPool,
+	    .sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+	    .level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+	    .commandPool        = *pBeginEndInfo->pCommandPool,
 	    .commandBufferCount = 1,
 	};
 
@@ -90,9 +90,9 @@ SgResult sgEndCommandBuffer(const SgApp* pApp,
 	vkEndCommandBuffer(*pBeginEndInfo->pCommandBuffer);
 
 	VkSubmitInfo submitInfo = {
-	    .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+	    .sType              = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 	    .commandBufferCount = 1,
-	    .pCommandBuffers = pBeginEndInfo->pCommandBuffer,
+	    .pCommandBuffers    = pBeginEndInfo->pCommandBuffer,
 	};
 
 	vkQueueSubmit(pApp->graphicsQueue, 1, &submitInfo, *pBeginEndInfo->pFence);
@@ -113,10 +113,10 @@ SgResult sgTransferImage(const SgApp* pApp,
 	/* Begin command buffer */
 	VkCommandBuffer commandBuffer;
 	SgCommandBufferBeginEndInfo beginEndInfo = {
-	    .pCommandPool = &pApp->pCommandPools[2],
-	    .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-	    .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
-	    .pFence = &fence,
+	    .pCommandPool   = &pApp->pCommandPools[2],
+	    .level          = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+	    .flags          = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+	    .pFence         = &fence,
 	    .pCommandBuffer = &commandBuffer,
 	};
 
@@ -124,15 +124,15 @@ SgResult sgTransferImage(const SgApp* pApp,
 	/**/
 
 	VkImageMemoryBarrier barrier = {
-	    .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-	    .oldLayout = pTransferInfo->srcImageLayout,
-	    .newLayout = pTransferInfo->dstImageLayout,
+	    .sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+	    .oldLayout           = pTransferInfo->srcImageLayout,
+	    .newLayout           = pTransferInfo->dstImageLayout,
 	    .srcQueueFamilyIndex = pTransferInfo->srcQueueFamilyID,
 	    .dstQueueFamilyIndex = pTransferInfo->dstQueueFamilyID,
-	    .image = pTransferInfo->image.image,
-	    .subresourceRange = pTransferInfo->subresourceRange,
-	    .srcAccessMask = pTransferInfo->srcAccessMask,
-	    .dstAccessMask = pTransferInfo->dstAccessMask,
+	    .image               = pTransferInfo->image.image,
+	    .subresourceRange    = pTransferInfo->subresourceRange,
+	    .srcAccessMask       = pTransferInfo->srcAccessMask,
+	    .dstAccessMask       = pTransferInfo->dstAccessMask,
 	};
 
 	vkCmdPipelineBarrier(

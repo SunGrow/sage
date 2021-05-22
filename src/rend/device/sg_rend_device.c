@@ -3,15 +3,15 @@
 #include <stdlib.h>
 
 // could replace with trying to get all of the families
-uint32_t getGraphicsFamilyIndex(VkPhysicalDevice pd) {
-	uint32_t queueCount = 0;
+SgSize getGraphicsFamilyIndex(VkPhysicalDevice pd) {
+	SgSize queueCount = 0;
 	vkGetPhysicalDeviceQueueFamilyProperties(pd, &queueCount, 0);
 	VkQueueFamilyProperties* queues;
 	SG_MALLOC_NUM(queues, queueCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(pd, &queueCount, queues);
 
 	// Too lazy to handle multiple families case. Might do it later
-	for (uint32_t i = 0; i < queueCount; ++i)
+	for (SgSize i = 0; i < queueCount; ++i)
 		if ((queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
 		    && (queues[i].queueFlags & VK_QUEUE_COMPUTE_BIT)) {
 			free(queues);
@@ -24,15 +24,15 @@ uint32_t getGraphicsFamilyIndex(VkPhysicalDevice pd) {
 
 VkPhysicalDevice pickPhysicalDevice(VkSurfaceKHR surface,
                                     VkPhysicalDevice* pPhysicalDevices,
-                                    uint32_t deviceCount) {
+                                    SgSize deviceCount) {
 	VkBool32 boolres;
 	VkPhysicalDevice preferedDevice = 0;
 	VkPhysicalDevice fallbackDevice = 0;
-	for (uint32_t i = 0; i < deviceCount; ++i) {
+	for (SgSize i = 0; i < deviceCount; ++i) {
 		VkPhysicalDeviceProperties props;
 		vkGetPhysicalDeviceProperties(pPhysicalDevices[i], &props);
 		sgLogInfo_Debug("[AppInit]: GPU %s found", props.deviceName);
-		uint32_t familyIdx = getGraphicsFamilyIndex(pPhysicalDevices[i]);
+		SgSize familyIdx = getGraphicsFamilyIndex(pPhysicalDevices[i]);
 		if (familyIdx == VK_QUEUE_FAMILY_IGNORED) {
 			continue;
 		}
@@ -69,7 +69,7 @@ VkPhysicalDevice pickPhysicalDevice(VkSurfaceKHR surface,
 
 SgResult getPhysicalDevice(SgPhysicalDeviceGetInfo* pGetInfo,
                            VkPhysicalDevice* pPhysicalDevice) {
-	uint32_t deviceCount = 0;
+	SgSize deviceCount = 0;
 	vkEnumeratePhysicalDevices(*pGetInfo->pInstance, &deviceCount,
 	                           VK_NULL_HANDLE);
 	VkPhysicalDevice* pPhysicalDevices =
@@ -94,7 +94,7 @@ static const char* deviceExtensionNames[] = {
 SgResult getLogicalDevice(SgLogicalDeviceGetInfo* pGetInfo, VkDevice* pDevice) {
 	VkDeviceQueueCreateInfo* pQueueCreateInfos;
 	SG_CALLOC_NUM(pQueueCreateInfos, pGetInfo->createInfosCount);
-	for (uint32_t i = 0; i < pGetInfo->createInfosCount; ++i) {
+	for (SgSize i = 0; i < pGetInfo->createInfosCount; ++i) {
 		pQueueCreateInfos[i].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		pQueueCreateInfos[i].queueFamilyIndex =
 		    pGetInfo->pQueueCreateInfos[i].queueIndex;
@@ -103,10 +103,10 @@ SgResult getLogicalDevice(SgLogicalDeviceGetInfo* pGetInfo, VkDevice* pDevice) {
 		pQueueCreateInfos[i].queueCount = pGetInfo->pQueueCreateInfos[i].queueCount;
 	}
 	VkDeviceCreateInfo createInfo = {
-	    .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-	    .queueCreateInfoCount = pGetInfo->createInfosCount,
-	    .pQueueCreateInfos = pQueueCreateInfos,
-	    .enabledExtensionCount = NUMOF(deviceExtensionNames),
+	    .sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+	    .queueCreateInfoCount    = pGetInfo->createInfosCount,
+	    .pQueueCreateInfos       = pQueueCreateInfos,
+	    .enabledExtensionCount   = NUMOF(deviceExtensionNames),
 	    .ppEnabledExtensionNames = deviceExtensionNames,
 	};
 	vkCreateDevice(pGetInfo->physicalDevice, &createInfo, VK_NULL_HANDLE,

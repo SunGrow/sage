@@ -79,9 +79,9 @@ void v3_cross(v3 v3dst, const v3 a, const v3 b) {
 
 void v3_normalize_to(v3 v3dst, const v3 v3src) {
 	float mag;
-	mag = v3_get_mag(v3src);
-	int a = (mag ? 1.0f : 0);
-	int b = (mag ? 0 : 1.0f);
+	mag      = v3_get_mag(v3src);
+	int a    = (mag ? 1.0f : 0);
+	int b    = (mag ? 0 : 1.0f);
 	v3dst[0] = v3src[0] * a / mag + b;
 	v3dst[1] = v3src[1] * a / mag + b;
 	v3dst[2] = v3src[2] * a / mag + b;
@@ -125,8 +125,8 @@ void m4_rotation_make(m4 m4src, const float angle, const v3 axis) {
 	m4src[2][2] += cosin;
 
 	m4src[0][3] = m4src[1][3] = m4src[2][3] = m4src[3][0] = m4src[3][1] =
-	    m4src[3][2] = 0.0f;
-	m4src[3][3] = 1.0f;
+	    m4src[3][2]                                       = 0.0f;
+	m4src[3][3]                                           = 1.0f;
 
 	return;
 }
@@ -234,7 +234,7 @@ void lookat(m4 m4src, const v3 v3eye, const v3 v3at, const v3 v3up) {
 	m4src[3][2] = v3_dot(v3eye, v3z_base);
 
 	m4src[0][3] = m4src[1][3] = m4src[2][3] = 0.0f;
-	m4src[3][3] = 1.0f;
+	m4src[3][3]                             = 1.0f;
 
 	return;
 }
@@ -248,7 +248,7 @@ void perspective(m4 m4src,
 
 	m4_to_zero(m4src);
 
-	f = 1.0f / tanf(fov_y * 0.5f);
+	f  = 1.0f / tanf(fov_y * 0.5f);
 	fn = 1.0f / (nearVal - farVal);
 
 	m4src[0][0] = f / aspect_ratio;

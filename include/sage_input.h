@@ -14,12 +14,12 @@ typedef void (*SgInputAction)(/* State */ SgBool,
 
 typedef enum SgInputType {
 	SG_INPUT_TYPE_KEYBOARD = BIT(0),
-	SG_INPUT_TYPE_MOUSE = BIT(1),
+	SG_INPUT_TYPE_MOUSE    = BIT(1),
 } SgInputType;
 
 typedef struct SgInputSignal {
-	uint32_t key;
-	uint32_t mod;
+	SgSize key;
+	SgSize mod;
 
 	char* keyName;
 	char* modName;
@@ -30,14 +30,14 @@ typedef struct SgInputSignal {
 typedef struct SgActiveContextsCreateInfo {
 	SgActor* pActors;
 	char** pActorNames;
-	uint32_t actorCount;
+	SgSize actorCount;
 
 	SgInputSignal* pInputSignals;
-	uint32_t signalCount;
+	SgSize signalCount;
 
 	SgInputAction* pActionFuncs;
 	char** pActionNames;
-	uint32_t actionCount;
+	SgSize actionCount;
 
 	SgFile file;
 } SgActiveContextsCreateInfo;
@@ -49,8 +49,8 @@ void sgUpdateContext(const SgActiveContextsCreateInfo* pCreateInfo,
 
 typedef enum SgActionType {
 	SG_ACTION_TYPE_TRIGGER = BIT(0),
-	SG_ACTION_TYPE_TOGGLE = BIT(1),
-	SG_ACTION_TYPE_RANGE = BIT(2),
+	SG_ACTION_TYPE_TOGGLE  = BIT(1),
+	SG_ACTION_TYPE_RANGE   = BIT(2),
 } SgActionType;
 
 typedef struct SgActionNames {
@@ -60,13 +60,13 @@ typedef struct SgActionNames {
 	char* inputName;
 	char* modName;
 	char* actionName;
-	uint32_t actorID;
+	SgSize actorID;
 } SgActionNames;
 
 typedef struct SgActiveContextsChangeInfo {
 	SgActionNames* pOldActions;
 	SgActionNames* pNewActions;
-	uint32_t count;
+	SgSize count;
 } SgActiveContextsChangeInfo;
 
 void sgChangeContext(const SgActiveContextsChangeInfo* pChangeInfo,

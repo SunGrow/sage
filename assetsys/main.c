@@ -4,34 +4,29 @@
 #include "stdlib.h"
 
 int main(int argc, const char* argv[]) {
-	const char* filesPath;
-	const char* outDir;
-	const char* inDir;
+	const char* projectPath;
 	if (argc <= 1) {
 		sgLogWarn(
-		    "No args provided. Sample args: [path/to/files.json] [output/dir] "
-		    "[in/dir]");
+		    "No args provided. Sample args: [path/to/project.json]");
 		exit(0);
 	}
-	if (argc <= 2) {
-		sgLogInfo("No output dir provided. Will use '.' ");
-		outDir = ".";
-	} else {
-		outDir = argv[2];
-	}
-	if (argc <= 3) {
-		sgLogInfo("No input dir provided. Will use '.' ");
-		inDir = ".";
-	} else {
-		inDir = argv[3];
-	}
-	filesPath = argv[1];
+	projectPath = argv[1];
+	SgProjectLayout projectLayout;
+	sgLoadProjectLayout(projectPath, &projectLayout);
+	sgLogInfo("%s %s %s %s %s %s", projectLayout.generalSettingsPath, projectLayout.keyContextsPath, projectLayout.filesPath, projectLayout.scenesPath, projectLayout.dataPath, projectLayout.buildDir);
+
+	sgLogInfo("Started file read");
 	SgAssets inAssets;
 	SgAssets outAssets;
-	sgAssetsRead(argv[1], inDir, &inAssets);
-	sgAssetsCompress(&inAssets, &outAssets);
-	sgAssetsWrite(&outAssets, outDir);
-	sgAssetsClear(&inAssets);
-	sgAssetsClear(&outAssets);
+	sgFilesRead(projectLayout.filesPath, ".", &inAssets);
+	sgLogInfo("Files read successfully. Starting file compression");
+	sgFilesCompress(&inAssets, &outAssets);
+	sgLogInfo("Files compression completed. Starting file write");
+	sgFilesWrite(&outAssets, projectLayout.buildDir);
+	sgLogInfo("File write completed");
+	sgFilesClear(&inAssets);
+	sgFilesClear(&outAssets);
+	//sgLogInfo("Started scene generation");
+	//sgLogInfo("Scene generation completed");
 	return 0;
 }

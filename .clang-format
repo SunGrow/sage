@@ -3,5 +3,6 @@ BasedOnStyle: Chromium
 BreakBeforeBinaryOperators: NonAssignment
 TabWidth: '2'
 UseTab: ForIndentation
+AlignConsecutiveAssignments: true
 
 ...

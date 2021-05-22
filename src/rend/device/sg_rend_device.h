@@ -11,15 +11,15 @@ typedef struct SgPhysicalDeviceGetInfo {
 } SgPhysicalDeviceGetInfo;
 SgResult getPhysicalDevice(SgPhysicalDeviceGetInfo* pGetInfo,
                            VkPhysicalDevice* pPhysicalDevice);
-uint32_t getGraphicsFamilyIndex(VkPhysicalDevice pd);
+SgSize getGraphicsFamilyIndex(VkPhysicalDevice pd);
 typedef struct SgDeviceQueueCreateInfo {
 	float* pQueuePriorities;
-	uint32_t queueIndex;
-	uint32_t queueCount;
+	SgSize queueIndex;
+	SgSize queueCount;
 } SgDeviceQueueCreateInfo;
 typedef struct SgLogicalDeviceGetInfo {
 	SgDeviceQueueCreateInfo* pQueueCreateInfos;
-	uint32_t createInfosCount;
+	SgSize createInfosCount;
 	VkPhysicalDevice physicalDevice;
 } SgLogicalDeviceGetInfo;
 SgResult getLogicalDevice(SgLogicalDeviceGetInfo* pGetInfo, VkDevice* pDevice);

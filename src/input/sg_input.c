@@ -28,9 +28,9 @@ static int keyCompare(const void* a, const void* b, void* udata) {
 	const SgInputKey* keyA = a;
 	const SgInputKey* keyB = b;
 
-	uint32_t keyTypeNeq = keyA->type != keyB->type;
-	uint32_t keyNeq = keyA->key != keyB->key;
-	uint32_t keyModNeq = keyA->mods != keyB->mods;
+	SgSize keyTypeNeq = keyA->type != keyB->type;
+	SgSize keyNeq     = keyA->key != keyB->key;
+	SgSize keyModNeq  = keyA->mods != keyB->mods;
 
 	return keyTypeNeq * (keyA->type - keyB->type)
 	       + (!keyTypeNeq) * (keyNeq) * (keyA->key - keyB->key)
@@ -57,7 +57,7 @@ static bool keyIter(const void* item, void* udata) {
 static SgResult sgFillActionMap(const SgActiveContextsCreateInfo* pCreateInfo,
                                 cJSON* actionMap,
                                 SgActionMap* pActionMap) {
-	pActionMap->type = SG_ACTION_TYPE_TOGGLE;
+	pActionMap->type        = SG_ACTION_TYPE_TOGGLE;
 	pActionMap->actionCount = cJSON_GetArraySize(actionMap);
 	if (pActionMap->actorIDs == NULL) {
 		SG_CALLOC_NUM(pActionMap->actorIDs, pActionMap->actionCount);
@@ -76,13 +76,13 @@ static SgResult sgFillActionMap(const SgActiveContextsCreateInfo* pCreateInfo,
 	    hashmap_new(sizeof(SgInputKey), pActionMap->actionCount, 0, 0, keyHash,
 	                keyCompare, NULL);
 
-	for (uint32_t j = 0; j < cJSON_GetArraySize(actionMap); ++j) {
+	for (SgSize j = 0; j < cJSON_GetArraySize(actionMap); ++j) {
 		cJSON* action = cJSON_GetArrayItem(actionMap, j);
 
 		SgInputKey inputKey;
 
 		cJSON* actionName = cJSON_GetObjectItem(action, "actionName");
-		for (uint32_t k = 0; k < pCreateInfo->actionCount; ++k) {
+		for (SgSize k = 0; k < pCreateInfo->actionCount; ++k) {
 			if (strcmp(pCreateInfo->pActionNames[k], actionName->valuestring)
 			    == SG_SUCCESS) {
 				pActionMap->actionFuncs[j] = pCreateInfo->pActionFuncs[k];
@@ -93,7 +93,7 @@ static SgResult sgFillActionMap(const SgActiveContextsCreateInfo* pCreateInfo,
 			          actionName->valuestring);
 		};
 
-		cJSON* actorID = cJSON_GetObjectItem(action, "actorID");
+		cJSON* actorID          = cJSON_GetObjectItem(action, "actorID");
 		pActionMap->actorIDs[j] = actorID->valueint;
 
 		cJSON* type = cJSON_GetObjectItem(action, "type");
@@ -105,16 +105,16 @@ static SgResult sgFillActionMap(const SgActiveContextsCreateInfo* pCreateInfo,
 			inputKey.type = SG_INPUT_TYPE_MOUSE;
 		}
 		cJSON* inputName = cJSON_GetObjectItem(action, "input");
-		cJSON* modName = cJSON_GetObjectItem(action, "mod");
+		cJSON* modName   = cJSON_GetObjectItem(action, "mod");
 		if (strlen(inputName->valuestring)) {
 			SgBool stringFound = SG_FALSE;
-			for (uint32_t k = 0; k < pCreateInfo->signalCount; ++k) {
+			for (SgSize k = 0; k < pCreateInfo->signalCount; ++k) {
 				if (pCreateInfo->pInputSignals[k].keyName) {
 					if (strcmp(pCreateInfo->pInputSignals[k].keyName,
 					           inputName->valuestring)
 					    == SG_SUCCESS) {
 						inputKey.key = pCreateInfo->pInputSignals[k].key;
-						stringFound = SG_TRUE;
+						stringFound  = SG_TRUE;
 					}
 				}
 			}
@@ -127,13 +127,13 @@ static SgResult sgFillActionMap(const SgActiveContextsCreateInfo* pCreateInfo,
 		}
 		if (strlen(modName->valuestring)) {
 			SgBool stringFound = SG_FALSE;
-			for (uint32_t k = 0; k < pCreateInfo->signalCount; ++k) {
+			for (SgSize k = 0; k < pCreateInfo->signalCount; ++k) {
 				if (pCreateInfo->pInputSignals[k].modName) {
 					if (strcmp(pCreateInfo->pInputSignals[k].modName,
 					           modName->valuestring)
 					    == SG_SUCCESS) {
 						inputKey.mods = pCreateInfo->pInputSignals[k].mod;
-						stringFound = SG_TRUE;
+						stringFound   = SG_TRUE;
 					}
 				}
 			}
@@ -159,7 +159,7 @@ void sgUpdateContext(const SgActiveContextsCreateInfo* pCreateInfo,
 	if (pActiveContexts->pContexts == NULL) {
 		SG_CALLOC_NUM(pActiveContexts->pContexts, pActiveContexts->contextCount);
 	}
-	for (uint32_t i = 0; i < cJSON_GetArraySize(contexts); ++i) {
+	for (SgSize i = 0; i < cJSON_GetArraySize(contexts); ++i) {
 		cJSON* context = cJSON_GetArrayItem(contexts, i);
 
 		cJSON* actorNames = cJSON_GetObjectItem(context, "actorNames");
@@ -168,9 +168,9 @@ void sgUpdateContext(const SgActiveContextsCreateInfo* pCreateInfo,
 			              cJSON_GetArraySize(actorNames));
 		}
 		pActiveContexts->pContexts[i].actorCount = cJSON_GetArraySize(actorNames);
-		for (uint32_t j = 0; j < cJSON_GetArraySize(actorNames); ++j) {
+		for (SgSize j = 0; j < cJSON_GetArraySize(actorNames); ++j) {
 			cJSON* actorName = cJSON_GetArrayItem(actorNames, j);
-			for (uint32_t k = 0; k < pCreateInfo->actorCount; ++k) {
+			for (SgSize k = 0; k < pCreateInfo->actorCount; ++k) {
 				if (strcmp(actorName->valuestring, pCreateInfo->pActorNames[k])
 				    == SG_SUCCESS) {
 					pActiveContexts->pContexts[i].pActors[j] = pCreateInfo->pActors[k];
@@ -235,7 +235,7 @@ static void sgCallActions(SgActiveContexts* pActiveContexts,
                           double rangeY,
                           GLFWwindow* pWindow) {
 	SgActionMap activeMap = {0};
-	for (uint32_t i = 0; i < pActiveContexts->contextCount; ++i) {
+	for (SgSize i = 0; i < pActiveContexts->contextCount; ++i) {
 		if ((actionType == SG_ACTION_TYPE_TRIGGER)
 		    && (actions == GLFW_PRESS || actions == GLFW_RELEASE)) {
 			activeMap = pActiveContexts->pContexts[i].triggerMap;
@@ -253,8 +253,8 @@ static void sgCallActions(SgActiveContexts* pActiveContexts,
 			    activeMap.actionMap,
 			    &(SgInputKey){.key = key, .mods = mods, .type = inputType});
 			if (inputKey) {
-				uint32_t actorID = activeMap.actorIDs[inputKey->id];
-				SgActor actor = pActiveContexts->pContexts[i].pActors[actorID];
+				SgSize actorID       = activeMap.actorIDs[inputKey->id];
+				SgActor actor        = pActiveContexts->pContexts[i].pActors[actorID];
 				SgInputAction action = activeMap.actionFuncs[inputKey->id];
 				action(actions, rangeX, rangeY, actor, pWindow);
 			}
@@ -264,8 +264,8 @@ static void sgCallActions(SgActiveContexts* pActiveContexts,
 				    activeMap.actionMap,
 				    &(SgInputKey){.key = key, .mods = 0, .type = inputType});
 				if (inputKey) {
-					uint32_t actorID = activeMap.actorIDs[inputKey->id];
-					SgActor actor = pActiveContexts->pContexts[i].pActors[actorID];
+					SgSize actorID       = activeMap.actorIDs[inputKey->id];
+					SgActor actor        = pActiveContexts->pContexts[i].pActors[actorID];
 					SgInputAction action = activeMap.actionFuncs[inputKey->id];
 					action(actions, rangeX, rangeY, actor, pWindow);
 				}
@@ -336,7 +336,7 @@ static void sgUnloadMap(SgActionMap* pActionMap) {
 void sgUnloadContexts(const SgApp* pApp, SgActiveContexts** ppContexts) {
 	SgActiveContexts* pContexts = *ppContexts;
 	if (pContexts->pContexts) {
-		for (uint32_t i = 0; i < pContexts->contextCount; ++i) {
+		for (SgSize i = 0; i < pContexts->contextCount; ++i) {
 			sgUnloadMap(&pContexts->pContexts[i].triggerMap);
 			sgUnloadMap(&pContexts->pContexts[i].toggleMap);
 			sgUnloadMap(&pContexts->pContexts[i].rangeMap);
@@ -360,19 +360,19 @@ static void sgReplaceActions(const SgActiveContextsChangeInfo* pChangeInfo,
                              cJSON** ppActionMap) {
 	cJSON* pActionMap = *ppActionMap;
 
-	for (uint32_t i = 0; i < cJSON_GetArraySize(pActionMap); ++i) {
+	for (SgSize i = 0; i < cJSON_GetArraySize(pActionMap); ++i) {
 		cJSON* action = cJSON_GetArrayItem(pActionMap, i);
 
-		cJSON* inputType = cJSON_GetObjectItem(action, "type");
-		cJSON* inputK = cJSON_GetObjectItem(action, "input");
-		cJSON* mod = cJSON_GetObjectItem(action, "mod");
-		cJSON* actionFunc = cJSON_GetObjectItem(action, "actionName");
+		cJSON* inputType    = cJSON_GetObjectItem(action, "type");
+		cJSON* inputK       = cJSON_GetObjectItem(action, "input");
+		cJSON* mod          = cJSON_GetObjectItem(action, "mod");
+		cJSON* actionFunc   = cJSON_GetObjectItem(action, "actionName");
 		char* inputTypeName = cJSON_GetStringValue(inputType);
-		char* inputName = cJSON_GetStringValue(inputK);
-		char* modName = cJSON_GetStringValue(mod);
-		char* actionName = cJSON_GetStringValue(actionFunc);
+		char* inputName     = cJSON_GetStringValue(inputK);
+		char* modName       = cJSON_GetStringValue(mod);
+		char* actionName    = cJSON_GetStringValue(actionFunc);
 
-		for (uint32_t j = 0; j < pChangeInfo->count; ++j) {
+		for (SgSize j = 0; j < pChangeInfo->count; ++j) {
 			SgBool notTheOne = actionType != pChangeInfo->pOldActions[j].actionType;
 			notTheOne |= strcmp(pChangeInfo->pOldActions[j].actionName, actionName);
 			notTheOne |= strcmp(pChangeInfo->pOldActions[j].modName, modName);
@@ -414,8 +414,8 @@ void sgChangeContext(const SgActiveContextsChangeInfo* pChangeInfo,
                      SgActiveContexts** ppContexts) {
 	SgActiveContexts* pContexts = *ppContexts;
 	cJSON* contexts = cJSON_GetObjectItem(pContexts->contextsJSON, "contexts");
-	for (uint32_t i = 0; i < cJSON_GetArraySize(contexts); ++i) {
-		cJSON* context = cJSON_GetArrayItem(contexts, i);
+	for (SgSize i = 0; i < cJSON_GetArraySize(contexts); ++i) {
+		cJSON* context   = cJSON_GetArrayItem(contexts, i);
 		cJSON* toggleMap = cJSON_GetObjectItem(context, "toggleMap");
 		sgReplaceActions(pChangeInfo, SG_ACTION_TYPE_TOGGLE, &toggleMap);
 		cJSON* triggerMap = cJSON_GetObjectItem(context, "triggerMap");
@@ -427,10 +427,10 @@ void sgChangeContext(const SgActiveContextsChangeInfo* pChangeInfo,
 }
 
 void sgSaveContext(const SgActiveContexts* pContexts, char* fileDir) {
-	char* json = cJSON_Print(pContexts->contextsJSON);
+	char* json  = cJSON_Print(pContexts->contextsJSON);
 	SgFile file = {
-	    .pBytes = (uint32_t*)json,
-	    .size = strlen(json),
+	    .pBytes = json,
+	    .size   = strlen(json),
 	};
 	sgWriteFile(fileDir, &file);
 }

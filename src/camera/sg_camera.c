@@ -1,14 +1,15 @@
 #include "sg_camera.h"
 
 void sgTimedCameraInit(SgTimedCamera* pTimedCamera) {
-	pTimedCamera->startTime = glfwGetTime();
-	pTimedCamera->currentTime = glfwGetTime();
+	pTimedCamera->startTime    = glfwGetTime();
+	pTimedCamera->currentTime  = glfwGetTime();
 	pTimedCamera->previousTime = glfwGetTime();
 }
 void sgTimedCameraUpdate(SgTimedCamera* pTimedCamera) {
 	pTimedCamera->previousTime = pTimedCamera->currentTime;
-	pTimedCamera->currentTime = glfwGetTime();
-	pTimedCamera->deltaTime = pTimedCamera->currentTime - pTimedCamera->previousTime;
+	pTimedCamera->currentTime  = glfwGetTime();
+	pTimedCamera->deltaTime =
+	    pTimedCamera->currentTime - pTimedCamera->previousTime;
 }
 
 void sgInitTransformUniform(const SgTmpCamera* pCamera,
