@@ -3,7 +3,7 @@
 #include "sage_core.h"
 
 void sgTransformCamera(const SgCameraTransformInfo* pTransformInfo,
-                       SgCamera* pCamera) {
+                       SgTmpCamera* pCamera) {
 	/* Move */
 	v3 tmp;
 	v3 right;

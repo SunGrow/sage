@@ -10,6 +10,9 @@ sage_libs += sgbase_lib
 subdir('math')
 sage_incs += sgmath_inc
 sage_libs += sgmath_lib
+subdir('camera')
+sage_incs += sgcamera_inc
+sage_libs += sgcamera_lib
 subdir('res')
 sage_incs += sgres_inc
 sage_libs += sgres_lib

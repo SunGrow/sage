@@ -1,7 +1,7 @@
 project('sage', 'c', 'cpp',
   version: '0.1.0',
   license: 'MIT',
-  default_options: ['warning_level=3', 'c_std=c17'])
+  default_options: ['warning_level=3', 'c_std=c17', 'march=x86-64-v3'])
  
 base_inc = include_directories('include')
 

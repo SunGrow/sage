@@ -5,16 +5,23 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
+#include "sage_types.h"
 
-typedef float v2[2];
-typedef float v3[3];
-typedef float v4[4];
+typedef f v2[2];
+typedef f v3[3];
+typedef f v4[4];
+
+typedef v2 m2[2];
+typedef v3 m3[3];
 typedef v4 m4[4];
 
-typedef uint32_t v2_i[2];
-typedef uint32_t v3_i[3];
-typedef uint32_t v4_i[4];
+typedef u32 v2_i[2];
+typedef u32 v3_i[3];
+typedef u32 v4_i[4];
+
+typedef v2_i m2_i[2];
+typedef v3_i m3_i[3];
+typedef v4_i m4_i[4];
 
 /* @brief: return randians of a degree */
 float deg_to_rad(const float deg);

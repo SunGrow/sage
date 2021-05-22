@@ -11,10 +11,15 @@ layout(location = 3) in vec3 v_ToLight;
 layout(set = 0, binding = 1) uniform sampler2D u_TexSampler;
 
 void main() {
-	vec4 depth = vec4(gl_FragCoord.z,gl_FragCoord.z,gl_FragCoord.z, 1.0);
+	vec4 depth = vec4(vec3(gl_FragCoord.z), 1.0);
 	vec4 tex = texture(u_TexSampler, v_TexCoord);
 	float lighted = dot(v_Normal, v_ToLight);
-	lighted = min(max(lighted, 0.2), 1.0);
-	// No transfer on tex coord and normal
+	if (lighted > 0.8) {
+		lighted = 1;
+	} else if (lighted > 0.4) {
+		lighted = 0.6;
+	} else {
+		lighted = 0.2;
+	}
 	o_Color  = tex * (lighted * v_Color) * depth;
 }

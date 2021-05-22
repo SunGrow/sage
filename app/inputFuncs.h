@@ -13,11 +13,11 @@ typedef struct SgCameraTransformInfo {
 	v3 moveDirectionNeg;
 	v2 cursorOffset;
 	double deltaTime;
-	SgCamera camera;
+	SgTmpCamera camera;
 } SgCameraTransformInfo;
 
 void sgTransformCamera(const SgCameraTransformInfo* pTransformInfo,
-                       SgCamera* pCamera);
+                       SgTmpCamera* pCamera);
 
 void keyPressForward(SgBool isPressed,
                      double rangeX,

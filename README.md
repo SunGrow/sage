@@ -27,12 +27,14 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 * [ ] - Rendering state load from json 
 * [ ] - Basic Asset system (Asset app and Asset app output reader in lib)
 * [ ] - Compute shaders <!-- Wow. I still haven't implemented them. -->
+* [ ] - GLTF support
+* [ ] - Demo apps
 
 ### 0.2 Release
 
 * [ ] - Rendering state GUI editor
 * [ ] - Job system node-like dependency GUI editor
-* [ ] - GLTF2.0 support
+* [ ] - Testing pipeline
 
 ### 0.3 Release
 

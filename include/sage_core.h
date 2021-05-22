@@ -6,20 +6,16 @@ extern "C" {
 #endif
 
 #include "sage_platform.h"
+#include "sage_types.h"
 
 #define SG_DEFINE_HANDLE(object) typedef struct object##_T* object
 #define BIT(n) (1UL << (n))
 
-typedef enum {
-	SG_SUCCESS = 0,
-} SgResult;
-
-typedef uint_fast8_t SgBool;
-typedef uint32_t SgFlags;
 
 SG_DEFINE_HANDLE(SgFile);
 SgResult sgOpenFile(const char* path, SgFile* pFile);
 SgResult sgCloseFile(SgFile* pFile);
+
 
 // Reserved for future use
 #ifdef __cplusplus

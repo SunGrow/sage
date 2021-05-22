@@ -1,12 +1,8 @@
 #include "inputFuncs.h"
 #include "inputKeys.h"
-#include "math.h"
+#include <math.h>
 #include "resourceBindings.h"
 #include "sage.h"
-#include "sage_input.h"
-#include "sage_math.h"
-#include "sage_rend.h"
-#include "sage_scene.h"
 #include "transformObjects.h"
 
 #define NUMOF(arr) (sizeof(arr) / sizeof((arr)[0]))
@@ -59,11 +55,11 @@ int main() {
 		v4 position;
 		v4 color;
 	} lighting = {
-	    .position = {-3.0, 1.0, 0.0, 1.0},
+	    .position = {0, 0, 0.0, 1.0},
 	    .color = {1.0, 1.0, 0.6, 1.0},
 	};
 
-	SgCamera camera = {
+	SgTmpCamera camera = {
 	    .position = {-2.0f, 1.0f, -1.0f},
 	    .front = {2.0f, 0.0f, 0.0f},
 	    .up = {0.0f, 1.0f, 0.0f},
@@ -74,7 +70,7 @@ int main() {
 	SgCameraTransformInfo cameraTransform = {0};
 	cameraTransform.camera = camera;
 
-	SgScene scene = {0};
+	SgTimedCamera timedCamera = {0};
 
 	SgActor testActors[] = {
 	    &cameraTransform,
@@ -105,89 +101,6 @@ int main() {
 
 	sgLoadContexts(&activeContextsCreateInfo, &contexts);
 	sgCloseFile(&contextConfigFile);
-	// SgActionNames oldNames[] = {
-	//	{
-	//		.actionType = SG_ACTION_TYPE_TRIGGER,
-	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
-	//		.inputName = "k",
-	//		.modName = "",
-	//		.actionName = "moveUp",
-	//	},
-	//	{
-	//		.actionType = SG_ACTION_TYPE_TRIGGER,
-	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
-	//		.inputName = "i",
-	//		.modName = "",
-	//		.actionName = "moveForward",
-	//	},
-	//	{
-	//		.actionType = SG_ACTION_TYPE_TRIGGER,
-	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
-	//		.inputName = "n",
-	//		.modName = "",
-	//		.actionName = "moveBack",
-	//	},
-	//	{
-	//		.actionType = SG_ACTION_TYPE_TRIGGER,
-	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
-	//		.inputName = "l",
-	//		.modName = "",
-	//		.actionName = "moveRight",
-	//	},
-	//	{
-	//		.actionType = SG_ACTION_TYPE_TRIGGER,
-	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
-	//		.inputName = "h",
-	//		.modName = "",
-	//		.actionName = "moveLeft",
-	//	},
-	//};
-	// SgActionNames newNames[] = {
-	//	{
-	//		.actionType = SG_ACTION_TYPE_TRIGGER,
-	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
-	//		.inputName = "space",
-	//		.modName = "",
-	//		.actionName = "moveUp",
-	//	},
-	//	{
-	//		.actionType = SG_ACTION_TYPE_TRIGGER,
-	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
-	//		.inputName = "w",
-	//		.modName = "",
-	//		.actionName = "moveForward",
-	//	},
-	//	{
-	//		.actionType = SG_ACTION_TYPE_TRIGGER,
-	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
-	//		.inputName = "s",
-	//		.modName = "",
-	//		.actionName = "moveBack",
-	//	},
-	//	{
-	//		.actionType = SG_ACTION_TYPE_TRIGGER,
-	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
-	//		.inputName = "d",
-	//		.modName = "",
-	//		.actionName = "moveRight",
-	//	},
-	//	{
-	//		.actionType = SG_ACTION_TYPE_TRIGGER,
-	//		.inputType = SG_INPUT_TYPE_KEYBOARD,
-	//		.inputName = "a",
-	//		.modName = "",
-	//		.actionName = "moveLeft",
-	//	},
-	//};
-	// SgActiveContextsChangeInfo changeInfo = {
-	//	.pOldActions = oldNames,
-	//	.pNewActions = newNames,
-	//	.count = sizeof(oldNames) / sizeof(*oldNames),
-	//};
-	// sgChangeContext(&changeInfo, &contexts);
-	// sgUpdateContext(&activeContextsCreateInfo, &contexts);
-	// sgSaveContext(contexts, "cfg/contexts.json");
-	//
 
 	SgFile appConfigFile;
 	const char* appConfigFilePath = "cfg/app.json";
@@ -203,7 +116,7 @@ int main() {
 
 	cameraTransform.camera.aspectRatio = 16 / 9;
 	cameraTransform.camera.fov = deg_to_rad(80.f);
-	sgSceneInit(&scene);
+	sgTimedCameraInit(&timedCamera);
 
 	// Shaders
 	// TODO: Shader Map
@@ -576,8 +489,8 @@ int main() {
 	sgSetActiveContexts(contexts, &app);
 
 	while (sgAppUpdate(&updateInfo)) {
-		sgSceneUpdate(&scene);
-		cameraTransform.deltaTime = scene.deltaTime;
+		sgTimedCameraUpdate(&timedCamera);
+		cameraTransform.deltaTime = timedCamera.deltaTime;
 		sgTransformCamera(&cameraTransform, &cameraTransform.camera);
 		sgUpdateTransformUniform(&cameraTransform.camera, &transformuniform);
 		cameraTransform.cursorOffset[0] = 0;

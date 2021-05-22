@@ -19,7 +19,7 @@ os.chdir("build")
 os.system("meson compile")
 os.chdir("..")
 
-os.system("./build/assetsys/assetsys app/cfg/files.json app/cfg app")
+os.system("./build/assetsys/assetsys app/cfg/files.json build/app/data app")
 copyAndOverride("app/res", "build/app/res")
 copyAndOverride("app/data", "build/app/data")
 copyAndOverride("app/cfg", "build/app/cfg")

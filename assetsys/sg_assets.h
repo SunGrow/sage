@@ -5,11 +5,11 @@
 #include "sg_math.h"
 
 // TODO: request vertex format from json
-typedef struct SgVertex {
+typedef struct SgObjVertex {
 	v3 vert;
 	v3 norm;
 	v2 tex;
-} SgVertex;
+} SgObjVertex;
 
 typedef enum SgAssetVersion { SG_ASSET_VERION_0_1 } SgAssetVersion;
 

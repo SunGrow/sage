@@ -3,11 +3,11 @@
 #include "cJSON.h"
 #include "sg_log.h"
 
+#define FAST_OBJ_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
 #include "fast_obj.h"
 #include "meshoptimizer.h"
 #include "stb_image.h"
-#define FAST_OBJ_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
 
 const char* getExt(const char* pPath) {
 	const char* pExt = strrchr(pPath, '.');
@@ -48,13 +48,13 @@ static SgResult sgReadTexture(const char* pPath,
 	return SG_SUCCESS;
 }
 
-static unsigned long long sgLoadOBJ(const char* pPath, SgVertex** ppVertices) {
+static unsigned long long sgLoadOBJ(const char* pPath, SgObjVertex** ppVertices) {
 	fastObjMesh* pObj = fast_obj_read(pPath);
 	uint32_t totalIndices = 0;
 	for (uint32_t i = 0; i < pObj->face_count; ++i) {
 		totalIndices += 3 * (pObj->face_vertices[i] - 2);
 	}
-	SgVertex* pVertices;
+	SgObjVertex* pVertices;
 	SG_CALLOC_NUM(pVertices, totalIndices + 1);
 	uint32_t vertexOffset = 0;
 	uint32_t indexOffset = 0;
@@ -62,7 +62,7 @@ static unsigned long long sgLoadOBJ(const char* pPath, SgVertex** ppVertices) {
 		for (uint32_t j = 0; j < pObj->face_vertices[i]; ++j) {
 			fastObjIndex gi = pObj->indices[indexOffset + j];
 
-			SgVertex v = {
+			SgObjVertex v = {
 			    .vert =
 			        {
 			            pObj->positions[gi.p * 3 + 0],
@@ -102,7 +102,7 @@ static SgResult sgReadObj(const char* pPath,
                           unsigned long long* pVertexBufferSize,
                           unsigned long long* pIndexBufferSize,
                           unsigned* pVertexSize) {
-	SgVertex* pVertices;
+	SgObjVertex* pVertices;
 	unsigned long long totalIndices = sgLoadOBJ(pPath, &pVertices);
 	uint32_t* premap;
 	SG_MALLOC_NUM(premap, totalIndices);
@@ -112,7 +112,7 @@ static SgResult sgReadObj(const char* pPath,
 
 	// Return value fillup
 	uint32_t* pIndices;
-	SgVertex* pTargetVertices;
+	SgObjVertex* pTargetVertices;
 	SG_CALLOC_NUM(pIndices, totalIndices);
 	SG_CALLOC_NUM(pTargetVertices, totalVertices);
 

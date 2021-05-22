@@ -15,6 +15,7 @@
 
 #include "../log/sg_log.h"
 #include "cJSON.h"  // TODO: wrapper
+#include "sg_types.h"
 
 #define SG_DEFINE_HANDLE(object) typedef struct object##_T* object;
 #define NUMOF(arr) (sizeof(arr) / sizeof((arr)[0]))
@@ -37,15 +38,6 @@
 		SG_REALLOC_NUM(object, num, error);     \
 	}
 
-typedef enum SgResult {
-	SG_SUCCESS = 0,
-} SgResult;
-enum SgBool {
-	SG_FALSE = 0,
-	SG_TRUE = 1,
-};
-typedef uint_fast8_t SgBool;
-typedef uint32_t SgFlags;
 
 typedef struct SurfaceAttributes {
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
