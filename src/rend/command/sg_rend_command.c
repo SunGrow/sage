@@ -2,15 +2,15 @@
 
 typedef struct ThreadCommandPoolCreateInfo {
 	const VkDevice* pDevice;
-	SgSize queueFamilyID;
-	VkCommandPool* pCommandPools;
-	SgSize commandPoolCount;
-	SgSize threadIndex;
+	SgSize          queueFamilyID;
+	VkCommandPool*  pCommandPools;
+	SgSize          commandPoolCount;
+	SgSize          threadIndex;
 } ThreadCommandPoolCreateInfo;
 
 static void* createCommandPool(void* threadCommandPoolInfo) {
-	VkResult vulkRes;
-	VkCommandPool commandpool = 0;
+	VkResult                     vulkRes;
+	VkCommandPool                commandpool = 0;
 	ThreadCommandPoolCreateInfo* info =
 	    (ThreadCommandPoolCreateInfo*)threadCommandPoolInfo;
 	SgSize index = info->threadIndex;
@@ -32,10 +32,10 @@ static void* createCommandPool(void* threadCommandPoolInfo) {
 }
 
 SgResult createCommandPools(const VkDevice* pDevice,
-                            const SgSize queueFamilyID,
-                            pthread_t* pThreads,
-                            VkCommandPool* pCommandPools,
-                            SgSize commandPoolCount) {
+                            const SgSize    queueFamilyID,
+                            pthread_t*      pThreads,
+                            VkCommandPool*  pCommandPools,
+                            SgSize          commandPoolCount) {
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
@@ -64,7 +64,7 @@ SgResult createCommandPools(const VkDevice* pDevice,
 	return SG_SUCCESS;
 }
 
-SgResult sgBeginCommandBuffer(const SgApp* pApp,
+SgResult sgBeginCommandBuffer(const SgApp*                 pApp,
                               SgCommandBufferBeginEndInfo* pBeginEndInfo) {
 	VkCommandBufferAllocateInfo allocInfo = {
 	    .sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -85,7 +85,7 @@ SgResult sgBeginCommandBuffer(const SgApp* pApp,
 
 	return SG_SUCCESS;
 }
-SgResult sgEndCommandBuffer(const SgApp* pApp,
+SgResult sgEndCommandBuffer(const SgApp*                 pApp,
                             SgCommandBufferBeginEndInfo* pBeginEndInfo) {
 	vkEndCommandBuffer(*pBeginEndInfo->pCommandBuffer);
 
@@ -103,15 +103,15 @@ SgResult sgEndCommandBuffer(const SgApp* pApp,
 	return SG_SUCCESS;
 }
 
-SgResult sgTransferImage(const SgApp* pApp,
+SgResult sgTransferImage(const SgApp*         pApp,
                          SgImageTransferInfo* pTransferInfo) {
-	VkFence fence;
+	VkFence           fence;
 	VkFenceCreateInfo fenceCreateInfo = {
 	    .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
 	};
 	vkCreateFence(pApp->device, &fenceCreateInfo, VK_NULL_HANDLE, &fence);
 	/* Begin command buffer */
-	VkCommandBuffer commandBuffer;
+	VkCommandBuffer             commandBuffer;
 	SgCommandBufferBeginEndInfo beginEndInfo = {
 	    .pCommandPool   = &pApp->pCommandPools[2],
 	    .level          = VK_COMMAND_BUFFER_LEVEL_PRIMARY,

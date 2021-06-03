@@ -12,7 +12,7 @@ void sgTimedCameraUpdate(SgTimedCamera* pTimedCamera) {
 	    pTimedCamera->currentTime - pTimedCamera->previousTime;
 }
 
-void sgInitTransformUniform(const SgTmpCamera* pCamera,
+void sgInitTransformUniform(const SgTmpCamera*  pCamera,
                             SgTransformUniform* pTransformUniform) {
 	for (uint32_t i = 0; i < 4; ++i) {
 		for (uint32_t j = 0; j < 4; ++j) {
@@ -24,7 +24,7 @@ void sgInitTransformUniform(const SgTmpCamera* pCamera,
 	}
 }
 
-void sgUpdateTransformUniform(const SgTmpCamera* pCamera,
+void sgUpdateTransformUniform(const SgTmpCamera*  pCamera,
                               SgTransformUniform* pTransformUniform) {
 	v3 at;
 	v3_add(at, pCamera->position, pCamera->front);

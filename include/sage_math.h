@@ -78,11 +78,11 @@ void m4_rotation_make(m4 m4src, const float angle, const v3 axis);
 
 void rotate_angle(m4 m4src, float angle, v3 axis);
 
-void lookat(m4 m4src,
+void lookat(m4       m4src,
             const v3 v3eye /*where camera is*/,
             const v3 v3at /*where camera is pointing to*/,
             const v3 v3up);
-void perspective(m4 m4src,
+void perspective(m4          m4src,
                  const float fov_y,
                  const float aspect_ratio,
                  const float nearVal,

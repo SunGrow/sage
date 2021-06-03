@@ -13,8 +13,8 @@ static int resourceKeyCompare(const void* a, const void* b, void* udata) {
 }
 
 static uint64_t resourceKeyHash(const void* item,
-                                uint64_t seed0,
-                                uint64_t seed1) {
+                                uint64_t    seed0,
+                                uint64_t    seed1) {
 	const SgResource* key = item;
 	return hashmap_sip(key->pName, strlen(key->pName), seed0, seed1);
 }
@@ -44,9 +44,9 @@ SgResult sgCreateResourceMap(const SgApp* pApp, SgResourceMap** ppResourceMap) {
 	return SG_SUCCESS;
 }
 
-static SgResult sgCreateResource(const SgApp* pApp,
+static SgResult sgCreateResource(const SgApp*                pApp,
                                  const SgResourceCreateInfo* pCreateInfo,
-                                 SgResource* pResource) {
+                                 SgResource*                 pResource) {
 	pResource->type               = pCreateInfo->type;
 	pResource->dataBuffer.size    = pCreateInfo->size;
 	pResource->stagingBuffer.size = pCreateInfo->size;
@@ -77,7 +77,7 @@ static SgResult sgCreateResource(const SgApp* pApp,
 		};
 		sgCreateImage(pApp, &imageCreateInfo, &pResource->image);
 
-		SgImageView imageView;
+		SgImageView           imageView;
 		SgImageViewCreateInfo imageViewCreateInfo = {
 		    .pImage      = &pResource->image,
 		    .type        = pCreateInfo->type,
@@ -167,11 +167,11 @@ static SgResult sgCreateResource(const SgApp* pApp,
 	return SG_SUCCESS;
 }
 
-SgResult sgAddResource(const SgApp* pApp,
+SgResult sgAddResource(const SgApp*                pApp,
                        const SgResourceCreateInfo* pCreateInfo,
-                       SgResourceMap** ppResourceMap) {
+                       SgResourceMap**             ppResourceMap) {
 	SgResourceMap* pResourceMap = *ppResourceMap;
-	SgResource resource         = {
+	SgResource     resource     = {
       .pName = pCreateInfo->pName,
   };
 	SgResource* pResource = hashmap_get(pResourceMap->pResourceMap, &resource);
@@ -191,14 +191,14 @@ SgResult sgAddResource(const SgApp* pApp,
 }
 
 struct SgResourceIterInfo {
-	const SgApp* pApp;
+	const SgApp*   pApp;
 	SgResourceMap* pResourceMap;
-	SgSize iter;
+	SgSize         iter;
 };
 
 _Bool sgImagesToTransferResourcesIter(const void* item, void* data) {
-	const SgResource* pResource         = item;
-	struct SgResourceIterInfo* iterInfo = data;
+	const SgResource*          pResource = item;
+	struct SgResourceIterInfo* iterInfo  = data;
 	if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
 		SgImageTransferInfo transferInfo = {
 		    .image                           = pResource->image,
@@ -222,8 +222,8 @@ _Bool sgImagesToTransferResourcesIter(const void* item, void* data) {
 }
 
 _Bool sgImagesToRenderResourcesIter(const void* item, void* data) {
-	const SgResource* pResource         = item;
-	struct SgResourceIterInfo* iterInfo = data;
+	const SgResource*          pResource = item;
+	struct SgResourceIterInfo* iterInfo  = data;
 	if (pResource->type & SG_RESOURCE_TYPE_IS_IMAGE_MASK) {
 		SgImageTransferInfo transferInfo = {
 		    .image                       = pResource->image,
@@ -247,9 +247,9 @@ _Bool sgImagesToRenderResourcesIter(const void* item, void* data) {
 }
 
 _Bool sgInitResourcesIter(const void* item, void* data) {
-	const SgResource* pResource         = item;
-	struct SgResourceIterInfo* iterInfo = data;
-	*pResource->pCommandBufferID        = iterInfo->iter;
+	const SgResource*          pResource = item;
+	struct SgResourceIterInfo* iterInfo  = data;
+	*pResource->pCommandBufferID         = iterInfo->iter;
 	VkCommandBuffer* pCommandBuffer =
 	    &iterInfo->pResourceMap->pCommadBuffers[iterInfo->iter];
 
@@ -307,12 +307,12 @@ SgResult sgInitResourceMap(const SgApp* pApp, SgResourceMap** ppResourceMap) {
 
 _Bool sgDestroyResourceIter(const void* item, void* data) {
 	SgResource* pResource = item;
-	SgApp* pApp           = data;
+	SgApp*      pApp      = data;
 	sgDestroyResource(pApp, &pResource);
 	return 1;
 }
 
-SgResult sgDestroyResourceMap(const SgApp* pApp,
+SgResult sgDestroyResourceMap(const SgApp*    pApp,
                               SgResourceMap** ppResourceMap) {
 	SgResourceMap* pResourceMap = *ppResourceMap;
 	hashmap_scan(pResourceMap->pResourceMap, sgDestroyResourceIter, pApp);
@@ -327,9 +327,9 @@ SgResult sgDestroyResourceMap(const SgApp* pApp,
 	return SG_SUCCESS;
 }
 
-SgResult sgCreateBuffer(const SgApp* pApp,
+SgResult sgCreateBuffer(const SgApp*        pApp,
                         SgBufferCreateInfo* pCreateInfo,
-                        SgBufferData* pBuffer) {
+                        SgBufferData*       pBuffer) {
 	VkBufferCreateInfo bufferCreateInfo = {
 	    .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
 	    .size  = pCreateInfo->size,
@@ -370,9 +370,9 @@ SgResult sgCreateBuffer(const SgApp* pApp,
 	return SG_SUCCESS;
 }
 
-SgResult sgCreateImage(const SgApp* pApp,
+SgResult sgCreateImage(const SgApp*       pApp,
                        SgImageCreateInfo* pCreateInfo,
-                       SgImageData* pImage) {
+                       SgImageData*       pImage) {
 	VkImageCreateInfo createinfo = {
 	    .sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
 	    .usage         = pCreateInfo->usage,
@@ -401,9 +401,9 @@ SgResult sgCreateImage(const SgApp* pApp,
 	return SG_SUCCESS;
 }
 
-SgResult sgCreateImageView(const SgApp* pApp,
+SgResult sgCreateImageView(const SgApp*                 pApp,
                            const SgImageViewCreateInfo* pCreateInfo,
-                           SgImageView* pImageView) {
+                           SgImageView*                 pImageView) {
 	VkImageViewCreateInfo createinfo = {
 	    .sType                       = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 	    .image                       = pCreateInfo->pImage->image,
@@ -419,10 +419,10 @@ SgResult sgCreateImageView(const SgApp* pApp,
 }
 
 // Add image
-SgResult sgUpdateResource(const SgApp* pApp,
+SgResult sgUpdateResource(const SgApp*   pApp,
                           SgResourceMap* pResourceMap,
-                          const SgData* pData,
-                          const char* pName) {
+                          const SgData*  pData,
+                          const char*    pName) {
 	SgResource findResource = {
 	    .pName = pName,
 	};
@@ -517,18 +517,18 @@ SgResult sgMemcpyToResource(const SgData* pData, const SgResource* pResource) {
 
 _Bool sgUpdateResourceIter(const void* item, void* data) {
 	const SgResource* pResource = item;
-	SgData resData              = {
+	SgData            resData   = {
       .bytes = pResource->lastBytes,
       .size  = pResource->lastSize,
   };
 	return sgMemcpyToResource(&resData, pResource);
 }
 
-SgResult sgUpdateResources(const SgApp* pApp,
+SgResult sgUpdateResources(const SgApp*   pApp,
                            SgResourceMap* pResourceMap,
-                           const SgSize resourceCount,
+                           const SgSize   resourceCount,
                            const SgData** ppData,
-                           const char** ppNames) {
+                           const char**   ppNames) {
 	for (SgSize i = 0; i < resourceCount; ++i) {
 		SgResource findResource = {
 		    .pName = ppNames[i],

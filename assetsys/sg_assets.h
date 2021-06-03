@@ -4,18 +4,25 @@
 #include "sg_base.h"
 #include "sg_scene.h"
 
-typedef struct SgProjectLayout {
-	char*      generalSettingsPath;
-	char*      keyContextsPath;
-	char*      filesPath;
-	char*      scenesPath;
-	char*      dataPath;
-	char*      buildDir;
+typedef struct SgProjects {
+	char** ppProjectDirs;
+	SgSize count;
+} SgProjects;
 
-	cJSON*     projectJson;
+SgResult sgLoadProjectDirs(const char* pPath, SgProjects* pProjects);
+
+typedef struct SgProjectLayout {
+	char* generalSettingsPath;
+	char* keyContextsPath;
+	char* scenesPath;
+	char* dataPath;
+	char* buildDir;
+
+	cJSON* projectJson;
 } SgProjectLayout;
 
-SgResult sgLoadProjectLayout(const char* pPath, SgProjectLayout* pProjectLayout);
+SgResult sgLoadProjectLayout(const char*      pPath,
+                             SgProjectLayout* pProjectLayout);
 
 // TODO: request vertex format from json
 typedef struct SgObjVertex {
@@ -27,48 +34,52 @@ typedef struct SgObjVertex {
 typedef enum SgAssetCompression { SG_ASSET_COMPRESSION_LZ4 } SgAssetCompression;
 
 typedef struct SgTextureAssets {
-	char** ppBytesArray;
-	SgSize *pWidthsArray, *pHeightsArray, *pChannelsArray,
-	    *pSizesArray;
+	char**       ppBytesArray;
+	SgSize *     pWidthsArray, *pHeightsArray, *pChannelsArray, *pSizesArray;
 	const char** ppNamesArray;
-	SgSize count;
+	SgSize       count;
 	SgAssetCompression compression;
 } SgTextureAssets;
 
 typedef struct SgMeshAssets {
 	const char** ppNamesArray;
-	SgSize* pVertexBufferSizes;
-	SgSize* pIndexBufferSizes;
-	SgSize* pCompressedSizesArray;
-	u* pVertexSizes;
-	char** ppBytesArray;
+	SgSize*      pVertexBufferSizes;
+	SgSize*      pIndexBufferSizes;
+	SgSize*      pCompressedSizesArray;
+	u*           pVertexSizes;
+	char**       ppBytesArray;
 
-	SgSize count;
+	SgSize             count;
 	SgAssetCompression compression;
 } SgMeshAssets;
 
 typedef struct SgAssets {
-	SgAssetVersion version;
+	SgAssetVersion  version;
 	SgTextureAssets textureAssets;
-	SgMeshAssets meshAssets;
+	SgMeshAssets    meshAssets;
 
 	cJSON* pAssetsJson;
-} SgAssets;
+} SgAssetFiles;
 
-SgResult sgFilesRead(const char* pPath,
-                      const char* pTargetPath,
-                      SgAssets* pAssets);
-SgResult sgFilesCompress(SgAssets* pInAssets, SgAssets* pOutAssets);
-SgResult sgFilesWrite(SgAssets* pAssets, const char* pOutPath);
-SgResult sgFilesClear(SgAssets* pAssets);
+SgResult sgFilesRead(const char*   pPath,
+                     const char*   pTargetPath,
+                     SgAssetFiles* pAssets);
+SgResult sgFilesCompress(SgAssetFiles* pInAssets, SgAssetFiles* pOutAssets);
+SgResult sgFilesWrite(SgAssetFiles* pAssets, const char* pOutPath);
+SgResult sgFilesClear(SgAssetFiles* pAssets);
 
 typedef struct SgProject {
 	SgProjectLayout*  pProjectLayout;
+	char*             pProjectDirPath;
 	SgSceneAssets*    pSceneAssets;
-	SgAssets*         pAssets;
+	SgSceneResources* pSceneResources;
+	SgAssetFiles      assets;
 } SgProject;
 
-SgResult sgProjectRead(SgProjectLayout* pProjectLayout, SgProject* pProject);
+SgResult sgProjectRead(char*            pProjectDirPath,
+                       SgProjectLayout* pProjectLayout,
+                       SgProject*       pProject);
+// Constructs a compressed file data file, scene files and a project file
 SgResult sgProjectWrite(SgProject* pProject);
 
 #endif

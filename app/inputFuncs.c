@@ -3,7 +3,7 @@
 #include "sage_core.h"
 
 void sgTransformCamera(const SgCameraTransformInfo* pTransformInfo,
-                       SgTmpCamera* pCamera) {
+                       SgTmpCamera*                 pCamera) {
 	/* Move */
 	v3 tmp;
 	v3 right;
@@ -66,67 +66,67 @@ void sgTransformCamera(const SgCameraTransformInfo* pTransformInfo,
 	return;
 }
 
-void keyPressForward(SgBool isPressed,
-                     double rangeX,
-                     double rangeY,
-                     SgActor actor,
+void keyPressForward(SgBool   isPressed,
+                     double   rangeX,
+                     double   rangeY,
+                     SgActor  actor,
                      SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*)actor;
 	transformInfo->moveDirectionPos[0]   = isPressed ? 1.0f : 0.0f;
 	return;
 }
-void keyPressUp(SgBool isPressed,
-                double rangeX,
-                double rangeY,
-                SgActor actor,
+void keyPressUp(SgBool   isPressed,
+                double   rangeX,
+                double   rangeY,
+                SgActor  actor,
                 SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*)actor;
 	transformInfo->moveDirectionPos[1]   = isPressed ? 1.0f : 0.0f;
 	return;
 }
-void keyPressLeft(SgBool isPressed,
-                  double rangeX,
-                  double rangeY,
-                  SgActor actor,
+void keyPressLeft(SgBool   isPressed,
+                  double   rangeX,
+                  double   rangeY,
+                  SgActor  actor,
                   SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*)actor;
 	transformInfo->moveDirectionNeg[2]   = isPressed ? 1.0f : 0.0f;
 	return;
 }
-void keyPressRight(SgBool isPressed,
-                   double rangeX,
-                   double rangeY,
-                   SgActor actor,
+void keyPressRight(SgBool   isPressed,
+                   double   rangeX,
+                   double   rangeY,
+                   SgActor  actor,
                    SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*)actor;
 	transformInfo->moveDirectionPos[2]   = isPressed ? 1.0f : 0.0f;
 	return;
 }
-void keyPressDown(SgBool isPressed,
-                  double rangeX,
-                  double rangeY,
-                  SgActor actor,
+void keyPressDown(SgBool   isPressed,
+                  double   rangeX,
+                  double   rangeY,
+                  SgActor  actor,
                   SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*)actor;
 	transformInfo->moveDirectionNeg[1]   = isPressed ? 1.0f : 0.0f;
 	return;
 }
-void keyPressBack(SgBool isPressed,
-                  double rangeX,
-                  double rangeY,
-                  SgActor actor,
+void keyPressBack(SgBool   isPressed,
+                  double   rangeX,
+                  double   rangeY,
+                  SgActor  actor,
                   SgWindow pWindow) {
 	SgCameraTransformInfo* transformInfo = (SgCameraTransformInfo*)actor;
 	transformInfo->moveDirectionNeg[0]   = isPressed ? 1.0f : 0.0f;
 	return;
 }
 
-void rotateCamera(SgBool isPressed,
-                  double rangeX,
-                  double rangeY,
-                  SgActor actor,
+void rotateCamera(SgBool   isPressed,
+                  double   rangeX,
+                  double   rangeY,
+                  SgActor  actor,
                   SgWindow pWindow) {
-	int wsizex, wsizey;
+	int                    wsizex, wsizey;
 	SgCameraTransformInfo* pTransformInfo = (SgCameraTransformInfo*)actor;
 	sgGetWindowSize(pWindow, &wsizex, &wsizey);
 	if (rangeX == wsizex / 2 && rangeY == wsizey / 2) {
@@ -148,64 +148,64 @@ struct SgLighting {
 	v4 color;
 };
 
-void lightKeyPressForward(SgBool isPressed,
-                          double rangeX,
-                          double rangeY,
-                          SgActor actor,
+void lightKeyPressForward(SgBool   isPressed,
+                          double   rangeX,
+                          double   rangeY,
+                          SgActor  actor,
                           SgWindow pWindow) {
 	struct SgLighting* pLighting = actor;
 	pLighting->position[0] += isPressed ? 1.0f : 0.0f;
 	return;
 }
-void lightKeyPressUp(SgBool isPressed,
-                     double rangeX,
-                     double rangeY,
-                     SgActor actor,
+void lightKeyPressUp(SgBool   isPressed,
+                     double   rangeX,
+                     double   rangeY,
+                     SgActor  actor,
                      SgWindow pWindow) {
 	struct SgLighting* pLighting = actor;
 	pLighting->position[1] += isPressed ? 1.0f : 0.0f;
 	return;
 }
-void lightKeyPressLeft(SgBool isPressed,
-                       double rangeX,
-                       double rangeY,
-                       SgActor actor,
+void lightKeyPressLeft(SgBool   isPressed,
+                       double   rangeX,
+                       double   rangeY,
+                       SgActor  actor,
                        SgWindow pWindow) {
 	struct SgLighting* pLighting = actor;
 	pLighting->position[2] -= isPressed ? 1.0f : 0.0f;
 	return;
 }
-void lightKeyPressRight(SgBool isPressed,
-                        double rangeX,
-                        double rangeY,
-                        SgActor actor,
+void lightKeyPressRight(SgBool   isPressed,
+                        double   rangeX,
+                        double   rangeY,
+                        SgActor  actor,
                         SgWindow pWindow) {
 	struct SgLighting* pLighting = actor;
 	pLighting->position[2] += isPressed ? 1.0f : 0.0f;
 	return;
 }
-void lightKeyPressDown(SgBool isPressed,
-                       double rangeX,
-                       double rangeY,
-                       SgActor actor,
+void lightKeyPressDown(SgBool   isPressed,
+                       double   rangeX,
+                       double   rangeY,
+                       SgActor  actor,
                        SgWindow pWindow) {
 	struct SgLighting* pLighting = actor;
 	pLighting->position[1] -= isPressed ? 1.0f : 0.0f;
 	return;
 }
-void lightKeyPressBack(SgBool isPressed,
-                       double rangeX,
-                       double rangeY,
-                       SgActor actor,
+void lightKeyPressBack(SgBool   isPressed,
+                       double   rangeX,
+                       double   rangeY,
+                       SgActor  actor,
                        SgWindow pWindow) {
 	struct SgLighting* pLighting = actor;
 	pLighting->position[0] -= isPressed ? 1.0f : 0.0f;
 	return;
 }
-void keyShoot(SgBool isPressed,
-              double rangeX,
-              double rangeY,
-              SgActor actor,
+void keyShoot(SgBool   isPressed,
+              double   rangeX,
+              double   rangeY,
+              SgActor  actor,
               SgWindow pWindow) {
 	if (isPressed)
 		log_warn("shooty shooty bang bang");

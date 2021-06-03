@@ -30,21 +30,21 @@ typedef enum SgInputType {
 } SgInputType;
 
 typedef struct SgInputKey {
-	int32_t key;
-	int32_t mods;
+	int32_t     key;
+	int32_t     mods;
 	SgInputType type;
-	uint64_t id;
+	uint64_t    id;
 } SgInputKey;
 
 typedef struct SgActionMap {
 	struct hashmap* actionMap;  // Map from inputs to actions
 
-	SgInputType* types;
-	SgSize* actorIDs;
+	SgInputType*   types;
+	SgSize*        actorIDs;
 	SgInputAction* actionFuncs;
-	SgBool* states;
+	SgBool*        states;
 
-	SgSize actionCount;
+	SgSize       actionCount;
 	SgActionType type;
 } SgActionMap;
 
@@ -53,8 +53,8 @@ typedef struct SgContext {
 	SgActionMap toggleMap;
 	SgActionMap rangeMap;
 
-	SgActor* pActors;   // Map addresed by actorID
-	SgSize actorCount;  // Not really needed. Debug
+	SgActor* pActors;     // Map addresed by actorID
+	SgSize   actorCount;  // Not really needed. Debug
 } SgContext;
 
 typedef struct SgInputSignal {
@@ -69,49 +69,49 @@ typedef struct SgInputSignal {
 
 typedef struct SgActiveContexts {
 	SgContext* pContexts;
-	SgSize contextCount;
+	SgSize     contextCount;
 
 	cJSON* contextsJSON;
 } SgActiveContexts;
 
 typedef struct SgActiveContextsCreateInfo {
 	SgActor* pActors;
-	char** pActorNames;
-	SgSize actorCount;
+	char**   pActorNames;
+	SgSize   actorCount;
 
 	SgInputSignal* pInputSignals;
-	SgSize signalCount;
+	SgSize         signalCount;
 
 	SgInputAction* pActionFuncs;
-	char** pActionNames;
-	SgSize actionCount;
+	char**         pActionNames;
+	SgSize         actionCount;
 
 	SgFile* pFile;
 } SgActiveContextsCreateInfo;
 
 SgResult sgLoadContexts(const SgActiveContextsCreateInfo* pCreateInfo,
-                        SgActiveContexts** ppContexts);
-void sgUpdateContext(const SgActiveContextsCreateInfo* pCreateInfo,
-                     SgActiveContexts** ppContexts);
+                        SgActiveContexts**                ppContexts);
+void     sgUpdateContext(const SgActiveContextsCreateInfo* pCreateInfo,
+                         SgActiveContexts**                ppContexts);
 
 typedef struct SgActionNames {
 	SgActionType actionType;
 
 	SgInputType inputType;
-	char* inputName;
-	char* modName;
-	char* actionName;
-	SgSize actorID;
+	char*       inputName;
+	char*       modName;
+	char*       actionName;
+	SgSize      actorID;
 } SgActionNames;
 
 typedef struct SgActiveContextsChangeInfo {
 	SgActionNames* pOldActions;
 	SgActionNames* pNewActions;
-	SgSize count;
+	SgSize         count;
 } SgActiveContextsChangeInfo;
 
 void sgChangeContext(const SgActiveContextsChangeInfo* pChangeInfo,
-                     SgActiveContexts** ppContexts);
+                     SgActiveContexts**                ppContexts);
 void sgSaveContext(const SgActiveContexts* pContexts, char* fileDir);
 
 void sgSetActiveContexts(SgActiveContexts* pActiveContexts, SgApp** ppApp);

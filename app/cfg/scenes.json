@@ -1,4 +1,491 @@
 {
+	"scene" : 0,
 	"scenes" : [
+		{
+			"name" : "default",
+			"nodes" : [
+				0
+			],
+			"passes" : [
+				{
+					0
+				}
+			],
+		}
+	],
+	"nodes" : [
+		{
+			"mesh" : 0
+		}
 	]
+	"meshes" : [
+		{
+			"name" : "kittenMesh",
+			"path" : "res/kitten.obj"
+		},
+		{
+			"name" : "chaletMesh",
+			"path" : "res/chalet.obj"
+		},
+		{
+			"name" : "myriamMesh",
+			"path" : "res/myriam.obj"
+		},
+		{
+			"name" : "lightSourceMesh",
+			"path" : "res/sphere.obj"
+		}
+	],
+	"textures" : [
+		{
+			"name" : "chaletTexture",
+			"path" : "res/chalet.jpg"
+		},
+		{
+			"name" : "myriamTexture",
+			"path" : "res/tex/10016_w_Myriam_Body_D_2k.jpg"
+		},
+		{
+			"name" : "myriamNormalTexture",
+			"path" : "res/tex/10016_w_Myriam_Body_N_2k.jpg"
+		},
+		{
+			"name" : "defTexture",
+			"path" : "res/def.jpg"
+		}
+	],
+	"resources" : {
+		"passes" : [
+			{
+				"name" : "default",
+				"type" : "render",
+				"attachments" : [
+					{
+						"name"           : "color",
+						"format"         : "surface",
+						"samples"        : "msaa",
+						"loadOp"         : "CLEAR",
+						"storeOp"        : "DONT_CARE",
+						"stencilLoadOp"  : "DONT_CARE",
+						"stencilStoreOp" : "DONT_CARE",
+						"initialLayout"  : "UNDEFINED",
+						"finalLayout"    : "COLOR_ATTACHMENT_OPTIMAL"
+					},
+					{
+						"name"           : "depth",
+						"format"         : "surface",
+						"samples"        : "msaa",
+						"loadOp"         : "CLEAR",
+						"storeOp"        : "DONT_CARE",
+						"stencilLoadOp"  : "DONT_CARE",
+						"stencilStoreOp" : "DONT_CARE",
+						"initialLayout"  : "DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+						"finalLayout"    : "DEPTH_STENCIL_ATTACHMENT_OPTIMAL"
+					},
+					{
+						"name"           : "colorblend",
+						"format"         : "surface",
+						"samples"        : 1,
+						"loadOp"         : "DONT_CARE",
+						"storeOp"        : "DONT_CARE",
+						"stencilLoadOp"  : "DONT_CARE",
+						"stencilStoreOp" : "DONT_CARE",
+						"initialLayout"  : "UNDEFINED",
+						"finalLayout"    : "PRESENT_SRC_KHR"
+					}
+				],
+				"subpasses" : [
+					{
+						"name" : "out",
+						"colorAttachmentRefs" : [
+							{
+								"name" : "color",
+								"layout" : "COLOR_ATTACHMENT_OPTIMAL"
+							}
+						],
+						"depthAttachmentRefs" : [
+							{
+								"name" : "depth",
+								"layout" : "DEPTH_STENCIL_ATTACHMENT_OPTIMAL"
+							}
+						],
+						"resolveAttachmentRefs" : [
+							{
+								"name" : "colorblend",
+								"layout" : "COLOR_ATTACHMENT_OPTIMAL"
+							}
+						]
+					}
+				],
+				"dependencies" : [
+					{
+						"srcSubpass"    : "extern",
+						"dstSubpass"    : "out",
+						"srcStageMask"  : ["COLOR_ATTACHMENT_OUTPUT_BIT"],
+						"dstStageMask"  : ["COLOR_ATTACHMENT_OUTPUT_BIT"],
+						"srcAccessMask" : [],
+						"dstAccessMask" : ["COLOR_ATTACHMENT_READ_BIT", "COLOR_ATTACHMENT_WRITE_BIT"]
+					}
+				]
+			},
+			{
+				"name" : "default",
+				"type" : "compute"
+			}
+		],
+		"resources" : [
+			{
+				"name"        : "swapchainImage",
+				"type"        : "swapchainImage",
+				"__comment__" : "0 count means 'default to swapchain image count'",
+				"count"       : 0,
+				"imageViews"  : [
+					{
+						"name" : "swapchainImageView",
+						"aspectFlag" : "COLOR_BIT",
+						"levelCount" : 1,
+						"layerCount" : 1
+					}
+				]
+			},
+			{
+				"name"        : "blendImage",
+				"memoryUsage" : "GPUonly",
+				"type"        : "image",
+				"imageType"   : "2D",
+				"format"      : "surface",
+				"tiling"      : "OPTIMAL",
+				"layout"      : "UNDEFINED",
+				"samples"     : "msaa",
+				"imageViews"  : [
+					{
+						"name" : "blendImageView",
+						"aspectFlag" : "COLOR_BIT",
+						"levelCount" : 1,
+						"layerCount" : 1
+					}
+				]
+			},
+			{
+				"name"        : "depthImage",
+				"memoryUsage" : "GPUonly",
+				"type"        : "image",
+				"imageType"   : "2D",
+				"format"      : "lowDepthStencil",
+				"tiling"      : "OPTIMAL",
+				"layout"      : "UNDEFINED",
+				"samples"     : "msaa",
+				"imageViews"  : [
+					{
+						"name" : "depthImageView",
+						"aspectFlag" : "DEPTH_BIT",
+						"levelCount" : 1,
+						"layerCount" : 1
+					}
+				]
+			},
+			{
+				"name"        : "cameraResource",
+				"memoryUsage" : "GPUtoCPU",
+				"type"        : "uniform",
+				"__comment__" : "resources without size and byte sources get created after getting them during runtime"
+			},
+			{
+				"name"        : "meshVerticesResource",
+				"memoryUsage" : "GPUonly",
+				"type"        : "storage"
+			},
+			{
+				"name"        : "meshIndicesResource",
+				"memoryUsage" : "GPUonly",
+				"type"        : "storage"
+			},
+			{
+				"name"        : "chaletTextureResource",
+				"memoryUsage" : "GPUonly",
+				"type"        : "image",
+				"format"      : "R8G8B8A8_SRGB",
+				"tiling"      : "OPTIMAL",
+				"layout"      : "UNDEFINED",
+				"samples"     : 1,
+				"bytes"       : "chaletTexture",
+				"size"        : "chaletTexture",
+				"imageViews"  : [
+					{
+						"name" : "chaletTextureResourceImageView",
+						"aspectFlag" : "COLOR_BIT",
+						"levelCount" : 1,
+						"layerCount" : 1
+					}
+				],
+				"imageSamplers" : [
+					{
+						"name" : "chaletTextureResourceImageSampler",
+						"templateName" : "defaultSampler"
+					}
+				]
+			},
+			{
+				"name"        : "myriamTextureResource",
+				"memoryUsage" : "GPUonly",
+				"type"        : "image",
+				"format"      : "R8G8B8A8_SRGB",
+				"tiling"      : "OPTIMAL",
+				"layout"      : "UNDEFINED",
+				"samples"     : 1,
+				"bytes"       : "myriamTexture",
+				"size"        : "myriamTexture",
+				"imageViews"  : [
+					{
+						"name" : "myriamTextureResourceImageView",
+						"aspectFlag" : "COLOR_BIT",
+						"levelCount" : 1,
+						"layerCount" : 1
+					}
+				],
+				"imageSamplers" : [
+					{
+						"name" : "myriamTextureResourceImageSampler",
+						"templateName" : "defaultSampler"
+					}
+				]
+			},
+			{
+				"name"        : "myriamNormalTextureResource",
+				"memoryUsage" : "GPUonly",
+				"type"        : "image",
+				"format"      : "R8G8B8A8_SRGB",
+				"tiling"      : "OPTIMAL",
+				"layout"      : "UNDEFINED",
+				"samples"     : 1,
+				"bytes"       : "myriamNormalTexture",
+				"size"        : "myriamNormalTexture",
+				"imageViews"  : [
+					{
+						"name" : "myriamNormalTextureResourceImageView",
+						"aspectFlag" : "COLOR_BIT",
+						"levelCount" : 1,
+						"layerCount" : 1
+					}
+				],
+				"imageSamplers" : [
+					{
+						"name" : "myriamNormalTextureResourceImageSampler",
+						"templateName" : "defaultSampler"
+					}
+				]
+			},
+			{
+				"name"        : "defTextureResource",
+				"memoryUsage" : "GPUonly",
+				"type"        : "image",
+				"format"      : "R8G8B8A8_SRGB",
+				"tiling"      : "OPTIMAL",
+				"layout"      : "UNDEFINED",
+				"samples"     : 1,
+				"bytes"       : "defTexture",
+				"size"        : "defTexture",
+				"imageViews"  : [
+					{
+						"name" : "defTextureResourceImageView",
+						"aspectFlag" : "COLOR_BIT",
+						"levelCount" : 1,
+						"layerCount" : 1
+					}
+				],
+				"imageSamplers" : [
+					{
+						"name" : "defTextureResourceImageSampler",
+						"templateName" : "defaultSampler"
+					}
+				]
+			},
+			{
+				"name"        : "myriamTransformMatrices",
+				"memoryUsage" : "GPUonly",
+				"type"        : "storage"
+			},
+			{
+				"name"        : "lighting",
+				"memoryUsage" : "GPUtoCPU",
+				"type"        : "uniform"
+			},
+			{
+				"name"        : "chaletTransformMatrices",
+				"memoryUsage" : "GPUonly",
+				"type"        : "storage"
+			},
+			{
+				"name"        : "kittenTransformMatrices",
+				"memoryUsage" : "GPUonly",
+				"type"        : "storage"
+			},
+			{
+				"name"        : "lightingTransformMatrices",
+				"memoryUsage" : "GPUonly",
+				"type"        : "storage"
+			}
+		],
+		"imageSamplerTemplates" : [
+			{
+				"name" : "defaultSampler",
+				"magFilter" : "LINEAR",
+				"minFilter" : "LINEAR",
+				"anisotropyEnable" : 0,
+				"borderColor" : "INT_OPAQUE_BLACK"
+			}
+		],
+		"framebuffers" : [
+			{
+				"name" : "default",
+				"renderpass" : "default",
+				"width" : "swapchainWidth",
+				"height" : "swapchainHeight",
+				"imageViewAttachments" : [
+					"blendImageView",
+					"depthImageView",
+					"swapchainImageView"
+				],
+				"layers" : 1,
+				"__comment__" : "0 count means 'default to swapchain image count'",
+				"count" : 0
+			}
+		],
+		"materials" : [
+			{
+				"name" : "chaletMaterial",
+				"layoutName" : "chaletResourceBindings",
+				"shaderNames" : [
+					"chaletVertShader",
+					"chaletFragShader"
+				],
+				"minRenderObjects" : 2
+			},
+			{
+				"name" : "myriamMaterial",
+				"layoutName" : "myriamResourceBindings",
+				"shaderNames" : [
+					"lightingVertShader",
+					"lightingFragShader"
+				],
+				"minRenderObjects" : 1
+			},
+			{
+				"name" : "lightingMaterial",
+				"layoutName" : "lightingResourceBindings",
+				"shaderNames" : [
+					"lightingVertShader",
+					"lightingFragShader"
+				],
+				"minRenderObjects" : 1
+			}
+		],
+		"layouts" : [
+			{
+				"name" : "chaletResourceBindings",
+				"bindings" : [
+					{
+						"type" : "buffer",
+						"stage" : "vertex",
+						"setBinding" : 0,
+						"binding" : 0
+					},
+					{
+						"type" : "sampler2D",
+						"stage" : "fragment",
+						"setBinding" : 0,
+						"binding" : 1
+					},
+					{
+						"type" : "buffer",
+						"stage" : "vertex",
+						"setBinding" : 0,
+						"binding" : 2
+					},
+					{
+						"type" : "uniform",
+						"stage" : "vertex",
+						"setBinding" : 0,
+						"binding" : 3
+					},
+					{
+						"type" : "uniform",
+						"stage" : "vertex",
+						"setBinding" : 1,
+						"binding" : 0
+					}
+				]
+			},
+			{
+				"name" : "myriamResourceBindings",
+				"bindings" : [
+					{
+						"type" : "buffer",
+						"stage" : "vertex",
+						"setBinding" : 0,
+						"binding" : 0
+					},
+					{
+						"type" : "sampler2D",
+						"stage" : "fragment",
+						"setBinding" : 0,
+						"binding" : 1
+					},
+					{
+						"type" : "sampler2D",
+						"stage" : "fragment",
+						"setBinding" : 0,
+						"binding" : 2
+					},
+					{
+						"type" : "buffer",
+						"stage" : "vertex",
+						"setBinding" : 0,
+						"binding" : 3
+					},
+					{
+						"type" : "uniform",
+						"stage" : "vertex",
+						"setBinding" : 0,
+						"binding" : 4
+					},
+					{
+						"type" : "uniform",
+						"stage" : "vertex",
+						"setBinding" : 1,
+						"binding" : 0
+					}
+				]
+			},
+			{
+				"name" : "lightingResourceBindings",
+				"bindings" : [
+					{
+						"type" : "buffer",
+						"stage" : "vertex",
+						"setBinding" : 0,
+						"binding" : 0
+					},
+					{
+						"type" : "buffer",
+						"stage" : "fragment",
+						"setBinding" : 0,
+						"binding" : 1
+					},
+					{
+						"type" : "uniform",
+						"stage" : "vertex",
+						"setBinding" : 0,
+						"binding" : 2
+					},
+					{
+						"type" : "uniform",
+						"stage" : "vertex",
+						"setBinding" : 1,
+						"binding" : 0
+					}
+				]
+			}
+		]
+	}
 }

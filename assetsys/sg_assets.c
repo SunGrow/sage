@@ -6,82 +6,109 @@
 #define FAST_OBJ_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #define CGLTF_IMPLEMENTATION
+#include "cgltf.h"
 #include "fast_obj.h"
 #include "meshoptimizer.h"
 #include "stb_image.h"
-#include "cgltf.h"
 
-SgResult sgFillProjectLayout(cJSON* projectJson, SgProjectLayout* pProjectLayout) {
-		cJSON* generalSettingsPath = cJSON_GetObjectItem(projectJson, "generalSettingsPath");
-		if (generalSettingsPath == NULL) {
-			sgLogWarn("General settings path not found");
-			return -1;
+static SgResult sgFillProjectsDirs(cJSON* projectsJson, SgProjects* pProjects) {
+	cJSON* projectsArr = cJSON_GetObjectItem(projectsJson, "projectDirs");
+	if (projectsArr == NULL) {
+		sgLogWarn("Project array is not provided");
+		return -1;
+	}
+	pProjects->count = cJSON_GetArraySize(projectsArr);
+	SG_CALLOC_NUM(pProjects->ppProjectDirs, pProjects->count);
+	for (SgSize i = 0; i < pProjects->count; ++i) {
+		cJSON* projectsItem         = cJSON_GetArrayItem(projectsArr, i);
+		pProjects->ppProjectDirs[i] = cJSON_GetStringValue(projectsItem);
+		if (pProjects->ppProjectDirs[i] == NULL) {
+			sgLogWarn("No project path string provided");
 		}
-		pProjectLayout->generalSettingsPath = cJSON_GetStringValue(generalSettingsPath);
-		if (pProjectLayout->generalSettingsPath == NULL) {
-			sgLogWarn("No general settings path string provided");
-		}
-
-		cJSON* keyContextsPath = cJSON_GetObjectItem(projectJson, "keyContextsPath");
-		if (keyContextsPath == NULL) {
-			sgLogWarn("Key contexts path not found");
-			return -1;
-		}
-		pProjectLayout->keyContextsPath = cJSON_GetStringValue(keyContextsPath);
-		if (pProjectLayout->keyContextsPath == NULL) {
-			sgLogWarn("No key contexts path string provided");
-		}
-
-		cJSON* filesPath = cJSON_GetObjectItem(projectJson, "filesPath");
-		if (filesPath == NULL) {
-			sgLogWarn("Files path not found");
-			return -1;
-		}
-		pProjectLayout->filesPath = cJSON_GetStringValue(filesPath);
-		if (pProjectLayout->filesPath == NULL) {
-			sgLogWarn("No files path string provided");
-		}
-
-		cJSON* scenesPath = cJSON_GetObjectItem(projectJson, "scenesPath");
-		if (scenesPath == NULL) {
-			sgLogWarn("Scenes path not found");
-			return -1;
-		}
-		pProjectLayout->scenesPath = cJSON_GetStringValue(scenesPath);
-		if (pProjectLayout->scenesPath == NULL) {
-			sgLogWarn("Scenes path string provided");
-		}
-
-		cJSON* dataPath = cJSON_GetObjectItem(projectJson, "dataPath");
-		if (dataPath == NULL) {
-			sgLogWarn("Data path not found");
-			return -1;
-		}
-		pProjectLayout->dataPath = cJSON_GetStringValue(dataPath);
-		if (pProjectLayout->dataPath == NULL) {
-			sgLogWarn("Data path string provided");
-		}
-
-		cJSON* buildDir = cJSON_GetObjectItem(projectJson, "buildDir");
-		if (buildDir == NULL) {
-			sgLogWarn("Build path not found");
-			return -1;
-		}
-		pProjectLayout->buildDir = cJSON_GetStringValue(buildDir);
-		if (pProjectLayout->buildDir == NULL) {
-			sgLogWarn("Build path string provided");
-		}
-		//char pFullPath[32768];
-		//snprintf(pFullPath, sizeof(pFullPath), "%s/%s", pTargetPath, pPath);
+	}
 
 	return SG_SUCCESS;
 }
 
-SgResult sgLoadProjectLayout(const char* pPath, SgProjectLayout* pProjectLayout) {
+SgResult sgLoadProjectDirs(const char* pPath, SgProjects* pProjects) {
 	SgFile* pFile;
 	sgOpenFile(pPath, &pFile);
 	const char* pError;
-	cJSON* projectJson = cJSON_ParseWithOpts((char*)pFile->pBytes, &pError, 1);
+	cJSON*      projectsJson = cJSON_ParseWithOpts(pFile->pBytes, &pError, 1);
+	if (projectsJson == NULL) {
+		if (pError != NULL) {
+			sgLogError("[JSON]: Error before: %s\n", pError);
+			return -1;
+		}
+	}
+	sgFillProjectsDirs(projectsJson, pProjects);
+	return SG_SUCCESS;
+}
+static SgResult sgFillProjectLayout(cJSON*           projectJson,
+                                    SgProjectLayout* pProjectLayout) {
+	cJSON* generalSettingsPath =
+	    cJSON_GetObjectItem(projectJson, "generalSettingsPath");
+	if (generalSettingsPath == NULL) {
+		sgLogWarn("General settings path not found");
+		return -1;
+	}
+	pProjectLayout->generalSettingsPath =
+	    cJSON_GetStringValue(generalSettingsPath);
+	if (pProjectLayout->generalSettingsPath == NULL) {
+		sgLogWarn("No general settings path string provided");
+	}
+
+	cJSON* keyContextsPath = cJSON_GetObjectItem(projectJson, "keyContextsPath");
+	if (keyContextsPath == NULL) {
+		sgLogWarn("Key contexts path not found");
+		return -1;
+	}
+	pProjectLayout->keyContextsPath = cJSON_GetStringValue(keyContextsPath);
+	if (pProjectLayout->keyContextsPath == NULL) {
+		sgLogWarn("No key contexts path string provided");
+	}
+
+	cJSON* scenesPath = cJSON_GetObjectItem(projectJson, "scenesPath");
+	if (scenesPath == NULL) {
+		sgLogWarn("Scenes path not found");
+		return -1;
+	}
+	pProjectLayout->scenesPath = cJSON_GetStringValue(scenesPath);
+	if (pProjectLayout->scenesPath == NULL) {
+		sgLogWarn("Scenes path string provided");
+	}
+
+	cJSON* dataPath = cJSON_GetObjectItem(projectJson, "dataPath");
+	if (dataPath == NULL) {
+		sgLogWarn("Data path not found");
+		return -1;
+	}
+	pProjectLayout->dataPath = cJSON_GetStringValue(dataPath);
+	if (pProjectLayout->dataPath == NULL) {
+		sgLogWarn("Data path string provided");
+	}
+
+	cJSON* buildDir = cJSON_GetObjectItem(projectJson, "buildDir");
+	if (buildDir == NULL) {
+		sgLogWarn("Build path not found");
+		return -1;
+	}
+	pProjectLayout->buildDir = cJSON_GetStringValue(buildDir);
+	if (pProjectLayout->buildDir == NULL) {
+		sgLogWarn("Build path string provided");
+	}
+
+	return SG_SUCCESS;
+}
+
+SgResult sgLoadProjectLayout(const char*      pPath,
+                             SgProjectLayout* pProjectLayout) {
+	char pFullPath[32768];
+	snprintf(pFullPath, sizeof(pFullPath), "%s/%s", pPath, "project.json");
+	SgFile* pFile;
+	sgOpenFile(pFullPath, &pFile);
+	const char* pError;
+	cJSON*      projectJson = cJSON_ParseWithOpts(pFile->pBytes, &pError, 1);
 	if (projectJson == NULL) {
 		if (pError != NULL) {
 			sgLogError("[JSON]: Error before: %s\n", pError);
@@ -103,11 +130,11 @@ const char* getExt(const char* pPath) {
 }
 
 static SgResult sgReadJpg(const char* pPath,
-                          char** ppBytes,
-                          SgSize* pWidth,
-                          SgSize* pHeight,
-                          SgSize* pChannels,
-                          SgSize* pSize) {
+                          char**      ppBytes,
+                          SgSize*     pWidth,
+                          SgSize*     pHeight,
+                          SgSize*     pChannels,
+                          SgSize*     pSize) {
 	*ppBytes = stbi_load(pPath, pWidth, pHeight, pChannels, STBI_rgb_alpha);
 	if (!*ppBytes) {
 		fprintf(stderr, "[Warning]: Texture on path < %s > not found\n", pPath);
@@ -119,11 +146,11 @@ static SgResult sgReadJpg(const char* pPath,
 }
 
 static SgResult sgReadTexture(const char* pPath,
-                              char** ppBytes,
-                              SgSize* pWidth,
-                              SgSize* pHeight,
-                              SgSize* pChannels,
-                              SgSize* pSize) {
+                              char**      ppBytes,
+                              SgSize*     pWidth,
+                              SgSize*     pHeight,
+                              SgSize*     pChannels,
+                              SgSize*     pSize) {
 	const char* pExt = getExt(pPath);
 	if (strcmp(pExt, "jpg") == 0 || strcmp(pExt, "jpeg") == 0
 	    || strcmp(pExt, "jpe") == 0 || strcmp(pExt, "jfif") == 0) {
@@ -133,10 +160,9 @@ static SgResult sgReadTexture(const char* pPath,
 	return SG_SUCCESS;
 }
 
-static SgSize sgLoadOBJ(const char* pPath,
-                                    SgObjVertex** ppVertices) {
-	fastObjMesh* pObj   = fast_obj_read(pPath);
-	SgSize totalIndices = 0;
+static SgSize sgLoadOBJ(const char* pPath, SgObjVertex** ppVertices) {
+	fastObjMesh* pObj         = fast_obj_read(pPath);
+	SgSize       totalIndices = 0;
 	for (SgSize i = 0; i < pObj->face_count; ++i) {
 		totalIndices += 3 * (pObj->face_vertices[i] - 2);
 	}
@@ -184,20 +210,20 @@ static SgSize sgLoadOBJ(const char* pPath,
 }
 
 static SgResult sgReadObj(const char* pPath,
-                          char** ppBytes,
-                          SgSize* pVertexBufferSize,
-                          SgSize* pIndexBufferSize,
-                          unsigned* pVertexSize) {
+                          char**      ppBytes,
+                          SgSize*     pVertexBufferSize,
+                          SgSize*     pIndexBufferSize,
+                          unsigned*   pVertexSize) {
 	SgObjVertex* pVertices;
-	SgSize totalIndices = sgLoadOBJ(pPath, &pVertices);
-	SgSize* premap;
+	SgSize       totalIndices = sgLoadOBJ(pPath, &pVertices);
+	SgSize*      premap;
 	SG_MALLOC_NUM(premap, totalIndices);
 
 	SgSize totalVertices = meshopt_generateVertexRemap(
 	    premap, NULL, totalIndices, pVertices, totalIndices, sizeof(*pVertices));
 
 	// Return value fillup
-	SgSize* pIndices;
+	SgSize*      pIndices;
 	SgObjVertex* pTargetVertices;
 	SG_CALLOC_NUM(pIndices, totalIndices);
 	SG_CALLOC_NUM(pTargetVertices, totalVertices);
@@ -221,10 +247,10 @@ static SgResult sgReadObj(const char* pPath,
 }
 
 static SgResult sgReadMesh(const char* pPath,
-                           char** ppBytes,
-                           SgSize* pVertexBufferSize,
-                           SgSize* pIndexBufferSize,
-                           unsigned* pVertexSize) {
+                           char**      ppBytes,
+                           SgSize*     pVertexBufferSize,
+                           SgSize*     pIndexBufferSize,
+                           unsigned*   pVertexSize) {
 	const char* pExt = getExt(pPath);
 	if (strcmp(pExt, "obj") == 0) {
 		sgReadObj(pPath, ppBytes, pVertexBufferSize, pIndexBufferSize, pVertexSize);
@@ -233,11 +259,11 @@ static SgResult sgReadMesh(const char* pPath,
 	return SG_SUCCESS;
 }
 
-static SgResult sgAssetsMeshessRead(const char* pTargetPath,
-                                    cJSON* meshArray,
-                                    SgAssets* pAssets) {
+static SgResult sgAssetsMeshessRead(const char*   pTargetPath,
+                                    cJSON*        meshArray,
+                                    SgAssetFiles* pAssets) {
 	SgSize meshArraySize = cJSON_GetArraySize(meshArray);
-	char pFullPath[32768];
+	char   pFullPath[32768];
 	pAssets->meshAssets.count = meshArraySize;
 	SG_CALLOC_NUM(pAssets->meshAssets.ppNamesArray, meshArraySize);
 	SG_CALLOC_NUM(pAssets->meshAssets.pVertexBufferSizes, meshArraySize);
@@ -297,11 +323,11 @@ static SgResult sgAssetsMeshessRead(const char* pTargetPath,
 	return SG_SUCCESS;
 }
 
-static SgResult sgAssetsTexturesRead(const char* pTargetPath,
-                                     cJSON* textureArray,
-                                     SgAssets* pAssets) {
+static SgResult sgAssetsTexturesRead(const char*   pTargetPath,
+                                     cJSON*        textureArray,
+                                     SgAssetFiles* pAssets) {
 	SgSize textureArraySize = cJSON_GetArraySize(textureArray);
-	char pFullPath[32768];
+	char   pFullPath[32768];
 	pAssets->textureAssets.count = textureArraySize;
 	SG_CALLOC_NUM(pAssets->textureAssets.ppNamesArray, textureArraySize);
 	SG_CALLOC_NUM(pAssets->textureAssets.pSizesArray, textureArraySize);
@@ -363,13 +389,13 @@ static SgResult sgAssetsTexturesRead(const char* pTargetPath,
 	return SG_SUCCESS;
 }
 
-SgResult sgFilesRead(const char* pPath,
-                      const char* pTargetPath,
-                      SgAssets* pAssets) {
+SgResult sgFilesRead(const char*   pPath,
+                     const char*   pTargetPath,
+                     SgAssetFiles* pAssets) {
 	SgFile* pFile;
 	sgOpenFile(pPath, &pFile);
 	const char* pError;
-	cJSON* assetsJson = cJSON_ParseWithOpts((char*)pFile->pBytes, &pError, 1);
+	cJSON*      assetsJson = cJSON_ParseWithOpts(pFile->pBytes, &pError, 1);
 	if (assetsJson == NULL) {
 		if (pError != NULL) {
 			sgLogError("[JSON]: Error before: %s\n", pError);
@@ -386,7 +412,8 @@ SgResult sgFilesRead(const char* pPath,
 	return SG_SUCCESS;
 }
 
-static SgResult sgTexturesCompress(SgAssets* pInAssets, SgAssets* pOutAssets) {
+static SgResult sgTexturesCompress(SgAssetFiles* pInAssets,
+                                   SgAssetFiles* pOutAssets) {
 	pOutAssets->textureAssets.count = pInAssets->textureAssets.count;
 	SG_CALLOC_NUM(pOutAssets->textureAssets.ppNamesArray,
 	              pInAssets->textureAssets.count);
@@ -429,7 +456,8 @@ static SgResult sgTexturesCompress(SgAssets* pInAssets, SgAssets* pOutAssets) {
 	return SG_SUCCESS;
 }
 
-static SgResult sgMeshCompress(SgAssets* pInAssets, SgAssets* pOutAssets) {
+static SgResult sgMeshCompress(SgAssetFiles* pInAssets,
+                               SgAssetFiles* pOutAssets) {
 	pOutAssets->meshAssets.count = pInAssets->meshAssets.count;
 	SG_CALLOC_NUM(pOutAssets->meshAssets.ppNamesArray,
 	              pOutAssets->meshAssets.count);
@@ -475,14 +503,14 @@ static SgResult sgMeshCompress(SgAssets* pInAssets, SgAssets* pOutAssets) {
 	return SG_SUCCESS;
 }
 
-SgResult sgFilesCompress(SgAssets* pInAssets, SgAssets* pOutAssets) {
+SgResult sgFilesCompress(SgAssetFiles* pInAssets, SgAssetFiles* pOutAssets) {
 	sgMeshCompress(pInAssets, pOutAssets);
 	sgTexturesCompress(pInAssets, pOutAssets);
 	return SG_SUCCESS;
 }
 
-SgResult sgFilesWrite(SgAssets* pAssets, const char* pOutPath) {
-	char pFullPath[32768];
+SgResult sgFilesWrite(SgAssetFiles* pAssets, const char* pOutPath) {
+	char   pFullPath[32768];
 	cJSON* assets = cJSON_CreateObject();
 	cJSON *textureArray, *meshArray;
 	textureArray = cJSON_CreateArray();
@@ -531,6 +559,57 @@ SgResult sgFilesWrite(SgAssets* pAssets, const char* pOutPath) {
 	return SG_SUCCESS;
 }
 
-SgResult sgFilesClear(SgAssets* pAssets) {
+SgResult sgFilesClear(SgAssetFiles* pAssets) {
+	return SG_SUCCESS;
+}
+
+SgResult sgFillSceneResources(cJSON* sceneResources, SgProject* pProject) {
+	return SG_SUCCESS;
+}
+
+static SgResult sgReadSceneResources(char* pScenesPath, SgProject* pProject) {
+	SgFile* pFile;
+	sgOpenFile(pScenesPath, &pFile);
+	const char* pError;
+	cJSON*      sceneResourcesJson = cJSON_ParseWithOpts(pFile->pBytes, &pError, 1);
+	if (sceneResourcesJson == NULL) {
+		if (pError != NULL) {
+			sgLogError("[JSON]: Error before: %s\n", pError);
+			return -1;
+		}
+	}
+	sgFillSceneResources(sceneResourcesJson, pProject);
+
+	return SG_SUCCESS;
+}
+
+static SgResult sgReadSceneAssets(char* pScenesPath, SgProject* pProject) {
+	sgFilesRead(pScenesPath, pProject->pProjectDirPath, &pProject->assets);
+	SgAssetFiles outAssets;
+	sgFilesCompress(&pProject->assets, &outAssets);
+	sgFilesClear(&pProject->assets);
+	pProject->assets = outAssets;
+	return SG_SUCCESS;
+}
+
+SgResult sgProjectRead(char*            pProjectDirPath,
+                       SgProjectLayout* pProjectLayout,
+                       SgProject*       pProject) {
+	pProject->pProjectLayout  = pProjectLayout;
+	pProject->pProjectDirPath = pProjectDirPath;
+	char pScenesPath[32768];
+	snprintf(pScenesPath, sizeof(pScenesPath), "%s/%s", pProject->pProjectDirPath, pProject->pProjectLayout->scenesPath);
+	sgReadSceneResources(pScenesPath, pProject);
+	sgReadSceneAssets(pScenesPath, pProject);
+	
+	return SG_SUCCESS;
+}
+
+// Constructs a compressed file data file, scene files and a project file
+SgResult sgProjectWrite(SgProject* pProject) {
+	char pDataPath[32768];
+	snprintf(pDataPath, sizeof(pDataPath), "%s/%s/%s", pProject->pProjectLayout->buildDir,
+	         pProject->pProjectDirPath, pProject->pProjectLayout->dataPath);
+	sgFilesWrite(&pProject->assets, pDataPath);
 	return SG_SUCCESS;
 }

@@ -9,7 +9,7 @@
 
 typedef struct SgMeshItem {
 	const char* pPath;
-	SgSize offsetid;
+	SgSize      offsetid;
 } SgMeshItem;
 
 static int keyCompare(const void* a, const void* b, void* udata) {
@@ -57,8 +57,8 @@ SgSize* sgGetMeshID(const char* pPath, const SgMeshSet* pMeshArray) {
 
 // Returns indices count
 static SgSize loadOBJ(const char* pPath, SgVertex** ppVertices) {
-	fastObjMesh* pObj   = fast_obj_read(pPath);
-	SgSize totalIndices = 0;
+	fastObjMesh* pObj         = fast_obj_read(pPath);
+	SgSize       totalIndices = 0;
 	for (SgSize i = 0; i < pObj->face_count; ++i) {
 		totalIndices += 3 * (pObj->face_vertices[i] - 2);
 	}
@@ -79,9 +79,9 @@ static SgSize loadOBJ(const char* pPath, SgVertex** ppVertices) {
 			        },
 			    .norm =
 			        {
-			            pObj->normals[gi.n * 3 + 0],
-			            pObj->normals[gi.n * 3 + 1],
-			            pObj->normals[gi.n * 3 + 2],
+			            (u8)(pObj->normals[gi.n * 3 + 0] * 127.f + 127.5f),
+			            (u8)(pObj->normals[gi.n * 3 + 1] * 127.f + 127.5f),
+			            (u8)(pObj->normals[gi.n * 3 + 2] * 127.f + 127.5f),
 			        },
 			    .tex =
 			        {
@@ -105,11 +105,11 @@ static SgSize loadOBJ(const char* pPath, SgVertex** ppVertices) {
 	return totalIndices;
 }
 
-SgSize sgOptimizeMesh(SgSize indexCount,
-                      SgSize vertexCount,
+SgSize sgOptimizeMesh(SgSize  indexCount,
+                      SgSize  vertexCount,
                       SgSize* indices,
-                      void* vertices,
-                      SgSize sizeOfVertex) {
+                      void*   vertices,
+                      SgSize  sizeOfVertex) {
 	SgSize* premap;
 	SG_MALLOC_NUM(premap, indexCount);
 
@@ -132,7 +132,7 @@ SgSize sgLoadMesh(const char* pPath, SgMeshSet** ppMesh) {
 	SG_STRETCHALLOC(pMesh->pIndexSizes, pMesh->meshCount + 2, "[ALLOC]");
 	SG_STRETCHALLOC(pMesh->pVertexSizes, pMesh->meshCount + 2, "[ALLOC]");
 	SgVertex* pVertices;
-	SgSize totalIndices = loadOBJ(pPath, &pVertices);
+	SgSize    totalIndices = loadOBJ(pPath, &pVertices);
 	// MeshLoad
 	//
 	// DEBUG

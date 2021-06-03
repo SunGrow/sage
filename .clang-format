@@ -4,5 +4,6 @@ BreakBeforeBinaryOperators: NonAssignment
 TabWidth: '2'
 UseTab: ForIndentation
 AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
 
 ...

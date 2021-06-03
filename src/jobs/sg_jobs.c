@@ -1,7 +1,7 @@
 #include "sg_jobs.h"
 
 SgResult sgCreateSemaphore(SgSemaphoreCreateInfo* pCreateInfo,
-                           SgSemaphore** ppSemaphore) {
+                           SgSemaphore**          ppSemaphore) {
 	SgSemaphore* pSemaphore = *ppSemaphore;
 	SG_CALLOC_NUM(pSemaphore, 1);
 	pSemaphore->pName = pCreateInfo->pName;
@@ -18,9 +18,9 @@ void sgDestroySemaphore(SgSemaphore** ppSemaphore) {
 
 void* signalingCommandFunc(void* pData) {
 	SgSignalingCommand* pSignalingCommand = pData;
-	const void* pInput                    = pSignalingCommand->pCommand->input;
-	void* pObject                         = pSignalingCommand->pCommand->object;
-	void* pOutput                         = pSignalingCommand->pCommand->output;
+	const void*         pInput            = pSignalingCommand->pCommand->input;
+	void*               pObject           = pSignalingCommand->pCommand->object;
+	void*               pOutput           = pSignalingCommand->pCommand->output;
 	pSignalingCommand->pCommand->func(pInput, pObject, pOutput);
 	pSignalingCommand->pSemaphore->semaphore = 1;
 	return NULL;
@@ -55,7 +55,7 @@ SgResult sgJobBufferUpdateSemaphore(SgJobBuffer* pJobBuffer) {
 	return SG_SUCCESS;
 }
 
-SgResult sgJobQueueSubmit(const SgJobQueue* pJobQueue,
+SgResult sgJobQueueSubmit(const SgJobQueue*           pJobQueue,
                           const SgJobQueueSubmitInfo* pSubmitInfo) {
 	for (SgSize i = 0; i < pSubmitInfo->jobBufferCount; ++i) {
 		sgJobBufferUpdateSemaphore(&pSubmitInfo->pJobBuffers[i]);
@@ -68,7 +68,7 @@ SgResult sgJobQueueSubmit(const SgJobQueue* pJobQueue,
 }
 
 SgResult sgJobQueueInit(SgJobQueueInitInfo* pInitInfo,
-                        SgJobQueue** ppJobQueue) {
+                        SgJobQueue**        ppJobQueue) {
 	SgJobQueue* pJobQueue = *ppJobQueue;
 	SG_CALLOC_NUM(pJobQueue, 1);
 	pJobQueue->threadCount = pInitInfo->threadCount;

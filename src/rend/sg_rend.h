@@ -13,41 +13,41 @@
 
 typedef struct SgAppCreateInfo {
 	const char* pName;
-	SgFile* pConfigFile;
-	v2 size;
+	SgFile*     pConfigFile;
+	v2          size;
 } SgAppCreateInfo;
 
-SgResult sgCreateApp(const SgAppCreateInfo* pCreateInfo, SgApp** ppApp);
+SgResult  sgCreateApp(const SgAppCreateInfo* pCreateInfo, SgApp** ppApp);
 SgWindow* sgGetWindow(SgApp* pApp);
 
 typedef struct SgShaderCreateInfo {
-	SgFile* pFile;
+	SgFile*            pFile;
 	SgShaderStageFlags stage;
 } SgShaderCreateInfo;
 
-SgResult sgCreateShader(const SgApp* pApp,
+SgResult sgCreateShader(const SgApp*              pApp,
                         const SgShaderCreateInfo* pCreateInfo,
-                        SgShader** ppShader);
+                        SgShader**                ppShader);
 
 typedef struct SgUpdateCommandsInitInfo {
 	SgMaterialMap* pMaterialMap;
 	SgResourceMap* pResourceMap;
-	SgMeshSet* pMeshSet;
+	SgMeshSet*     pMeshSet;
 } SgUpdateCommandsInitInfo;
 
 SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo* pInitInfo,
-                              SgUpdateCommands** ppUpdateCommands);
+                              SgUpdateCommands**              ppUpdateCommands);
 
 typedef struct SgAppUpdateInfo {
-	SgApp* pApp;
-	SgMaterialMap* pMaterialMap;
-	SgMeshSet* pMeshSet;
+	SgApp*            pApp;
+	SgMaterialMap*    pMaterialMap;
+	SgMeshSet*        pMeshSet;
 	SgUpdateCommands* pUpdateCommands;
 } SgAppUpdateInfo;
 SgBool sgAppUpdate(SgAppUpdateInfo* pUpdateInfo);
 
 void sgDestroyShader(const SgApp* pApp, SgShader** ppShader);
-void sgDeinitUpdateCommands(const SgApp* pApp,
+void sgDeinitUpdateCommands(const SgApp*       pApp,
                             SgUpdateCommands** ppUpdateCommands);
 void sgDestroyApp(SgApp** ppApp);
 

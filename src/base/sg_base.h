@@ -40,8 +40,8 @@
 
 typedef struct SurfaceAttributes {
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
-	VkSurfaceFormatKHR format;
-	VkPresentModeKHR presentMode;
+	VkSurfaceFormatKHR       format;
+	VkPresentModeKHR         presentMode;
 } SurfaceAttributes;
 
 enum {
@@ -58,8 +58,8 @@ typedef SgFlags SgAppCreateFlags;
 
 typedef struct SgWindowConfig {
 	SgAppCreateFlags createFlags;
-	SgSize dimentions[2];
-	const char* pName;
+	SgSize           dimentions[2];
+	const char*      pName;
 } SgWindowConfig;
 
 typedef struct SgGraphicsConfig {
@@ -67,47 +67,47 @@ typedef struct SgGraphicsConfig {
 } SgGraphicsConfig;
 
 typedef struct SgAppConfig {
-	SgWindowConfig windowConfig;
+	SgWindowConfig   windowConfig;
 	SgGraphicsConfig graphicsConfig;
-	cJSON* configJSON;
+	cJSON*           configJSON;
 } SgAppConfig;
 
 typedef GLFWwindow SgWindow;
 
 typedef struct SgApp {
-	SgWindow* pWindow;
+	SgWindow*  pWindow;
 	VkInstance instance;
 #ifdef _DEBUG
 	VkDebugUtilsMessengerEXT debugCallback;
 #endif
-	VkSurfaceKHR surface;
+	VkSurfaceKHR     surface;
 	VkPhysicalDevice physicalDevice;
 	// TODO: Do it more generic.
 	// With an array of queues and their priorities
-	SgSize graphicsQueueFamilyIdx;
-	SurfaceAttributes surfaceAttributes;
-	VkDevice device;
+	SgSize             graphicsQueueFamilyIdx;
+	SurfaceAttributes  surfaceAttributes;
+	VkDevice           device;
 	VkSampleCountFlags msaaSampleCount;
-	VkQueue graphicsQueue;
-	VmaAllocator allocator;
+	VkQueue            graphicsQueue;
+	VmaAllocator       allocator;
 
 	pthread_t threads[SG_THREADS_COUNT];
 	// No secondary command buffer pools atm
 	VkCommandPool pCommandPools[SG_FRAME_QUEUE_LENGTH * SG_THREADS_COUNT];
-	SgSize commandPoolCount;
+	SgSize        commandPoolCount;
 
 	// Synchorization primitives
 	VkSemaphore pFrameReadySemaphore[SG_FRAME_QUEUE_LENGTH];
 	VkSemaphore pFrameFinishedSemaphore[SG_FRAME_QUEUE_LENGTH];
-	SgSize currentFrame;
-	SgSize frameImageIndex;
-	VkFence pFrameFences[SG_FRAME_QUEUE_LENGTH];
-	VkFence pFrameImageInFlightFences[SG_FRAME_QUEUE_LENGTH + 6];
+	SgSize      currentFrame;
+	SgSize      frameImageIndex;
+	VkFence     pFrameFences[SG_FRAME_QUEUE_LENGTH];
+	VkFence     pFrameImageInFlightFences[SG_FRAME_QUEUE_LENGTH + 6];
 
 	VkFormat lowDepthStencil;
 	VkFormat highDepthStencil;
 
-	VkRect2D* pScissor;
+	VkRect2D*   pScissor;
 	VkViewport* pViewport;
 	// Config
 	SgAppConfig appConfig;
@@ -120,26 +120,26 @@ typedef enum SgResourceTypeFlagBits {
 	SG_RESOURCE_TYPE_INDICES    = BIT(3),
 	SG_RESOURCE_TYPE_STAGING    = BIT(4),  // Hidden from the outer API atm
 } SgResourceTypeFlagBits;
-typedef SgFlags SgResourceTypeFlags;
+typedef SgFlags                  SgResourceTypeFlags;
 static const SgResourceTypeFlags SG_RESOURCE_TYPE_REQIRE_STAGING_MASK =
     SG_RESOURCE_TYPE_MESH | SG_RESOURCE_TYPE_INDICES;
 static const SgResourceTypeFlags SG_RESOURCE_TYPE_IS_IMAGE_MASK =
     SG_RESOURCE_TYPE_TEXTURE_2D;
 
 typedef struct SgBufferData {
-	VkBuffer buffer;
-	void* bytes;
-	SgSize size;
+	VkBuffer      buffer;
+	void*         bytes;
+	SgSize        size;
 	VmaAllocation allocation;
 } SgBufferData;
 
 typedef struct SgImageData {
-	VkImage image;
-	void* bytes;
-	VkExtent3D extent;
-	SgSize size;
+	VkImage       image;
+	void*         bytes;
+	VkExtent3D    extent;
+	SgSize        size;
 	VmaAllocation allocation;
-	VkFormat format;
+	VkFormat      format;
 } SgImageData;
 
 typedef struct SgImageView {
@@ -154,111 +154,111 @@ typedef enum SgShaderStageFlagBits {
 typedef SgFlags SgShaderStageFlags;
 
 typedef struct SgShader {
-	VkShaderModule shader;
+	VkShaderModule     shader;
 	SgShaderStageFlags stage;
 } SgShader;
 
 typedef struct SgShaderPass {
-	VkPipeline pipeline;
+	VkPipeline       pipeline;
 	VkPipelineLayout pipelineLayout;
 } SgShaderPass;
 
 typedef struct SgResourceBinding {
 	SgResourceTypeFlags type;
-	SgShaderStageFlags stage;
-	SgSize binding;
-	SgSize setBinding;
+	SgShaderStageFlags  stage;
+	SgSize              binding;
+	SgSize              setBinding;
 } SgResourceBinding;
 
 typedef struct SgSetBindings {
 	SgResourceBinding* pBindings;
-	SgSize bindingCount;
+	SgSize             bindingCount;
 } SgSetBindings;
 
 typedef struct SgResource {
-	SgBufferData dataBuffer;
-	SgImageData image;
-	VkImageView imageView;
-	VkSampler imageSampler;
-	SgBufferData stagingBuffer;
+	SgBufferData        dataBuffer;
+	SgImageData         image;
+	VkImageView         imageView;
+	VkSampler           imageSampler;
+	SgBufferData        stagingBuffer;
 	SgResourceTypeFlags type;
 
 	SgSize* pCommandBufferID;
 
-	void* lastBytes;
+	void*  lastBytes;
 	SgSize lastSize;
 
 	const char* pName;
 } SgResource;
 
 typedef struct SgResourceMap {
-	struct hashmap* pResourceMap;
+	struct hashmap*  pResourceMap;
 	VkCommandBuffer* pCommadBuffers;
-	SgSize commandBufferCount;
+	SgSize           commandBufferCount;
 
 	VkCommandBuffer* pCommadBuffersForSpecificUpdate;
 
-	VkFence fence;
+	VkFence       fence;
 	VkCommandPool commandPool;
 } SgResourceMap;
 
 typedef struct SgSwapchain {
 	VkSwapchainKHR swapchain;
-	VkImage* pFrameImages;
-	VkImageView* pFrameImageViews;
-	SgImageData depthImage;
-	SgImageView depthImageView;
-	SgImageData blendImage;
-	SgImageView blendImageView;
+	VkImage*       pFrameImages;
+	VkImageView*   pFrameImageViews;
+	SgImageData    depthImage;
+	SgImageView    depthImageView;
+	SgImageData    blendImage;
+	SgImageView    blendImageView;
 	VkFramebuffer* pFrameBuffers;
-	VkExtent2D extent;
-	SgSize imageCount;
+	VkExtent2D     extent;
+	SgSize         imageCount;
 } SgSwapchain;
 
 typedef struct SgGraphicsPipelineBuilder {
 	VkPipelineShaderStageCreateInfo* pShaderStages;
-	SgSize shaderStageCount;
+	SgSize                           shaderStageCount;
 
-	VkPipelineVertexInputStateCreateInfo vertexInputInfo;
+	VkPipelineVertexInputStateCreateInfo   vertexInputInfo;
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly;
-	VkViewport viewport;
-	VkRect2D scissor;
+	VkViewport                             viewport;
+	VkRect2D                               scissor;
 	VkPipelineRasterizationStateCreateInfo rasterizer;
-	VkPipelineColorBlendAttachmentState colorBlendAttachment;
-	VkPipelineMultisampleStateCreateInfo multisampling;
-	VkPipelineLayout pipelineLayout;
-	VkPipelineDepthStencilStateCreateInfo depthStencil;
+	VkPipelineColorBlendAttachmentState    colorBlendAttachment;
+	VkPipelineMultisampleStateCreateInfo   multisampling;
+	VkPipelineLayout                       pipelineLayout;
+	VkPipelineDepthStencilStateCreateInfo  depthStencil;
 } SgGraphicsPipelineBuilder;
 
 typedef struct SgComputePipelineBuilder {
 	VkPipelineShaderStageCreateInfo shaderStage;
-	VkPipelineLayout pipelineLayout;
+	VkPipelineLayout                pipelineLayout;
 } SgComputePipelineBuilder;
 
 typedef struct SgUpdateCommands {
 	VkCommandBuffer* pCommandBuffers;
-	SgResourceMap* pResourceMap;
+	SgResourceMap*   pResourceMap;
 } SgUpdateCommands;
 
 // Really does look like a file, doesn't it?
 typedef struct SgData {
-	void* bytes;
+	void*  bytes;
 	size_t size;
 } SgData;
 
 #ifdef __unix__
 typedef struct SgFile {
-	char* pBytes;
+	char*              pBytes;
 	unsigned long long size;
 } SgFile;
 #else
 #ifdef _WIN32
 #include <windows.h>
 typedef struct SgFile {
-	HANDLE hFile;
-	LPVOID pBytes;
+	HANDLE        hFile;
+	LPVOID        pBytes;
 	LARGE_INTEGER sizeLI;
-	LONGLONG size;
+	LONGLONG      size;
 } SgFile;
 #endif
 #endif

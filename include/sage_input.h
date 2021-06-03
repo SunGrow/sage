@@ -29,23 +29,23 @@ typedef struct SgInputSignal {
 
 typedef struct SgActiveContextsCreateInfo {
 	SgActor* pActors;
-	char** pActorNames;
-	SgSize actorCount;
+	char**   pActorNames;
+	SgSize   actorCount;
 
 	SgInputSignal* pInputSignals;
-	SgSize signalCount;
+	SgSize         signalCount;
 
 	SgInputAction* pActionFuncs;
-	char** pActionNames;
-	SgSize actionCount;
+	char**         pActionNames;
+	SgSize         actionCount;
 
 	SgFile file;
 } SgActiveContextsCreateInfo;
 
 SgResult sgLoadContexts(const SgActiveContextsCreateInfo* pCreateInfo,
-                        SgActiveContexts* pContexts);
-void sgUpdateContext(const SgActiveContextsCreateInfo* pCreateInfo,
-                     SgActiveContexts* pContexts);
+                        SgActiveContexts*                 pContexts);
+void     sgUpdateContext(const SgActiveContextsCreateInfo* pCreateInfo,
+                         SgActiveContexts*                 pContexts);
 
 typedef enum SgActionType {
 	SG_ACTION_TYPE_TRIGGER = BIT(0),
@@ -57,20 +57,20 @@ typedef struct SgActionNames {
 	SgActionType actionType;
 
 	SgInputType inputType;
-	char* inputName;
-	char* modName;
-	char* actionName;
-	SgSize actorID;
+	char*       inputName;
+	char*       modName;
+	char*       actionName;
+	SgSize      actorID;
 } SgActionNames;
 
 typedef struct SgActiveContextsChangeInfo {
 	SgActionNames* pOldActions;
 	SgActionNames* pNewActions;
-	SgSize count;
+	SgSize         count;
 } SgActiveContextsChangeInfo;
 
 void sgChangeContext(const SgActiveContextsChangeInfo* pChangeInfo,
-                     SgActiveContexts* pContexts);
+                     SgActiveContexts*                 pContexts);
 void sgSaveContext(const SgActiveContexts contexts, char* fileDir);
 
 void sgSetActiveContexts(SgActiveContexts activeContexts, SgApp* pApp);

@@ -102,7 +102,7 @@ void m4_copy(m4 m4dst, const m4 m4src) {
 }
 
 void m4_rotation_make(m4 m4src, const float angle, const v3 axis) {
-	v3 axis_norm, v, vs;
+	v3    axis_norm, v, vs;
 	float cosin;
 
 	cosin = cosf(angle);
@@ -239,7 +239,7 @@ void lookat(m4 m4src, const v3 v3eye, const v3 v3at, const v3 v3up) {
 	return;
 }
 
-void perspective(m4 m4src,
+void perspective(m4          m4src,
                  const float fov_y,
                  const float aspect_ratio,
                  const float nearVal,

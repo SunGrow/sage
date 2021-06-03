@@ -20,7 +20,7 @@ static const char* SG_SURF_EXT[] = {
 
 static SgResult getAppConfig(const SgFile* pFile, SgAppConfig* pAppConfig) {
 	const char* error_ptr;
-	cJSON* configJSON = pAppConfig->configJSON;
+	cJSON*      configJSON = pAppConfig->configJSON;
 
 	if (configJSON == NULL) {
 		configJSON = cJSON_ParseWithOpts((char*)pFile->pBytes, &error_ptr, 1);
@@ -59,15 +59,15 @@ static SgResult getAppConfig(const SgFile* pFile, SgAppConfig* pAppConfig) {
 }
 
 static SgResult createGLFWwindow(const SgAppConfig* pAppConfig,
-                                 SgWindow** ppWindow) {
+                                 SgWindow**         ppWindow) {
 	SgWindow* pWindow = *ppWindow;
 	glfwWindowHint(GLFW_RESIZABLE, pAppConfig->windowConfig.createFlags
 	                                   & SG_APP_WINDOW_RESIZABLE);
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 	if (pAppConfig->windowConfig.createFlags & SG_APP_WINDOW_FULLSCREEN) {
-		GLFWmonitor* monitor    = glfwGetPrimaryMonitor();
-		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+		GLFWmonitor*       monitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode* mode    = glfwGetVideoMode(monitor);
 
 		glfwWindowHint(GLFW_RED_BITS, mode->redBits);
 		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
@@ -96,7 +96,7 @@ static SgResult createGLFWwindow(const SgAppConfig* pAppConfig,
 }
 
 static SgResult createVkInstance(const SgAppCreateInfo* pCreateInfo,
-                                 VkInstance* pInstance) {
+                                 VkInstance*            pInstance) {
 	/* Instance */
 	SgSize apiver = volkGetInstanceVersion();
 	if (apiver >= VK_API_VERSION_1_2) {
@@ -113,11 +113,11 @@ static SgResult createVkInstance(const SgAppCreateInfo* pCreateInfo,
 	    .apiVersion         = VK_API_VERSION_1_2,
 	};
 
-	SgSize glfwExtCount = 0;
+	SgSize       glfwExtCount = 0;
 	const char** glfwExt;
-	glfwExt           = glfwGetRequiredInstanceExtensions(&glfwExtCount);
-	SgSize extCount   = NUMOF(SG_SURF_EXT) + glfwExtCount;
-	const char** pExt = malloc(extCount * sizeof(*pExt));
+	glfwExt               = glfwGetRequiredInstanceExtensions(&glfwExtCount);
+	SgSize       extCount = NUMOF(SG_SURF_EXT) + glfwExtCount;
+	const char** pExt     = malloc(extCount * sizeof(*pExt));
 	for (SgSize i = 0; i < glfwExtCount; ++i) {
 		pExt[i] = glfwExt[i];
 	}
@@ -183,12 +183,12 @@ static VkSampleCountFlagBits getMaxUsableSampleCount(
 }
 
 void getSupportedDepthStencilFormats(const VkPhysicalDevice* pPhysicalDevice,
-                                     VkFormat* pLowDepthStencil,
+                                     VkFormat*               pLowDepthStencil,
                                      VkFormat* pHighDepthStencil) {
 	VkFormatProperties props;
-	VkFormat formats[] = {VK_FORMAT_D16_UNORM_S8_UINT,
-	                      VK_FORMAT_D24_UNORM_S8_UINT,
-	                      VK_FORMAT_D32_SFLOAT_S8_UINT};
+	VkFormat           formats[] = {VK_FORMAT_D16_UNORM_S8_UINT,
+                        VK_FORMAT_D24_UNORM_S8_UINT,
+                        VK_FORMAT_D32_SFLOAT_S8_UINT};
 	for (SgSize i = 0; i < NUMOF(formats); ++i) {
 		vkGetPhysicalDeviceFormatProperties(*pPhysicalDevice, formats[i], &props);
 		if (props.optimalTilingFeatures && *pLowDepthStencil == 0) {
@@ -297,16 +297,16 @@ SgWindow* sgGetWindow(SgApp* pApp) {
 	return pApp->pWindow;
 }
 
-SgResult sgCreateShader(const SgApp* pApp,
+SgResult sgCreateShader(const SgApp*              pApp,
                         const SgShaderCreateInfo* pCreateInfo,
-                        SgShader** ppShader) {
+                        SgShader**                ppShader) {
 	SgShader* pShader;
 	SG_CALLOC_NUM(pShader, 1);
-	SgFile* pFile                       = pCreateInfo->pFile;
+	SgFile*                  pFile      = pCreateInfo->pFile;
 	VkShaderModuleCreateInfo createInfo = {
 	    .sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
 	    .codeSize = pFile->size,
-	    .pCode    = pFile->pBytes,
+	    .pCode    = (uint32_t*) pFile->pBytes,
 	};
 	VkResult res = vkCreateShaderModule(pApp->device, &createInfo, VK_NULL_HANDLE,
 	                                    &pShader->shader);
@@ -322,14 +322,14 @@ SgResult sgCreateShader(const SgApp* pApp,
 }
 
 struct bindRenderObjectInfo {
-	SgMaterialMap* pMaterialMap;
+	SgMaterialMap*   pMaterialMap;
 	VkCommandBuffer* pCommandBuffer;
-	SgMeshSet* pMeshSet;
+	SgMeshSet*       pMeshSet;
 };
 
 _Bool renderPassBindRenderObjects(const void* item, void* udata) {
 	const SgMaterialRenderObjects* pRenderObjects = item;
-	struct bindRenderObjectInfo* pInfo            = udata;
+	struct bindRenderObjectInfo*   pInfo          = udata;
 
 	SgMaterial materialGet = {
 	    .pName = pRenderObjects->materialName,
@@ -446,7 +446,7 @@ SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo* pInitInfo,
 }
 
 SgBool sgAppUpdate(SgAppUpdateInfo* pUpdateInfo) {
-	SgApp* pApp             = pUpdateInfo->pApp;
+	SgApp*       pApp       = pUpdateInfo->pApp;
 	SgSwapchain* pSwapchain = &pUpdateInfo->pMaterialMap->swapchain;
 	if (glfwWindowShouldClose(pApp->pWindow))
 		return 0;
@@ -568,7 +568,7 @@ void sgDestroyResource(const SgApp* pApp, SgResource** ppResource) {
 	free(pResource->pCommandBufferID);
 }
 
-void sgDeinitUpdateCommands(const SgApp* pApp,
+void sgDeinitUpdateCommands(const SgApp*       pApp,
                             SgUpdateCommands** ppUpdateCommands) {
 	SgUpdateCommands* pUpdateCommands = *ppUpdateCommands;
 	free(pUpdateCommands->pCommandBuffers);

@@ -27,15 +27,15 @@ typedef struct SgJobBufferAllocInfo {
 } SgJobBufferAllocInfo;
 SG_DEFINE_HANDLE(SgJobBuffer);
 SgResult sgAllocateJobBuffers(SgJobBufferAllocInfo* pAllocInfo,
-                              SgJobBuffer* pJobBuffer);
+                              SgJobBuffer*          pJobBuffer);
 
 typedef void (*SgCommandFunc)(const void* input, void* object, void* output);
 SG_DEFINE_HANDLE(SgCommand);
 typedef struct SgCommandInfo {
 	SgCommandFunc func;
-	const void* input;
-	void* object;
-	void* output;
+	const void*   input;
+	void*         object;
+	void*         output;
 } SgCommandInfo;
 SgResult sgAddCommand(SgJobBuffer jobBuffer, SgCommandInfo* pInfo);
 /* */
@@ -52,12 +52,12 @@ typedef struct SgSemaphoreCreateInfo {
 
 SG_DEFINE_HANDLE(SgSemaphore);
 SgResult sgCreateSemaphore(SgSemaphoreCreateInfo* pCreateInfo,
-                           SgSemaphore* pSemaphore);
-void sgDestroySemaphore(SgSemaphore* pSemaphore);
+                           SgSemaphore*           pSemaphore);
+void     sgDestroySemaphore(SgSemaphore* pSemaphore);
 
 typedef struct SgJobSubmitInfo {
 	SgJobBuffer* pJobBuffers;
-	SgSize jobBufferCount;
+	SgSize       jobBufferCount;
 } SgJobSubmitInfo;
 
 typedef struct SgJobQueueCreateInfo {
@@ -67,7 +67,7 @@ typedef struct SgJobQueueCreateInfo {
 SG_DEFINE_HANDLE(SgJobQueue);
 
 SgResult sgJobQueueCreate(const SgJobQueueCreateInfo* pCreateInfo,
-                          SgJobQueue* pJobQueue);
+                          SgJobQueue*                 pJobQueue);
 SgResult sgJobQueueSubmit(SgJobQueue* pJobQueue, SgJobSubmitInfo* pSubmitInfo);
 SgResult sgJobQueueWait(SgJobQueue* pJobQueue);
 SgResult sgJobQueueDelete(SgJobQueue* pJobQueue);
@@ -79,7 +79,7 @@ typedef SgFlags SgJobPoolCreateFlags;
 
 typedef struct SgJobPoolCreateInfo {
 	SgJobPoolCreateFlags flags;
-	SgSize jobBufferCount;
+	SgSize               jobBufferCount;
 } SgJobPoolCreateInfo;
 SG_DEFINE_HANDLE(SgJobPool);
 

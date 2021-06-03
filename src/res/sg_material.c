@@ -5,15 +5,15 @@
 
 static int materialRenderObjectsKeyCompare(const void* a,
                                            const void* b,
-                                           void* udata) {
+                                           void*       udata) {
 	const SgMaterialRenderObjects* keyA = a;
 	const SgMaterialRenderObjects* keyB = b;
 	return strcmp(keyA->pName, keyB->pName);
 }
 
 static uint64_t materialRenderObjectsKeyHash(const void* item,
-                                             uint64_t seed0,
-                                             uint64_t seed1) {
+                                             uint64_t    seed0,
+                                             uint64_t    seed1) {
 	const SgMaterialRenderObjects* key = item;
 	return hashmap_sip(key->pName, strlen(key->pName), seed0, seed1);
 }
@@ -25,13 +25,13 @@ static int materialKeyCompare(const void* a, const void* b, void* udata) {
 }
 
 static uint64_t materialKeyHash(const void* item,
-                                uint64_t seed0,
-                                uint64_t seed1) {
+                                uint64_t    seed0,
+                                uint64_t    seed1) {
 	const SgMaterial* key = item;
 	return hashmap_sip(key->pName, strlen(key->pName), seed0, seed1);
 }
 
-static SgResult sgFillDefaultRenderpass(const SgApp* pApp,
+static SgResult sgFillDefaultRenderpass(const SgApp*  pApp,
                                         VkRenderPass* pRenderPass) {
 	VkDevice device = pApp->device;
 	VkFormat format = pApp->surfaceAttributes.format.format;
@@ -126,8 +126,8 @@ static SgResult sgFillDefaultRenderpass(const SgApp* pApp,
 	return SG_SUCCESS;
 }
 
-SgResult createVkSwapchain(const SgApp* pApp,
-                           VkSwapchainKHR oldswapchain,
+SgResult createVkSwapchain(const SgApp*    pApp,
+                           VkSwapchainKHR  oldswapchain,
                            VkSwapchainKHR* pSwapchain) {
 	VkSurfaceCapabilitiesKHR surfcap =
 	    pApp->surfaceAttributes.surfaceCapabilities;
@@ -168,9 +168,9 @@ SgResult createVkSwapchain(const SgApp* pApp,
 	return SG_SUCCESS;
 }
 
-SgResult sgCreateSwapchain(SgApp* pApp,
+SgResult sgCreateSwapchain(SgApp*                 pApp,
                            SgSwapchainCreateInfo* pCreateInfo,
-                           SgSwapchain* pSwapchain) {
+                           SgSwapchain*           pSwapchain) {
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
 	    pApp->physicalDevice, pApp->surface,
 	    &pApp->surfaceAttributes.surfaceCapabilities);
@@ -306,9 +306,9 @@ SgResult sgCreateSwapchain(SgApp* pApp,
 	return SG_SUCCESS;
 }
 
-SgResult sgCreateMaterialMap(SgApp* pApp,
+SgResult sgCreateMaterialMap(SgApp*                         pApp,
                              const SgMaterialMapCreateInfo* pCreateInfo,
-                             SgMaterialMap** ppMaterialMap) {
+                             SgMaterialMap**                ppMaterialMap) {
 	SgMaterialMap* pMaterialMap = *ppMaterialMap;
 	SG_CALLOC_NUM(pMaterialMap, 1);
 	pMaterialMap->pMaterialRenderObjectMap = hashmap_new(
@@ -331,7 +331,7 @@ SgResult sgCreateMaterialMap(SgApp* pApp,
 }
 
 SgResult sgFillGraphicsPipelineBuilder(
-    const SgApp* pApp,
+    const SgApp*               pApp,
     SgGraphicsPipelineBuilder* pPipelineBuilder) {
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {
 	    .sType    = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
@@ -384,7 +384,7 @@ SgResult sgFillGraphicsPipelineBuilder(
 
 static SgResult sgSetGraphicsPipelineBuilderStages(
     const SgMaterialCreateInfo* pCreateInfo,
-    SgGraphicsPipelineBuilder* pPipelineBuilder) {
+    SgGraphicsPipelineBuilder*  pPipelineBuilder) {
 	SG_CALLOC_NUM(pPipelineBuilder->pShaderStages, pCreateInfo->shaderCount);
 	pPipelineBuilder->shaderStageCount = pCreateInfo->shaderCount;
 	for (SgSize i = 0; i < pPipelineBuilder->shaderStageCount; ++i) {
@@ -399,10 +399,10 @@ static SgResult sgSetGraphicsPipelineBuilderStages(
 }
 
 SgResult sgBuildGraphicsPipeline(
-    const SgApp* pApp,
+    const SgApp*                     pApp,
     const SgGraphicsPipelineBuilder* pPipelineBuilder,
-    VkRenderPass renderPass,
-    VkPipeline* pPipeline) {
+    VkRenderPass                     renderPass,
+    VkPipeline*                      pPipeline) {
 	VkPipelineViewportStateCreateInfo viewportstate = {
 	    .sType         = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
 	    .viewportCount = 1,
@@ -458,9 +458,9 @@ SgResult sgBuildGraphicsPipeline(
 	return SG_SUCCESS;
 }
 
-SgResult sgBuildComputePipeline(const SgApp* pApp,
+SgResult sgBuildComputePipeline(const SgApp*              pApp,
                                 SgComputePipelineBuilder* pPipelineBuilder,
-                                VkPipeline* pPipeline) {
+                                VkPipeline*               pPipeline) {
 	// Not derived atm. MB later
 	VkComputePipelineCreateInfo createInfo = {
 	    .sType  = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
@@ -478,9 +478,9 @@ SgResult sgBuildComputePipeline(const SgApp* pApp,
 }
 
 static SgResult sgCreateDescriptorSetLayout(
-    const SgApp* pApp,
+    const SgApp*                pApp,
     const SgMaterialCreateInfo* pCreateInfo,
-    SgSetLayouts* pSetLayouts) {
+    SgSetLayouts*               pSetLayouts) {
 	// max binding+1
 	SgSize descriptorSetCount = 0;
 	for (SgSize i = 0; i < pCreateInfo->resourceBindingCount; ++i) {
@@ -547,9 +547,9 @@ static SgResult sgCreateDescriptorSetLayout(
 	return SG_SUCCESS;
 }
 
-static SgResult sgCreatePipelineLayout(const SgApp* pApp,
+static SgResult sgCreatePipelineLayout(const SgApp*        pApp,
                                        const SgSetLayouts* pSetLayouts,
-                                       VkPipelineLayout* pPipelineLayout) {
+                                       VkPipelineLayout*   pPipelineLayout) {
 	VkPipelineLayoutCreateInfo createInfo = {
 	    .sType          = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 	    .pSetLayouts    = pSetLayouts->pSetLayouts,
@@ -569,9 +569,9 @@ static SgResult sgCreatePipelineLayout(const SgApp* pApp,
 	return SG_SUCCESS;
 }
 
-SgResult sgCreateMaterial(const SgMaterialMap* pMaterialMap,
+SgResult sgCreateMaterial(const SgMaterialMap*        pMaterialMap,
                           const SgMaterialCreateInfo* pCreateInfo,
-                          SgMaterial* pMaterial) {
+                          SgMaterial*                 pMaterial) {
 	SgGraphicsPipelineBuilder graphicsPipelineBuilder;
 	sgFillGraphicsPipelineBuilder(pMaterialMap->pApp, &graphicsPipelineBuilder);
 	sgSetGraphicsPipelineBuilderStages(pCreateInfo, &graphicsPipelineBuilder);
@@ -609,7 +609,7 @@ SgResult sgCreateMaterial(const SgMaterialMap* pMaterialMap,
 }
 
 SgMaterial* sgAddMaterial(const SgMaterialCreateInfo* pCreateInfo,
-                          SgMaterialMap** ppMaterialMap) {
+                          SgMaterialMap**             ppMaterialMap) {
 	SgMaterialMap* pMaterialMap = *ppMaterialMap;
 
 	SgMaterial material = {
@@ -640,7 +640,7 @@ static _Bool materialDescriptorPoolCountGetIter(const void* item, void* udata) {
 
 struct SgFillerDescriptorPoolSizes {
 	VkDescriptorPoolSize* pPoolSizes;
-	SgSize offset;
+	SgSize                offset;
 };
 
 static _Bool materialDescriptorPoolFillIter(const void* item, void* udata) {
@@ -684,8 +684,8 @@ static _Bool materialDescriptorSetCountGetIter(const void* item, void* udata) {
 }
 
 SgResult sgInitMaterialMap(SgApp* pApp, SgMaterialMap** ppMaterialMap) {
-	SgMaterialMap* pMaterialMap = *ppMaterialMap;
-	SgSize poolSizeCount        = 0;
+	SgMaterialMap* pMaterialMap  = *ppMaterialMap;
+	SgSize         poolSizeCount = 0;
 	hashmap_scan(pMaterialMap->pMaterialMap, materialDescriptorPoolCountGetIter,
 	             &poolSizeCount);
 	VkDescriptorPoolSize* pPoolSizes;
@@ -714,7 +714,7 @@ SgResult sgInitMaterialMap(SgApp* pApp, SgMaterialMap** ppMaterialMap) {
 	return SG_SUCCESS;
 }
 
-SgMaterial* sgGetMaterial(const char* pMaterialName,
+SgMaterial* sgGetMaterial(const char*          pMaterialName,
                           const SgMaterialMap* pMaterialMap) {
 	SgMaterial material = {
 	    .pName = pMaterialName,
@@ -725,7 +725,7 @@ SgMaterial* sgGetMaterial(const char* pMaterialName,
 
 SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pCreateInfo,
                                     SgMaterialMap** ppMaterialMap) {
-	SgMaterialMap* pMaterialMap          = *ppMaterialMap;
+	SgMaterialMap*          pMaterialMap = *ppMaterialMap;
 	SgMaterialRenderObjects renderObject = {
 	    .pRenderObjects    = pCreateInfo->pRenderObjects,
 	    .renderObjectCount = pCreateInfo->renderObjectCount,
@@ -777,12 +777,12 @@ SgResult sgAddMaterialRenderObjects(const SgRenderObjectCreateInfo* pCreateInfo,
 }
 
 void sgUpdateRenderObjects(const SgRenderObjectUpdateInfo* pUpdateInfo,
-                           SgMaterialMap** ppMaterialMap) {
-	SgMaterialMap* pMaterialMap = *ppMaterialMap;
+                           SgMaterialMap**                 ppMaterialMap) {
+	SgMaterialMap*           pMaterialMap = *ppMaterialMap;
 	SgMaterialRenderObjects* pMaterialRenderObject;
-	SgMaterialRenderObjects findMaterialRenderObject = {
-	    .pName = pUpdateInfo->pName,
-	};
+	SgMaterialRenderObjects  findMaterialRenderObject = {
+      .pName = pUpdateInfo->pName,
+  };
 	pMaterialRenderObject = hashmap_get(pMaterialMap->pMaterialRenderObjectMap,
 	                                    &findMaterialRenderObject);
 	if (pMaterialRenderObject) {
@@ -796,9 +796,9 @@ void sgUpdateRenderObjects(const SgRenderObjectUpdateInfo* pUpdateInfo,
 
 _Bool materialRenderObjectWrite(const void* item, void* udata) {
 	const SgMaterialRenderObjects* pRenderObject = item;
-	SgMaterialMap* pMMap                         = udata;
-	struct hashmap* pMaterialMap                 = pMMap->pMaterialMap;
-	SgMaterial findMaterial                      = {
+	SgMaterialMap*                 pMMap         = udata;
+	struct hashmap*                pMaterialMap  = pMMap->pMaterialMap;
+	SgMaterial                     findMaterial  = {
       .pName = pRenderObject->materialName,
   };
 	SgMaterial* pMaterial = hashmap_get(pMaterialMap, &findMaterial);
@@ -835,7 +835,7 @@ _Bool materialRenderObjectWrite(const void* item, void* udata) {
 			    pMaterial->pResourceBindings[j].binding;
 			pRenderObject->pWriteDescriptorSets[resCount].descriptorCount = 1;
 
-			VkDescriptorImageInfo* pImageInfo;
+			VkDescriptorImageInfo*  pImageInfo;
 			VkDescriptorBufferInfo* pBufferInfo;
 			SG_CALLOC_NUM(pImageInfo, 1);
 			SG_CALLOC_NUM(pBufferInfo, 1);
@@ -909,9 +909,9 @@ SgResult sgWriteMaterialRenderObjects(SgMaterialMap** ppMaterialMap) {
 }
 
 _Bool sgFreeMaterialMapIter(const void* item, void* data) {
-	const SgMaterial* pMaterial = item;
-	SgMaterialMap* pMaterialMap = data;
-	VkDevice device             = pMaterialMap->pApp->device;
+	const SgMaterial* pMaterial    = item;
+	SgMaterialMap*    pMaterialMap = data;
+	VkDevice          device       = pMaterialMap->pApp->device;
 	vkDestroyPipelineLayout(device, pMaterial->pipelineLayout,
 	                        VK_NULL_HANDLE);  // TODO: pipeline layout hashmap
 	vkDestroyPipeline(device, pMaterial->pipeline, VK_NULL_HANDLE);

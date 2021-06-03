@@ -1,2 +1,3 @@
 extern/**
 subprojects/**
+build*/**

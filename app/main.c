@@ -10,7 +10,7 @@
 int main() {
 	// Testing
 
-	SgFile contextConfigFile;
+	SgFile      contextConfigFile;
 	const char* contextConfigFilePath = "cfg/contexts.json";
 	sgOpenFile(contextConfigFilePath, &contextConfigFile);
 
@@ -82,7 +82,7 @@ int main() {
 	    "lighting",
 	};
 
-	SgActiveContexts contexts;
+	SgActiveContexts           contexts;
 	SgActiveContextsCreateInfo activeContextsCreateInfo = {
 
 	    .pActionFuncs = inputActions,
@@ -102,7 +102,7 @@ int main() {
 	sgLoadContexts(&activeContextsCreateInfo, &contexts);
 	sgCloseFile(&contextConfigFile);
 
-	SgFile appConfigFile;
+	SgFile      appConfigFile;
 	const char* appConfigFilePath = "cfg/app.json";
 	sgOpenFile(appConfigFilePath, &appConfigFile);
 	SgAppCreateInfo createInfo = {
@@ -290,7 +290,7 @@ int main() {
 	sgAddResource(app, &defTextureResourceCreateInfo, &resourceMap);
 	///
 
-	SgMaterialMap materialMap;
+	SgMaterialMap           materialMap;
 	SgMaterialMapCreateInfo materialMapCreateInfo = {
 	    .materailCount = 2,
 	    .resourceMap   = resourceMap,

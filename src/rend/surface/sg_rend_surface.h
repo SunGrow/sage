@@ -6,10 +6,10 @@
 #include "volk.h"
 
 SgResult createWindowSurface(const VkInstance* pInstance,
-                             SgWindow* pWindow,
-                             VkSurfaceKHR* pSurface);
+                             SgWindow*         pWindow,
+                             VkSurfaceKHR*     pSurface);
 SgResult getSurfaceAttributes(const VkPhysicalDevice* pPhysicalDevice,
-                              const VkSurfaceKHR* pSurface,
-                              SurfaceAttributes* pSurfaceAttributes);
+                              const VkSurfaceKHR*     pSurface,
+                              SurfaceAttributes*      pSurfaceAttributes);
 
 #endif

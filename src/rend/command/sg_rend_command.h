@@ -7,35 +7,35 @@ typedef struct SgCommandPoolsCreateInfo {
 } SgCommandPoolsCreateInfo;
 
 SgResult createCommandPools(const VkDevice* pDevice,
-                            const SgSize queueFamilyID,
-                            pthread_t* pThreads,
-                            VkCommandPool* pCommandPools,
-                            SgSize commandPoolCount);
+                            const SgSize    queueFamilyID,
+                            pthread_t*      pThreads,
+                            VkCommandPool*  pCommandPools,
+                            SgSize          commandPoolCount);
 
 typedef struct SgCommandBufferBeginEndInfo {
-	const VkCommandPool* pCommandPool;
-	VkCommandBufferLevel level;
+	const VkCommandPool*      pCommandPool;
+	VkCommandBufferLevel      level;
 	VkCommandBufferUsageFlags flags;
-	VkFence* pFence;
-	VkCommandBuffer* pCommandBuffer;
+	VkFence*                  pFence;
+	VkCommandBuffer*          pCommandBuffer;
 } SgCommandBufferBeginEndInfo;
 
-SgResult sgBeginCommandBuffer(const SgApp* pApp,
+SgResult sgBeginCommandBuffer(const SgApp*                 pApp,
                               SgCommandBufferBeginEndInfo* pBeginEndInfo);
-SgResult sgEndCommandBuffer(const SgApp* pApp,
+SgResult sgEndCommandBuffer(const SgApp*                 pApp,
                             SgCommandBufferBeginEndInfo* pBeginEndInfo);
 typedef struct SgImageTransferInfo {
-	SgImageData image;
-	SgSize srcQueueFamilyID;
-	SgSize dstQueueFamilyID;
-	VkImageLayout srcImageLayout;
-	VkImageLayout dstImageLayout;
-	VkAccessFlags srcAccessMask;
-	VkAccessFlags dstAccessMask;
+	SgImageData             image;
+	SgSize                  srcQueueFamilyID;
+	SgSize                  dstQueueFamilyID;
+	VkImageLayout           srcImageLayout;
+	VkImageLayout           dstImageLayout;
+	VkAccessFlags           srcAccessMask;
+	VkAccessFlags           dstAccessMask;
 	VkImageSubresourceRange subresourceRange;
-	VkPipelineStageFlags srcStageMask;
-	VkPipelineStageFlags dstStageMask;
-	VkDependencyFlags dependencyFlags;
+	VkPipelineStageFlags    srcStageMask;
+	VkPipelineStageFlags    dstStageMask;
+	VkDependencyFlags       dependencyFlags;
 } SgImageTransferInfo;
 SgResult sgTransferImage(const SgApp* pApp, SgImageTransferInfo* pTransferInfo);
 #endif

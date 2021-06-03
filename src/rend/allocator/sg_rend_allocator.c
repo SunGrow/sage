@@ -3,9 +3,9 @@
 #include "vk_mem_alloc.h"
 
 SgResult createAllocator(const VkPhysicalDevice* pPhysicalDevice,
-                         const VkDevice* pDevice,
-                         const VkInstance* pInstance,
-                         VmaAllocator* pAllocator) {
+                         const VkDevice*         pDevice,
+                         const VkInstance*       pInstance,
+                         VmaAllocator*           pAllocator) {
 	VmaAllocatorCreateInfo allocatorInfo = {
 	    .physicalDevice   = *pPhysicalDevice,
 	    .device           = *pDevice,

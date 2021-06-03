@@ -5,10 +5,10 @@
 
 #ifdef _DEBUG
 VKAPI_ATTR VkBool32 VKAPI_CALL
-debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT flags,
-              VkDebugUtilsMessageTypeFlagsEXT messageType,
+debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT      flags,
+              VkDebugUtilsMessageTypeFlagsEXT             messageType,
               const VkDebugUtilsMessengerCallbackDataEXT* pData,
-              void* pUserData) {
+              void*                                       pUserData) {
 	(flags & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
 	    ? sgLogError("[%s]: %s", pData->pMessageIdName, pData->pMessage)
 	: (flags & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
@@ -17,7 +17,7 @@ debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT flags,
 	return VK_FALSE;
 }
 
-SgResult registerDebugCallback(const VkInstance* pInstance,
+SgResult registerDebugCallback(const VkInstance*         pInstance,
                                VkDebugUtilsMessengerEXT* debugMessenger) {
 	VkDebugUtilsMessengerCreateInfoEXT createInfo = {
 	    .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,

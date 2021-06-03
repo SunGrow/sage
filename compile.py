@@ -14,16 +14,15 @@ os.chdir("app/shaders")
 os.system("make")
 os.chdir("../../")
 copyAndOverride("app/shaders", "build/app/shaders")
-copyAndOverride("app/data", "build/app/data")
-copyAndOverride("app/res", "build/app/res")
-copyAndOverride("app/cfg", "build/app/cfg")
+copyAndOverride("app/data",    "build/app/data")
+copyAndOverride("app/res",     "build/app/res")
+copyAndOverride("app/cfg",     "build/app/cfg")
 
 os.chdir("build")
 os.system("meson compile")
 os.chdir("..")
 
-os.chdir("app")
-os.system("../build/assetsys/assetsys project.json")
+os.system("./build/assetsys/assetsys projects.json")
 
 # if os.name != 'nt':
 #     os.system("meson build_windows --cross-file wincross.ini")

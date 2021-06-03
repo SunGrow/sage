@@ -6,7 +6,7 @@
 
 typedef void (*SgWindowCursorEnterFun)(SgWindow, int);
 void sgGetWindowSize(SgWindow* pWindow, int* xSize, int* ySize);
-void sgSetCursorEnterCallback(SgWindow* pWindow,
+void sgSetCursorEnterCallback(SgWindow*              pWindow,
                               SgWindowCursorEnterFun callback);
 
 #endif

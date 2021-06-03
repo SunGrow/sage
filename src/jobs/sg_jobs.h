@@ -7,9 +7,9 @@
 typedef void (*SgCommandFunc)(const void* input, void* object, void* output);
 typedef struct SgCommand {
 	SgCommandFunc func;
-	const void* input;
-	void* object;
-	void* output;
+	const void*   input;
+	void*         object;
+	void*         output;
 } SgCommand;
 
 typedef enum SgJobSemaphoreCreateFlagBits {
@@ -17,30 +17,30 @@ typedef enum SgJobSemaphoreCreateFlagBits {
 } SgJobSemaphoreCreateFlagBits;
 typedef SgFlags SgJobSemaphoreCreateFlags;
 typedef struct SgSemaphoreCreateInfo {
-	const char* pName;
+	const char*               pName;
 	SgJobSemaphoreCreateFlags flags;
 } SgSemaphoreCreateInfo;
 
 typedef struct SgSemaphore {
 	atomic_uint_fast8_t semaphore;
-	const char* pName;
+	const char*         pName;
 } SgSemaphore;
 SgResult sgCreateSemaphore(SgSemaphoreCreateInfo* pCreateInfo,
-                           SgSemaphore** ppSemaphore);
-void sgDestroySemaphore(SgSemaphore** ppSemaphore);
+                           SgSemaphore**          ppSemaphore);
+void     sgDestroySemaphore(SgSemaphore** ppSemaphore);
 
 typedef struct SgDependencyLayer {
 	SgSemaphore** ppSemaphores;
-	SgSize semaphoreCount;
+	SgSize        semaphoreCount;
 } SgDependencyLayer;
 
 typedef struct SgJobBuffer {
-	SgCommand* pCommands;
-	SgSemaphore* pCommandSemaphores;
-	SgSize commandCount;
+	SgCommand*         pCommands;
+	SgSemaphore*       pCommandSemaphores;
+	SgSize             commandCount;
 	SgDependencyLayer* pDependencyLayer;
-	SgSize dependencyLayerSemaphoreCount;
-	SgSemaphore* pSemaphore;
+	SgSize             dependencyLayerSemaphoreCount;
+	SgSemaphore*       pSemaphore;
 } SgJobBuffer;
 
 typedef enum SgJobPoolCreateFlagBits {
@@ -50,16 +50,16 @@ typedef SgFlags SgJobPoolCreateFlags;
 
 typedef struct SgJobPoolCreateInfo {
 	SgJobPoolCreateFlags flags;
-	SgSize jobBufferCount;
+	SgSize               jobBufferCount;
 } SgJobPoolCreateInfo;
 
 typedef struct SgJobPool {
 	SgJobBuffer* pBuffers;
-	SgSize bufferCount;
+	SgSize       bufferCount;
 } SgJobPool;
 
 SgResult sgCreateJobPool(SgJobPoolCreateInfo* pCreateInfo,
-                         SgJobPool** ppJobPool);
+                         SgJobPool**          ppJobPool);
 
 typedef enum SgJobAllocFlagBits {
 	SG_JOB_BUFFER_ALLOC_MAX_BIT,
@@ -67,15 +67,15 @@ typedef enum SgJobAllocFlagBits {
 typedef SgFlags SgJobAllocFlags;
 
 typedef struct SgJobBufferAllocInfo {
-	SgJobPool* pJobPool;
+	SgJobPool*      pJobPool;
 	SgJobAllocFlags allocFlags;
-	SgSize commandCount;
+	SgSize          commandCount;
 } SgJobBufferAllocInfo;
 SgResult sgAllocateJobBuffers(SgJobBufferAllocInfo* pAllocInfo,
-                              SgJobBuffer* pJobBuffer);
+                              SgJobBuffer*          pJobBuffer);
 
 typedef struct SgSignalingCommand {
-	SgCommand* pCommand;
+	SgCommand*   pCommand;
 	SgSemaphore* pSemaphore;
 } SgSignalingCommand;
 
@@ -88,17 +88,17 @@ typedef struct SgJobQueueInitInfo {
 
 typedef struct SgJobQueue {
 	pthread_t* pThreads;
-	SgSize threadCount;
+	SgSize     threadCount;
 } SgJobQueue;
 
 SgResult sgJobQueueInit(SgJobQueueInitInfo* pInitInfo, SgJobQueue** ppJobQueue);
 
 typedef struct SgJobQueueSubmitInfo {
 	SgJobBuffer* pJobBuffers;
-	SgSize jobBufferCount;
+	SgSize       jobBufferCount;
 } SgJobQueueSubmitInfo;
 
-SgResult sgJobQueueSubmit(const SgJobQueue* pJobQueue,
+SgResult sgJobQueueSubmit(const SgJobQueue*           pJobQueue,
                           const SgJobQueueSubmitInfo* pSubmitInfo);
 
 #endif

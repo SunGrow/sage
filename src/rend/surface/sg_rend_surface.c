@@ -6,8 +6,8 @@
 #include "log.h"
 
 SgResult createWindowSurface(const VkInstance* pInstance,
-                             SgWindow* pWindow,
-                             VkSurfaceKHR* pSurface) {
+                             SgWindow*         pWindow,
+                             VkSurfaceKHR*     pSurface) {
 	glfwCreateWindowSurface(*pInstance, pWindow, VK_NULL_HANDLE, pSurface);
 	if (*pSurface) {
 		sgLogInfo_Debug("[AppInit]: Vulkan Surface created");
@@ -20,8 +20,8 @@ SgResult createWindowSurface(const VkInstance* pInstance,
 }
 
 VkSurfaceFormatKHR getSurfaceFormat(VkPhysicalDevice physicalDevice,
-                                    VkSurfaceKHR surface) {
-	SgSize formatCount = 0;
+                                    VkSurfaceKHR     surface) {
+	SgSize             formatCount = 0;
 	VkSurfaceFormatKHR format;
 	vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount,
 	                                     VK_NULL_HANDLE);
@@ -52,8 +52,8 @@ VkSurfaceFormatKHR getSurfaceFormat(VkPhysicalDevice physicalDevice,
 }
 
 VkPresentModeKHR getSurfacePresentMode(VkPhysicalDevice physicalDevice,
-                                       VkSurfaceKHR surface) {
-	SgSize modeCount = 0;
+                                       VkSurfaceKHR     surface) {
+	SgSize           modeCount = 0;
 	VkPresentModeKHR result;
 	vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &modeCount,
 	                                          VK_NULL_HANDLE);
@@ -75,8 +75,8 @@ VkPresentModeKHR getSurfacePresentMode(VkPhysicalDevice physicalDevice,
 }
 
 SgResult getSurfaceAttributes(const VkPhysicalDevice* pPhysicalDevice,
-                              const VkSurfaceKHR* pSurface,
-                              SurfaceAttributes* pSurfaceAttributes) {
+                              const VkSurfaceKHR*     pSurface,
+                              SurfaceAttributes*      pSurfaceAttributes) {
 	pSurfaceAttributes->format = getSurfaceFormat(*pPhysicalDevice, *pSurface);
 	pSurfaceAttributes->presentMode =
 	    getSurfacePresentMode(*pPhysicalDevice, *pSurface);

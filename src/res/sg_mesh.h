@@ -9,28 +9,28 @@
 // Mesh
 typedef struct SgVertex {
 	v3 vert;
-	v3 norm;
+	u8 norm[4];
 	v2 tex;
 } SgVertex;
 
 typedef struct SgMesh {
 	SgVertex* pVertices;
-	SgSize vertexCount;
-	SgSize* pIndices;
-	SgSize indexCount;
+	SgSize    vertexCount;
+	SgSize*   pIndices;
+	SgSize    indexCount;
 } SgMesh;
 //
 
 typedef struct SgMeshSet {
-	SgVertex* pVertices;
-	SgSize vertexCount;
-	SgSize* pVertexOffsets;
-	SgSize* pIndexSizes;
-	SgSize* pVertexSizes;
-	SgSize* pIndices;
-	SgSize indexCount;
-	SgSize* pIndexOffsets;
-	SgSize meshCount;
+	SgVertex*       pVertices;
+	SgSize          vertexCount;
+	SgSize*         pVertexOffsets;
+	SgSize*         pIndexSizes;
+	SgSize*         pVertexSizes;
+	SgSize*         pIndices;
+	SgSize          indexCount;
+	SgSize*         pIndexOffsets;
+	SgSize          meshCount;
 	struct hashmap* meshMap;  // Return an offset id
 
 	const char* indicesResourceName;
@@ -38,16 +38,16 @@ typedef struct SgMeshSet {
 
 // Returns mesh offset to added mesh
 SgResult sgCreateMeshSet(SgMeshSet** ppMeshArray);
-SgSize sgAddMesh(const char* pPath, SgMeshSet** ppMeshArray);
-SgSize* sgGetMeshID(const char* pPath, const SgMeshSet* pMeshArray);
-SgSize sgLoadMesh(const char* pPath, SgMeshSet** ppMesh);
-void sgUnloadMesh(SgMesh** ppMesh);
+SgSize   sgAddMesh(const char* pPath, SgMeshSet** ppMeshArray);
+SgSize*  sgGetMeshID(const char* pPath, const SgMeshSet* pMeshArray);
+SgSize   sgLoadMesh(const char* pPath, SgMeshSet** ppMesh);
+void     sgUnloadMesh(SgMesh** ppMesh);
 
 ///
 
 typedef struct SgTexture {
-	int32_t width, height, channels;
-	SgSize size;
+	int32_t  width, height, channels;
+	SgSize   size;
 	stbi_uc* pixels;
 } SgTexture;
 

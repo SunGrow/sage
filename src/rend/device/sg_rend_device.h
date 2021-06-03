@@ -6,12 +6,12 @@
 #include "volk.h"
 
 typedef struct SgPhysicalDeviceGetInfo {
-	VkInstance* pInstance;
+	VkInstance*   pInstance;
 	VkSurfaceKHR* pSurface;
 } SgPhysicalDeviceGetInfo;
 SgResult getPhysicalDevice(SgPhysicalDeviceGetInfo* pGetInfo,
-                           VkPhysicalDevice* pPhysicalDevice);
-SgSize getGraphicsFamilyIndex(VkPhysicalDevice pd);
+                           VkPhysicalDevice*        pPhysicalDevice);
+SgSize   getGraphicsFamilyIndex(VkPhysicalDevice pd);
 typedef struct SgDeviceQueueCreateInfo {
 	float* pQueuePriorities;
 	SgSize queueIndex;
@@ -19,8 +19,8 @@ typedef struct SgDeviceQueueCreateInfo {
 } SgDeviceQueueCreateInfo;
 typedef struct SgLogicalDeviceGetInfo {
 	SgDeviceQueueCreateInfo* pQueueCreateInfos;
-	SgSize createInfosCount;
-	VkPhysicalDevice physicalDevice;
+	SgSize                   createInfosCount;
+	VkPhysicalDevice         physicalDevice;
 } SgLogicalDeviceGetInfo;
 SgResult getLogicalDevice(SgLogicalDeviceGetInfo* pGetInfo, VkDevice* pDevice);
 

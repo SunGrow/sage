@@ -22,10 +22,10 @@ SgSize getGraphicsFamilyIndex(VkPhysicalDevice pd) {
 	return VK_QUEUE_FAMILY_IGNORED;
 }
 
-VkPhysicalDevice pickPhysicalDevice(VkSurfaceKHR surface,
+VkPhysicalDevice pickPhysicalDevice(VkSurfaceKHR      surface,
                                     VkPhysicalDevice* pPhysicalDevices,
-                                    SgSize deviceCount) {
-	VkBool32 boolres;
+                                    SgSize            deviceCount) {
+	VkBool32         boolres;
 	VkPhysicalDevice preferedDevice = 0;
 	VkPhysicalDevice fallbackDevice = 0;
 	for (SgSize i = 0; i < deviceCount; ++i) {
@@ -68,7 +68,7 @@ VkPhysicalDevice pickPhysicalDevice(VkSurfaceKHR surface,
 }
 
 SgResult getPhysicalDevice(SgPhysicalDeviceGetInfo* pGetInfo,
-                           VkPhysicalDevice* pPhysicalDevice) {
+                           VkPhysicalDevice*        pPhysicalDevice) {
 	SgSize deviceCount = 0;
 	vkEnumeratePhysicalDevices(*pGetInfo->pInstance, &deviceCount,
 	                           VK_NULL_HANDLE);
@@ -102,12 +102,24 @@ SgResult getLogicalDevice(SgLogicalDeviceGetInfo* pGetInfo, VkDevice* pDevice) {
 		    pGetInfo->pQueueCreateInfos[i].pQueuePriorities;
 		pQueueCreateInfos[i].queueCount = pGetInfo->pQueueCreateInfos[i].queueCount;
 	}
+	// TODO: Config
+	VkPhysicalDeviceVulkan12Features features12 = { 
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
+		.shaderInt8 = VK_TRUE,
+		.shaderFloat16 = VK_TRUE,
+		.storageBuffer8BitAccess = VK_TRUE,
+	};
+	VkPhysicalDeviceFeatures2 features = {
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+		.pNext = &features12,
+	};
 	VkDeviceCreateInfo createInfo = {
 	    .sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
 	    .queueCreateInfoCount    = pGetInfo->createInfosCount,
 	    .pQueueCreateInfos       = pQueueCreateInfos,
 	    .enabledExtensionCount   = NUMOF(deviceExtensionNames),
 	    .ppEnabledExtensionNames = deviceExtensionNames,
+		.pNext                   = &features,
 	};
 	vkCreateDevice(pGetInfo->physicalDevice, &createInfo, VK_NULL_HANDLE,
 	               pDevice);

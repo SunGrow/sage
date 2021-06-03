@@ -37,22 +37,22 @@ typedef enum SgBufferViewType {
 
 typedef struct SgBuffer {
 	SgSize size;
-	char* pUri;
-	void* data;
+	char*  pUri;
+	void*  data;
 } SgBuffer;
 
 typedef struct SgBufferView {
-	SgBuffer* pBuffer;
-	SgSize offset;
-	SgSize size;
-	SgSize stride;
+	SgBuffer*        pBuffer;
+	SgSize           offset;
+	SgSize           size;
+	SgSize           stride;
 	SgBufferViewType type;
 } SgBufferView;
 
 typedef struct SgImage {
-	char* pUri;
+	char*         pUri;
 	SgBufferView* pBuferView;
-	char* pMimeType;
+	char*         pMimeType;
 
 	char* pName;
 } SgImage;
@@ -65,37 +65,37 @@ typedef struct SgSampler {
 } SgSampler;
 
 typedef struct SgTextureAttr {
-	SgImage* pImage;
+	SgImage*   pImage;
 	SgSampler* pSampler;
 
 	char* pName;
 } SgTextureAttr;
 
 typedef struct SgTextureView {
-	SgUInt levelCount;
-	SgUInt layerCount;
-	VkImageViewType imageViewType;
+	SgUInt             levelCount;
+	SgUInt             layerCount;
+	VkImageViewType    imageViewType;
 	VkImageAspectFlags imageAspectFlags;
-	char* pTextureName;
+	char*              pTextureName;
 
 	char* pName;
 } SgTextureView;
 
 typedef struct SgAccessor {
 	SgComponentType componentType;
-	SgBool normalized;
-	SgType type;
-	SgSize offset;
-	SgSize count;
-	SgSize stride;
-	SgBufferView* pBufferView;
+	SgBool          normalized;
+	SgType          type;
+	SgSize          offset;
+	SgSize          count;
+	SgSize          stride;
+	SgBufferView*   pBufferView;
 } SgAccessor;
 
 typedef struct SgSkin {
 	SgSceneNode** ppJoints;
-	SgSize jointCount;
-	SgSceneNode* pSkeleton;
-	SgAccessor* pInverseBindMatrices;
+	SgSize        jointCount;
+	SgSceneNode*  pSkeleton;
+	SgAccessor*   pInverseBindMatrices;
 
 	char* pName;
 } SgSkin;
@@ -122,34 +122,34 @@ typedef enum SgAttributeType {
 } SgAttributeType;
 
 typedef struct SgAttribute {
-	char* pName;
+	char*           pName;
 	SgAttributeType type;
-	SgInt index;
-	SgAccessor* data;
+	SgInt           index;
+	SgAccessor*     data;
 } SgAttribute;
 
 typedef struct SgDracoMeshCompression {
 	SgBufferView* pBufferView;
-	SgAttribute* attributes;
-	SgSize attributesCount;
+	SgAttribute*  attributes;
+	SgSize        attributesCount;
 } SgDracoMeshCompression;
 
 typedef struct SgMeshoptMeshCompression {
 	SgBufferView* pBufferView;
-	SgAttribute* attributes;
-	SgSize attributesCount;
+	SgAttribute*  attributes;
+	SgSize        attributesCount;
 } SgMeshoptMeshCompression;
 
 typedef struct SgMorphTarget {
 	SgAttribute* pAttributes;
-	SgSize attributesCount;
+	SgSize       attributesCount;
 } SgMorphTarget;
 
 typedef struct SgPBRMetalicRoughness {
 	SgTextureView baseColorTexture;
 	SgTextureView metallicRoughnessTexture;
 
-	v4 baseColorFactor;
+	v4      baseColorFactor;
 	SgFloat metallicFactor;
 	SgFloat roughnessFactor;
 } SgPBRMetalicRoughness;
@@ -158,8 +158,8 @@ typedef struct SgPBRSpecularGlossiness {
 	SgTextureView diffuseTexture;
 	SgTextureView specularGlossinessTexture;
 
-	v4 diffuseFactor;
-	v3 specularFactor;
+	v4      diffuseFactor;
+	v3      specularFactor;
 	SgFloat glossinessFactor;
 } SgPBRSpecularGlossiness;
 
@@ -174,7 +174,7 @@ typedef struct SgClearcoat {
 
 typedef struct SgTransmission {
 	SgTextureView transmissionTexture;
-	SgFloat transmissionFactor;
+	SgFloat       transmissionFactor;
 } SgTransmission;
 
 typedef struct SgIOR {
@@ -183,15 +183,15 @@ typedef struct SgIOR {
 
 typedef struct SgSpecular {
 	SgTextureView specularTexture;
-	v3 specularColorFactor;
-	SgFloat specularFactor;
+	v3            specularColorFactor;
+	SgFloat       specularFactor;
 } SgSpecular;
 
 typedef struct SgSheen {
 	SgTextureView sheenColorTexture;
-	v3 sheenColorFactor;
+	v3            sheenColorFactor;
 	SgTextureView sheenRoughnessTexture;
-	SgFloat sheenRoughnessFactor;
+	SgFloat       sheenRoughnessFactor;
 } SgSheen;
 
 typedef enum SgAlphaMode {
@@ -201,65 +201,65 @@ typedef enum SgAlphaMode {
 } SgAlphaMode;
 
 typedef struct SgShaderAttr {
-	VkShaderModule* pShader;
-	VkShaderStageFlags stage;
+	VkShaderModule*        pShader;
+	VkShaderStageFlags     stage;
 	VkDescriptorSetLayout* pSetLayout;
 
 	char* pName;
 } SgShaderAttr;
 
 typedef struct SgMaterialAttr {
-	SgBool hasPbrMetallicRoughness;
-	SgBool hasPbrSpecularGlossiness;
-	SgBool hasClearcoat;
-	SgBool hasTransmission;
-	SgBool hasIor;
-	SgBool hasSpecular;
-	SgBool hasSheen;
-	SgPBRMetalicRoughness pbrMetallicRoughness;
+	SgBool                  hasPbrMetallicRoughness;
+	SgBool                  hasPbrSpecularGlossiness;
+	SgBool                  hasClearcoat;
+	SgBool                  hasTransmission;
+	SgBool                  hasIor;
+	SgBool                  hasSpecular;
+	SgBool                  hasSheen;
+	SgPBRMetalicRoughness   pbrMetallicRoughness;
 	SgPBRSpecularGlossiness pbrSpecularGlossiness;
-	SgClearcoat clearcoat;
-	SgIOR ior;
-	SgSpecular specular;
-	SgSheen sheen;
-	SgTransmission transmission;
-	SgTextureView normalTexture;
-	SgTextureView occlusionTexture;
-	SgTextureView emissiveTexture;
-	v3 emissiveFactor;
-	SgAlphaMode alphaMode;
-	SgFloat alphaCutoff;
-	SgBool doubleSided;
-	SgBool unlit;
+	SgClearcoat             clearcoat;
+	SgIOR                   ior;
+	SgSpecular              specular;
+	SgSheen                 sheen;
+	SgTransmission          transmission;
+	SgTextureView           normalTexture;
+	SgTextureView           occlusionTexture;
+	SgTextureView           emissiveTexture;
+	v3                      emissiveFactor;
+	SgAlphaMode             alphaMode;
+	SgFloat                 alphaCutoff;
+	SgBool                  doubleSided;
+	SgBool                  unlit;
 
 	SgShaderAttr** ppShaders;
-	SgSize shaderCount;
+	SgSize         shaderCount;
 
 	char* pName;
 } SgMaterialAttr;
 
 typedef struct SgPrimitive {
-	SgPrimitiveType type;
-	SgAccessor* pIndices;
-	SgMaterialAttr* pMaterial;
-	SgAttribute* pAttributes;
-	SgSize attributeCount;
-	SgMorphTarget* pTargets;
-	SgSize targets_count;
-	SgBool hasDracoMeshCompression;
-	SgDracoMeshCompression dracoMeshCompression;
-	SgBool hasMeshoptMeshCompression;
+	SgPrimitiveType          type;
+	SgAccessor*              pIndices;
+	SgMaterialAttr*          pMaterial;
+	SgAttribute*             pAttributes;
+	SgSize                   attributeCount;
+	SgMorphTarget*           pTargets;
+	SgSize                   targets_count;
+	SgBool                   hasDracoMeshCompression;
+	SgDracoMeshCompression   dracoMeshCompression;
+	SgBool                   hasMeshoptMeshCompression;
 	SgMeshoptMeshCompression meshoptMeshCompression;
 } SgPrimitive;
 
 typedef struct SgMesh {
 	SgPrimitive* pPrimitives;
-	SgSize primitivesCount;
-	SgFloat* pWeights;
-	SgSize weightsCount;
-	char** ppTargetNames;
-	SgSize targetNamesCount;
-	char* pName;
+	SgSize       primitivesCount;
+	SgFloat*     pWeights;
+	SgSize       weightsCount;
+	char**       ppTargetNames;
+	SgSize       targetNamesCount;
+	char*        pName;
 } SgMesh;
 
 typedef struct SgCameraPerspective {
@@ -285,7 +285,7 @@ typedef enum SgCameraType {
 typedef struct SgCamera {
 	SgCameraType type;
 	union {
-		SgCameraPerspective perspective;
+		SgCameraPerspective  perspective;
 		SgCameraOrthographic orthographic;
 	} data;
 
@@ -300,46 +300,46 @@ typedef enum SgLightType {
 } SgLightType;
 
 typedef struct SgLight {
-	v3 color;
-	SgFloat intensity;
+	v3          color;
+	SgFloat     intensity;
 	SgLightType type;
-	SgFloat range;
-	SgFloat spotInnerConeAngle;
-	SgFloat spotOuterConeAngle;
+	SgFloat     range;
+	SgFloat     spotInnerConeAngle;
+	SgFloat     spotOuterConeAngle;
 
 	char* pName;
 } SgLight;
 
 struct SgSceneNode {
-	SgSceneNode* pParentNode;
+	SgSceneNode*  pParentNode;
 	SgSceneNode** pChildrenNodes;
-	SgSize childrenCount;
-	SgSkin* pSkin;
-	SgMesh* pMesh;
-	SgCamera* pCamera;
-	SgLight* pLight;
-	SgFloat* pWeights;
-	SgSize weightsCount;
-	SgBool hasTranslation;
-	SgBool hasScale;
-	SgBool hasMatrix;
-	v3 translation;
-	v4 rotation;
-	v3 scale;
-	m4 matrix;
+	SgSize        childrenCount;
+	SgSkin*       pSkin;
+	SgMesh*       pMesh;
+	SgCamera*     pCamera;
+	SgLight*      pLight;
+	SgFloat*      pWeights;
+	SgSize        weightsCount;
+	SgBool        hasTranslation;
+	SgBool        hasScale;
+	SgBool        hasMatrix;
+	v3            translation;
+	v4            rotation;
+	v3            scale;
+	m4            matrix;
 
 	char* pName;
 };
 
 typedef struct SgPassAttachment {
-	VkFormat format;
-	SgSize* pSampleCount;
-	VkAttachmentLoadOp loadOp;
+	VkFormat            format;
+	SgSize*             pSampleCount;
+	VkAttachmentLoadOp  loadOp;
 	VkAttachmentStoreOp storeOp;
-	VkAttachmentLoadOp stencilLoadOp;
+	VkAttachmentLoadOp  stencilLoadOp;
 	VkAttachmentStoreOp stencilStoreOp;
-	VkImageLayout initialLayout;
-	VkImageLayout finalLayout;
+	VkImageLayout       initialLayout;
+	VkImageLayout       finalLayout;
 
 	char* pName;
 } SgPassAttachment;
@@ -351,33 +351,33 @@ typedef enum SgPassTypeFlagBits {
 typedef SgPassTypeFlagBits SgPassTypeFlags;
 
 typedef struct SgPass {
-	SgPassTypeFlags type;
-	SgPassAttachment* pPassAttachments;
-	SgSize passAttachmentsCount;
+	SgPassTypeFlags       type;
+	SgPassAttachment*     pPassAttachments;
+	SgSize                passAttachmentsCount;
 	VkSubpassDescription* pSubpassDescriptions;
-	SgSize subpassDescriptionsCount;
-	VkSubpassDependency* pDependencies;
-	SgSize dependenciesCount;
+	SgSize                subpassDescriptionsCount;
+	VkSubpassDependency*  pDependencies;
+	SgSize                dependenciesCount;
 
 	char* pName;
 } SgPass;
 
 typedef struct SgFramebuffer {
-	SgPass* pRenderPass;
-	SgSize width;
-	SgSize height;
+	SgPass*      pRenderPass;
+	SgSize       width;
+	SgSize       height;
 	VkImageView* pImageViewAttachments;
-	SgSize layers;
+	SgSize       layers;
 
 	char* pName;
 } SgFramebuffer;
 
 typedef struct SgScene {
 	SgSceneNode** ppNodes;
-	SgSize nodeCount;
+	SgSize        nodeCount;
 
 	SgPass** ppPasses;
-	SgSize passCount;
+	SgSize   passCount;
 
 	char* pName;
 } SgScene;
@@ -385,8 +385,8 @@ typedef struct SgScene {
 typedef enum SgAssetVersion { SG_ASSET_VERION_0_1 } SgAssetVersion;
 
 typedef struct SgSceneAssets {
-	SgScene* pScenes;
-	SgSize sceneCount;
+	SgScene*       pScenes;
+	SgSize         sceneCount;
 	SgAssetVersion version;
 } SgSceneAssets;
 
@@ -394,6 +394,7 @@ typedef struct SgSceneAssetLoadInfo {
 	SgFile assetFile;
 } SgSceneAssetLoadInfo;
 
-SgResult sgLoadSceneAssets(const SgSceneAssetLoadInfo* assetLoadInfo, SgSceneAssets* pAssets);
+SgResult sgLoadSceneAssets(const SgSceneAssetLoadInfo* assetLoadInfo,
+                           SgSceneAssets*              pAssets);
 
 #endif

@@ -17,7 +17,7 @@ extern "C" {
 
 typedef struct SgAppCreateInfo {
 	const char* pName;
-	SgFile configFile;
+	SgFile      configFile;
 } SgAppCreateInfo;
 
 SG_DEFINE_HANDLE(SgApp);
@@ -33,14 +33,14 @@ typedef enum SgShaderStageFlagBits {
 } SgShaderStageFlagBits;
 typedef SgFlags SgShaderStageFlags;
 typedef struct SgShaderCreateInfo {
-	SgFile file;
+	SgFile             file;
 	SgShaderStageFlags stage;
 } SgShaderCreateInfo;
 
 SG_DEFINE_HANDLE(SgShader);
-SgResult sgCreateShader(const SgApp app,
+SgResult sgCreateShader(const SgApp               app,
                         const SgShaderCreateInfo* pCreateInfo,
-                        SgShader* pShader);
+                        SgShader*                 pShader);
 
 typedef enum SgResourceTypeFlagBits {
 	SG_RESOURCE_TYPE_TEXTURE_2D = BIT(0),
@@ -52,54 +52,54 @@ typedef SgFlags SgResourceTypeFlags;
 
 typedef struct SgResourceCreateInfo {
 	SgResourceTypeFlags type;
-	void* bytes;
-	SgSize size;
-	VkExtent3D extent;
-	SgSize layerCount;
-	SgSize levelCount;
+	void*               bytes;
+	SgSize              size;
+	VkExtent3D          extent;
+	SgSize              layerCount;
+	SgSize              levelCount;
 
 	const char* pName;
 } SgResourceCreateInfo;
 
 SG_DEFINE_HANDLE(SgResourceMap);
 SgResult sgCreateResourceMap(const SgApp app, SgResourceMap* pResourceMap);
-SgResult sgAddResource(const SgApp app,
+SgResult sgAddResource(const SgApp                 app,
                        const SgResourceCreateInfo* pCreateInfo,
-                       SgResourceMap* pResourceMap);
+                       SgResourceMap*              pResourceMap);
 SgResult sgDestroyResourceMap(const SgApp app, SgResourceMap* pResourceMap);
 SgResult sgInitResourceMap(const SgApp app, SgResourceMap* pResourceMap);
 
 /* Make mesh load fit with the engine theme */
 typedef struct SgVertex {
 	v3 vert;
-	v3 norm;
+	u8 norm[4];
 	v2 tex;
 } SgVertex;
 
 typedef struct SgMeshSet {
-	SgVertex* pVertices;
-	SgSize vertexCount;
-	SgSize* pVertexOffsets;
-	SgSize* pIndexSizes;
-	SgSize* pVertexSizes;
-	SgSize* pIndices;
-	SgSize indexCount;
-	SgSize* pIndexOffsets;
-	SgSize meshCount;
+	SgVertex*       pVertices;
+	SgSize          vertexCount;
+	SgSize*         pVertexOffsets;
+	SgSize*         pIndexSizes;
+	SgSize*         pVertexSizes;
+	SgSize*         pIndices;
+	SgSize          indexCount;
+	SgSize*         pIndexOffsets;
+	SgSize          meshCount;
 	struct hashmap* meshMap;  // Return an offset id
 
 	const char* indicesResourceName;
 } SgMeshSet;
 
 SgResult sgCreateMeshSet(SgMeshSet** ppMeshArray);
-SgSize sgAddMesh(const char* pPath, SgMeshSet** ppMeshArray);
+SgSize   sgAddMesh(const char* pPath, SgMeshSet** ppMeshArray);
 
 SgSize* sgGetMeshID(const char* pPath, const SgMeshSet* pMeshArray);
-void sgUnloadMesh(SgMeshSet** ppMesh);
+void    sgUnloadMesh(SgMeshSet** ppMesh);
 
 typedef struct SgTexture {
-	int32_t width, height, channels;
-	SgSize size;
+	int32_t  width, height, channels;
+	SgSize   size;
 	stbi_uc* pixels;
 } SgTexture;
 
@@ -115,16 +115,16 @@ typedef struct SgRenderObject {
 
 typedef struct SgResourceBinding {
 	SgResourceTypeFlags type;
-	SgShaderStageFlags stage;
-	SgSize binding;
-	SgSize setBinding;
+	SgShaderStageFlags  stage;
+	SgSize              binding;
+	SgSize              setBinding;
 } SgResourceBinding;
 
 typedef struct SgRenderObjectCreateInfo {
 	SgRenderObject* pRenderObjects;
-	SgSize renderObjectCount;
-	const char** ppResourceNames;
-	SgSize resourceCount;
+	SgSize          renderObjectCount;
+	const char**    ppResourceNames;
+	SgSize          resourceCount;
 
 	const char* materialName;
 	const char* pName;
@@ -133,18 +133,18 @@ typedef struct SgRenderObjectCreateInfo {
 SG_DEFINE_HANDLE(SgMaterialRenderObjects);
 
 typedef struct SgMaterialCreateInfo {
-	const char* pMaterialName;
+	const char*        pMaterialName;
 	SgResourceBinding* pResourceBindings;
-	SgSize resourceBindingCount;
-	SgShader* pShaders;
-	SgSize shaderCount;
+	SgSize             resourceBindingCount;
+	SgShader*          pShaders;
+	SgSize             shaderCount;
 
 	SgSize renderObjectCount;
 } SgMaterialCreateInfo;
 
 typedef struct SgSetLayouts {
 	VkDescriptorSetLayout* setLayouts;
-	SgSize setLayoutCount;
+	SgSize                 setLayoutCount;
 } SgSetLayouts;
 
 SG_DEFINE_HANDLE(SgMaterial);
@@ -152,27 +152,27 @@ SG_DEFINE_HANDLE(SgMaterialMap);
 
 typedef struct SgMaterialMapCreateInfo {
 	const SgResourceMap resourceMap;
-	SgSize materailCount;
+	SgSize              materailCount;
 } SgMaterialMapCreateInfo;
 
-SgResult sgCreateMaterialMap(SgApp app,
-                             const SgMaterialMapCreateInfo* pCreateInfo,
-                             SgMaterialMap* pMaterialMap);
+SgResult   sgCreateMaterialMap(SgApp                          app,
+                               const SgMaterialMapCreateInfo* pCreateInfo,
+                               SgMaterialMap*                 pMaterialMap);
 SgMaterial sgAddMaterial(const SgMaterialCreateInfo* pCreateInfo,
-                         SgMaterialMap* pMaterialMap);
-SgMaterial sgGetMaterial(const char* pMaterialName,
+                         SgMaterialMap*              pMaterialMap);
+SgMaterial sgGetMaterial(const char*         pMaterialName,
                          const SgMaterialMap materialMap);
-SgResult sgAddMaterialRenderObjects(
-    const SgRenderObjectCreateInfo* pRenderObjectsCreateInfo,
-    SgMaterialMap* pMaterialMap);
+SgResult   sgAddMaterialRenderObjects(
+      const SgRenderObjectCreateInfo* pRenderObjectsCreateInfo,
+      SgMaterialMap*                  pMaterialMap);
 typedef struct SgRenderObjectUpdateInfo {
 	SgRenderObject* pRenderObjects;
-	SgSize renderObjectCount;
+	SgSize          renderObjectCount;
 
 	const char* pName;
 } SgRenderObjectUpdateInfo;
-void sgUpdateRenderObjects(const SgRenderObjectUpdateInfo* pUpdateInfo,
-                           SgMaterialMap* pMaterialMap);
+void     sgUpdateRenderObjects(const SgRenderObjectUpdateInfo* pUpdateInfo,
+                               SgMaterialMap*                  pMaterialMap);
 SgResult sgWriteMaterialRenderObjects(SgMaterialMap* pMaterialMap);
 // Will create/recreate descriptor set that could fit all of the material
 // descriptor sets and consequentially fill it up with descriptor sets
@@ -181,18 +181,18 @@ SgResult sgInitMaterialMap(SgApp app, SgMaterialMap* pMaterialMap);
 void sgDestroyMaterialMap(SgApp app, SgMaterialMap* pMaterialMap);
 
 typedef struct SgData {
-	void* bytes;
+	void*  bytes;
 	size_t size;
 } SgData;
-SgResult sgUpdateResource(const SgApp app,
+SgResult sgUpdateResource(const SgApp   app,
                           SgResourceMap resourceMap,
                           const SgData* pData,
-                          const char* pName);
-SgResult sgUpdateResources(const SgApp app,
-                           SgResourceMap resourceMap,
-                           const SgSize resourceCount,
+                          const char*   pName);
+SgResult sgUpdateResources(const SgApp    app,
+                           SgResourceMap  resourceMap,
+                           const SgSize   resourceCount,
                            const SgData** ppData,
-                           const char** ppNames);
+                           const char**   ppNames);
 // Update resources with last assigned data (the pointer is stored, so you
 // better not have destroyed the last used data)
 SgResult sgUpdateAllResources(const SgApp app, SgResourceMap resourceMap);
@@ -200,17 +200,17 @@ SgResult sgUpdateAllResources(const SgApp app, SgResourceMap resourceMap);
 typedef struct SgUpdateCommandsInitInfo {
 	SgMaterialMap materialMap;
 	SgResourceMap resourceMap;
-	SgMeshSet* pMeshSet;
+	SgMeshSet*    pMeshSet;
 } SgUpdateCommandsInitInfo;
 
 SG_DEFINE_HANDLE(SgUpdateCommands);
 SgResult sgInitUpdateCommands(const SgUpdateCommandsInitInfo* pInitInfo,
-                              SgUpdateCommands* pUpdateCommands);
+                              SgUpdateCommands*               pUpdateCommands);
 
 typedef struct SgAppUpdateInfo {
-	SgApp app;
-	SgMaterialMap materialMap;
-	SgMeshSet* pMeshSet;
+	SgApp            app;
+	SgMaterialMap    materialMap;
+	SgMeshSet*       pMeshSet;
 	SgUpdateCommands updateCommands;
 } SgAppUpdateInfo;
 SgBool sgAppUpdate(const SgAppUpdateInfo* pUpdateInfo);

@@ -1,9 +1,12 @@
 #version 460
 #extension GL_ARB_separate_shader_objects : enable
+#extension GL_EXT_shader_explicit_arithmetic_types: require
+#extension GL_EXT_shader_16bit_storage: require
+#extension GL_EXT_shader_8bit_storage: require
 
 struct Vertex {
 	float vert[3];
-	float norm[3];
+	uint8_t norm[4];
 	float tex[2];
 };
 
